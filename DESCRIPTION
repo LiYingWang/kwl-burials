@@ -1,0 +1,23 @@
+Package: kwlburials
+Title:   Compendium of R code and data for KWL burials
+Version: 0.0.0.9000
+Authors@R:
+    person(given = "Liying",
+           family = "Wang",
+           role = c("aut", "cre"),
+           email = "liying15@uw.edu")
+Description: Compendium of R code and data for KWL burials
+License: MIT + file LICENSE
+ByteCompile: true
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+Imports:
+    dplyr,
+    bookdown,
+    git2r,
+    devtools,
+    ggplot2 (>= 3.2.0),
+    knitr (>= 1.23),
+    Bergm
+Remotes: benmarwick/wordcountaddin
