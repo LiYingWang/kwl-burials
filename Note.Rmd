@@ -1,0 +1,14 @@
+# Note for the paper
+
+ERGM toturial: 
+https://www.r-bloggers.com/ergm-tutorial/
+
+Bergm toturial:
+http://acaimo.github.io/Bergm/tutorials/Dec_18.html
+
+# Explore different combination of variables for Bergm
+1. there is difference in statistics (mean, sd) between weighed and unweighed ties
+2. difference in statistics when simplifying variables to agate and golden beads, plus a few types of prestige goods such as gold foil and fish-like shaped necklace. The mean looks fine
+3. did not work well when there is too many ties in the network
+4. difference in the results of using BergmM and Bergm, BergmM is for missing data
+5. add the spacial information?

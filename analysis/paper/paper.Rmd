@@ -38,24 +38,23 @@ knitr::opts_chunk$set(
 
 # Methods
 
-## ERGM model
+## Exponential Random Graph Models
 
 Exponential Random Graph Models (ERGMs) are a family of statistical model for network analysis to 
-describe the formation of ties in a network. In traditional statistical model for network, a dyad, the pair of nodes, is measured by the presence of a tie according to the attributes of the nodes or ties, where each predictor variable for forming a tie is measured separately. In contrast to traditional model where variables not interacting with each other, ERGMs assumes the formation of a tie is influenced by the presence or absence of other ties or attributes of nodes and ties (Robins et al. 2007). In a network using ERGMs, predictor variables, called "network statistics", are direct functions of the ties themselves that the probability of occurrence of the configuration of ties can be hypothesized (Morries et al. 2008). This approach enables networks to be constructed in a variety of assumption and contexts to model social network in the past using archaeological data (Amati et al. 2019). 
+describe the formation of ties in a network. In traditional statistical model for network, a dyad, the pair of nodes, is measured by the presence of a tie according to the attributes of the nodes or ties, where each predictor variable for forming a tie is measured separately. In contrast to traditional model where variables not interacting with each other, ERGMs assumes the formation of a tie is influenced by the presence or absence of other ties or attributes of nodes and ties (Robins et al. 2007). In a network using ERGMs, predictor variables, called "network statistics", are direct functions of the ties themselves that the probability of occurrence of the configuration of ties can be hypothesized [@Morris2008]. This approach enables networks to be constructed in a variety of assumption and contexts to model social network in the past using archaeological data [@Amati2019]. 
 
 some concepts:
 - endogenous statistics that ties are modelled based on the existence of other ties
 - exogenous statistics that ties are formed according to monadic or dyadic node attributes
 
-toturial: 
-https://www.r-bloggers.com/ergm-tutorial/
+
 
 ## statistics
 We want to know 
 
 ERGM- consider transitivity by taking into account high-order k-triangles. Triangles and higher order cycles
 
-We used ergm package in R for the model specification. Every term in an ERGM must have an associated algorithm for computing its value for network (Morris et al. 2008). The terms we selected for nwtwork specification include:
+We used ergm package in R for the model specification. Every term in an ERGM must have an associated algorithm for computing its value for network [@Morris2008]. The terms we selected for nwtwork specification include:
 
 1. edges: ties, a measure of density, equal to kstar(1) for undirected networks
 
@@ -131,10 +130,7 @@ The summary presents the statistics that each θ corresponds to the parameter sp
 θ3 = gwesp is negative that rejects the assumption that actors with multiple partners in common are more likely to be directed connected
 θ4 = 
 
-# some exploration
-1. there is different statistics between weighted and unweighed ties
-
-Here is an example of inline code `r x` in the middle of a sentence. 
+inline code `r x` example
 
 # Discussion
 
