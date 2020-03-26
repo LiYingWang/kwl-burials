@@ -1,5 +1,5 @@
 ---
-title: "Title Goes Here"
+title: "Bayesian exponential random graph modelling of KWL Burial network"
 author:
   - Author One
   - Author Two
@@ -34,28 +34,105 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Here is a citation [@Marwick2017]
-
 # Background
 
 # Methods
 
+## ERGM model
+
+Exponential Random Graph Models (ERGMs) are a family of statistical model for network analysis to 
+describe the formation of ties in a network. In traditional statistical model for network, a dyad, the pair of nodes, is measured by the presence of a tie according to the attributes of the nodes or ties, where each predictor variable for forming a tie is measured separately. In contrast to traditional model where variables not interacting with each other, ERGMs assumes the formation of a tie is influenced by the presence or absence of other ties or attributes of nodes and ties (Robins et al. 2007). In a network using ERGMs, predictor variables, called "network statistics", are direct functions of the ties themselves that the probability of occurrence of the configuration of ties can be hypothesized (Morries et al. 2008). This approach enables networks to be constructed in a variety of assumption and contexts to model social network in the past using archaeological data (Amati et al. 2019). 
+
+some concepts:
+- endogenous statistics that ties are modelled based on the existence of other ties
+- exogenous statistics that ties are formed according to monadic or dyadic node attributes
+
+toturial: 
+https://www.r-bloggers.com/ergm-tutorial/
+
+## statistics
+We want to know 
+
+ERGM- consider transitivity by taking into account high-order k-triangles. Triangles and higher order cycles
+
+We used ergm package in R for the model specification. Every term in an ERGM must have an associated algorithm for computing its value for network (Morris et al. 2008). The terms we selected for nwtwork specification include:
+
+1. edges: ties, a measure of density, equal to kstar(1) for undirected networks
+
+2. gwesp (geometrically weighted edgewise shared partners): a dyad-based configurations (not node-based) that counts the number of times that both nodes have a tie to a third node. It is a measure of the tendency for two actors who are tied to have x partners in common.
+
+3. gwdegree (geometrically weighted degree distribution): a parametric form that represents the frequency distribution for nodal degree, each node counts only once. The local configuration is degrees and stars that are equivalent representations for the distribution of node-based edge counts
+
 # Results
 
-```{r get-data, eval = FALSE}
-# Note the path that we need to use to access our data files when rendering this document
-my_data <- read.csv(here::here('analysis/data/raw_data/my_csv_file.csv'))
+```{r model-ergm-1}
+model.ergm <- burial_network_pre ~ 
+  edges + # ties, a measure of density, equal to kstar(1) for undirected networks
+  density +
+  gwdegree(0.5, fixed = TRUE)  +
+  triangle # triad relation, a measure of clustering or cohesion, also called transitive triple in undirected network
+summary(model.ergm)
 ```
 
-```{r demo-plot, fig.cap="A plot of random numbers"}
-plot(rnorm(10))
+```{r model-ergm-2}
+model.2 <- burial_network_pre ~ edges + # density
+  gwesp(0.2, fixed = TRUE) +  # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
+  # triad-based clustering according to dyad-based configurations instead of node-based
+  # number means weight parameter alpha, which controls the rate of declining marginal returns
+  # fixed = TRUE means the scale parameter lambda is fit as a curved exponential-family model
+  # not much difference in a range of 0-1.5, the lower the value of the scaling parameter, the less likely the model is to be degenerate
+  # ergm can estimate the parameter from the data by using fixed=FALSE
+  # http://mailman13.u.washington.edu/pipermail/statnet_help/2010/000575.html
+  gwdegree(0.8, fixed = TRUE)  # popularity(degree; star), the frequency distribution for nodal degrees
+  # tendency of being in contact with multiple partners, measures of centralisation
+  # distribution of node-based edge counts, each node counts only once
+  # number means weight parameter decay
+  # Morris et al. (2008)
+summary(model.2)
 ```
 
-Figure \@ref(fig:demo-plot) shows how we can have a caption and cross-reference for a plot
 
-```{r demo-inline-code}
-x <- round(pi, 2)
+```{r model-ergm-3}
+model.3 <- burial_network_pre ~ edges +  # the overall density of the network
+  nodematch('quantity') +    # quantity-based homophily, categorical nodal attribute
+  # the similarity of connected nodes
+  gwesp(0.2, fixed = TRUE) +    # transitivity
+  gwdegree(0.8, fixed = TRUE)   # popularity
+summary(model.3)
 ```
+
+
+```{r model-bergm}
+# Specify a prior distribution: normal distribution (low density and high transitivity)
+prior.mean <- c(-3, 0, 1, 0) # prior mean corresponds to mean for each parameter
+# follow Alberto Caimo et al. (2015) hospital example
+prior.sigma <- diag(3, 4, 4) # covariance matrix structure
+# normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
+# where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
+
+# Estimated posterior means, medians and 95% credible intervals for Models.3
+# bergmM: Bayesian exponential random graphs models under missing data using the approximate exchange algorithm
+parpost <- bergm(model.3,
+                  prior.mean  = prior.mean,
+                  prior.sigma = prior.sigma,
+                  burn.in     = 200, # burn-in iterations for every chain of the populationm, drops the first 200
+                  main.iters  = 2000, # iterations for every chain of the population
+                  aux.iters   = 10000, # MCMC steps used for network simulation
+                  nchains     = 8, # number of chains of the population MCMC
+                  gamma       = 0.7) # scalar; parallel adaptive direction sampling move factor, acceptance rate
+
+summary(parpost) 
+```
+
+The summary presents the statistics that each θ corresponds to the parameter specified in ERGM previously. In general, positive mean indicates positive correlation, while negative mean indicates negative correlation. 
+
+θ1 = number of ties
+θ2 = individuals with the same abundance of burial goods
+θ3 = gwesp is negative that rejects the assumption that actors with multiple partners in common are more likely to be directed connected
+θ4 = 
+
+# some exploration
+1. there is different statistics between weighted and unweighed ties
 
 Here is an example of inline code `r x` in the middle of a sentence. 
 
