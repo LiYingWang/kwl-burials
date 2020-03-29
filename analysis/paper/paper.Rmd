@@ -71,7 +71,7 @@ We used ergm package in R for the model specification. Every term in an ERGM mus
 
 2. gwesp (geometrically weighted edgewise shared partners): a dyad-based configurations (not node-based) that counts the number of times that both nodes have a tie to a third node. It is a measure of the tendency for two actors who are tied to have x partners in common.
 
-3. gwdegree (geometrically weighted degree distribution): a parametric form that represents the frequency distribution for nodal degree, each node counts only once. The local configuration is degrees and stars that are equivalent representations for the distribution of node-based edge counts
+3. gwdegree (geometrically weighted degree distribution): a parametric form that represents the frequency distribution for nodal degree, each node counts only once. The local configuration is degrees and stars that are equivalent representations for the distribution of node-based edge counts. A measure of the tendency of the number of edges into a node. gwdegree estimates the change in tie likelihood given the degree of the nodes involved, but with marginally decreasing weighting as degree increases(https://www.r-bloggers.com/ergm-tutorial/). This statistic captures the tendency towards centralisation in the degree distribution of the network.
 
 # Results
 
@@ -98,6 +98,7 @@ model.2 <- burial_network_pre ~ edges + # density
   # distribution of node-based edge counts, each node counts only once
   # number means weight parameter decay
   # Morris et al. (2008)
+  # The closer decay is to zero, the more gwdegree considers low degree nodes relative to high degree nodes
 summary(model.2)
 ```
 
@@ -138,8 +139,8 @@ The summary presents the statistics that each θ corresponds to the parameter sp
 
 θ1 = number of ties
 θ2 = individuals with the same abundance of burial goods
-θ3 = gwesp is negative that rejects the assumption that actors with multiple partners in common are more likely to be directed connected
-θ4 = 
+θ3 = gwesp, a positive sign suggests a tendency of burials in our sample to group together in closed transitive structures. In mortuary context, clustering implies a tendency of burials with the same status indicated by prestige goods to be organised in closed structures. Burials with multiple prestige goods in common are more likely to be directed connected.
+θ4 = gwdegree, negative estimates reflect an increased likelihood on ties to higher-degree nodes, or the strong edges are not necessarily centralised or dispersed in the degree distribution.
 
 inline code `r x` example
 
