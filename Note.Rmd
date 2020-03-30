@@ -12,3 +12,8 @@ http://acaimo.github.io/Bergm/tutorials/Dec_18.html
 3. did not work well when there is too many ties in the network
 4. difference in the results of using BergmM and Bergm, BergmM is for missing data
 5. add the spacial information?
+
+# some paragraphs from proposal 
+At Kiwulan, we view individual burials as actors or nodes in the social network, and use SNA methods to test hypotheses about the distribution of influence in the network to identify network or corporate mode conditions. Network ties will be drawn between burials with similar variables that can represent the same ‘community’ or social group. To measure change in social inequality, I will use the binary presence or absence of burial goods, the amount of prestige goods, grave dimensional attributes, and ordinal variables of age and sex categories to determine which actors have connections in the network (Sosna, et al. 2012).
+
+Once the relationships between the actors have been described, I will compute statistical measures such as network degree centrality, graph density, and graph centralization. These measures are helpful to identify individual’s role and trends of network relationship, and I will use them to formally test hypotheses about the structure of the social network (Brughmans 2010: 280; Gjesfjeld 2014: 192). I predict that if there is a change from corporate to network mode following the European contact, then I expect the social network will show statistically significantly higher degrees of centrality and a higher density in the post-European period compared to pre-European period. This is because a social network graph that is highly centralized and very sparse indicates high concentrations of wealth, and higher social inequality.
