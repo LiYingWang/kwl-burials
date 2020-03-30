@@ -15,7 +15,9 @@ burial_three_period_tidy <-
          Stamped_ceramic = ifelse(Stamped_ceramic == "cluster", "1", Stamped_ceramic)) %>%
   mutate_at(21:ncol(.), as.numeric) %>%
   janitor::remove_empty(which = "cols") %>%
-  mutate(total = rowSums(.[c(21:48, 50, 55, 56)], na.rm = TRUE)) %>%
+  mutate(total = rowSums(.[c(21:48, 50, 55, 56)], na.rm = TRUE)) %>% #prestige goods
+  mutate(Porcelain = rowSums(.[c(40:48, 55, 56)], na.rm = TRUE)) %>% #B&W, porcelain, anping, kendi
+  mutate(Porcelain = ifelse(Porcelain == 0, NA, Porcelain)) %>%
   mutate(quantity = case_when(
     total == 0 ~ "none",
     total > 0 & total <= 7 ~ "low",
@@ -41,9 +43,9 @@ burial_three_period_tidy <-
          Agate_bead_high,
          #Agate_bead, #female burials
          #Golden_bead,
-         #`B&W_vase`,
-         #Gold_leaf, #prestige good
-         #fish_shape_knit, #prestige good
+         Porcelain,
+         Gold_leaf, #prestige good
+         fish_shape_knit, #prestige good
          #Bell, #children's burials
          quantity)
          #total) # select to drop columns and uninformative variables:
@@ -57,7 +59,8 @@ burial_three_period_number <-
 
 burial_pre <-
   burial_three_period_tidy %>%
-  filter(Phase == "pre")
+  filter(Phase == "pre") %>%
+  janitor::remove_empty(which = "cols")
 
 # create node list using burial index by phase
 #--------------------pre--------------------------------
@@ -78,7 +81,7 @@ burial_comb_pre = as_tibble(burial_comb_pre)
 # create list for each burial that contains the burial good types and their counts
 edge_list_pre <-
   burial_three_period_tidy %>%
-  select(burial_label, 3:8) %>% #19:39
+  select(burial_label, 3:11) %>% # need to change for each exploration
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   #mutate(burial_connection = rep(unique(burial_label), length.out = length(burial_label)))
   group_by(burial_label) %>%
@@ -151,7 +154,7 @@ burial_network_pre <-
   network(edges_for_network_pre, # the network object
           vertex.attr = nodes_pre, # node list
           directed = FALSE, # specify whether the network is directed
-          ignore.eval = TRUE, # FALSE = weighted
+          ignore.eval = FALSE, # FALSE = weighted
           loops = FALSE, # do we allow self ties (should not allow them)
           matrix.type = "edgelist") # the type of input
 
