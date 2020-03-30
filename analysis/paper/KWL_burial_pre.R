@@ -19,7 +19,7 @@ burial_three_period_tidy <-
          Stoneware = as.numeric(Stoneware),
          `Stamped_ceramic` = as.numeric(`Stamped_ceramic`)) %>% 
   janitor::remove_empty(which = "cols") %>% 
-  mutate(total = rowSums(.[20:40], na.rm = TRUE)) %>% 
+  mutate(total = rowSums(.[21:40], na.rm = TRUE)) %>% 
   mutate(quantity = case_when( 
     total == 0 ~ "none",
     total > 0 & total <= 7 ~ "low",
@@ -40,9 +40,9 @@ burial_three_period_tidy <-
          Gold_bead_low,
          Gold_bead_med,
          Gold_bead_high,
-         #Agate_bead_low,
-         #Agate_bead_med,
-         #Agate_bead_high,
+         Agate_bead_low,
+         Agate_bead_med,
+         Agate_bead_high,
          #Agate_bead, #female burials
          #Golden_bead,
          #`B&W_vase`,
