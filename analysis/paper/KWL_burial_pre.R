@@ -119,7 +119,7 @@ edges_pre <-
 
 edges_for_network_pre <-
   select(edges_pre, from, to, common_counts) %>%
-  filter (!common_counts == 0)
+  filter (!common_counts == 0) # remove rows with no goods in common
  # %>% mutate(common_counts = ifelse(common_counts > 1, 1, common_counts)) # for unweighted network
 
 #1--------------------network analysis using ggraph pkg------------------------------
@@ -159,7 +159,7 @@ burial_network_pre <-
           matrix.type = "edgelist") # the type of input
 
 # plot
-plot(burial_network_pre, vertex.cex = 1)
+plot(burial_network_pre, vertex.cex = 1) # It seems the last two nodes are missing?? only 27 nodes
 
 #-----------------------Bayesian ------------------------------
 library(statnet)
@@ -171,12 +171,13 @@ set.vertex.attribute(burial_network_pre, "quantity", burial_pre$quantity)
 # plot
 set.seed(30)
 quantity <- get.vertex.attribute(burial_network_pre, "quantity")
+ID <- get.vertex.attribute(burial_network_pre, "burial_label") # not sure how to get id on the network plot
 plot(burial_network_pre,
      vertex.col = "quantity",
      vertex.cex = 1.5)
 
 legend("topleft",
-       col = c(3, 2, 4, 1),
+       col = c(2, 3, 1, 4), # need to adjust each time
        pch    = 20,
        legend = unique(quantity),
        title  = 'Burial good counts')
@@ -270,9 +271,9 @@ parpost2 <- bergmC(model.3,
                    noisy.thin  = 1000,
                    burnin      = 200,
                    mcmc        = 10000,
-                   tunePL      = 1.5)
+                   tunePL      = 1.5) # does not work
 
-
+# example here
 bergmC(formula,
        prior.mean = NULL,
        prior.sigma = NULL,
@@ -294,7 +295,7 @@ bgof(parpost,
      n.dist    = 15,
      n.esp     = 9)
 
-#_-------------------------set different parameters------------------------------
+#-------------------------set different parameters------------------------------
 # three competing models based on ERGM formulas to fit the data using gwesp and gwdegree
 
 mod.1 <- burial_network_pre ~ edges +
