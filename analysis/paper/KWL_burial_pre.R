@@ -43,7 +43,7 @@ burial_three_period_tidy <-
          Agate_bead_high,
          #Agate_bead, #female burials
          #Golden_bead,
-         Porcelain,
+         #Porcelain,
          Gold_leaf, #prestige good
          fish_shape_knit, #prestige good
          #Bell, #children's burials
@@ -81,7 +81,7 @@ burial_comb_pre = as_tibble(burial_comb_pre)
 # create list for each burial that contains the burial good types and their counts
 edge_list_pre <-
   burial_three_period_tidy %>%
-  select(burial_label, 3:11) %>% # need to change for each exploration
+  select(burial_label, 3:10) %>% # need to change for each exploration
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   #mutate(burial_connection = rep(unique(burial_label), length.out = length(burial_label)))
   group_by(burial_label) %>%

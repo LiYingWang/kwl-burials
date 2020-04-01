@@ -42,15 +42,13 @@ Using the R language, we use Bayesian SNA to study burials from Kiwulan, an Iron
 
 # Archaeological background
 
-Based on the quantity and quality of grave goods among burials, we can reconstruct social networks from the distribution of prestige goods, including imported ceramic and beads based on the principle that prestige materials usually relate to social status. 
+The burials we analyzed in this study are from Kiwulan site, an Iron Age settlement site (AD1350-AD1950) located in northeastern Taiwan that experienced the European colonial impacts in the 17th century and the large wave of Chinese immigrants in the 19th century. The burials were assigned to pre-European contact period, post-European contact period, and Chinese period based on the stratigraphic data and diagnostic porcelain as time indicators.
 
-We build network where burials represent actors (nodes in the network) linked by sharing the same prestige goods. 
+Based on the quantity and quality of grave goods among burials, we can reconstruct social networks from the distribution of prestige goods, including imported ceramic and beads based on the principle that prestige materials usually relate to social status. We build network where burials represent actors (nodes in the network) linked by sharing the same prestige goods. 
 
 # Methods
 
 ## Exponential Random Graph Models
-
-
 
 some concepts:
 - endogenous statistics that ties are modelled based on the existence of other ties
@@ -110,12 +108,13 @@ summary(model.3)
 ```
 
 
+Normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) is viewed as a suitable prior model for the model parameters of interests in network analysis (Caimo et al, 2015). We specified the prior based on normal distribution that assumes a low density and high transitivity network. 
+
 ```{r model-bergm}
 # Specify a prior distribution: normal distribution (low density and high transitivity)
 prior.mean <- c(-3, 0, 1, 0) # prior mean corresponds to mean for each parameter
 # follow Alberto Caimo et al. (2015) hospital example
 prior.sigma <- diag(3, 4, 4) # covariance matrix structure
-# normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
 
 # Estimated posterior means, medians and 95% credible intervals for Models.3
