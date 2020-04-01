@@ -2,6 +2,7 @@ library(readxl)
 library(tidyverse)
 library(here)
 
+# read data
 burial <- read_excel(here("analysis", "data", "raw_data", "Kiwulan_Burials.xlsx"))
 
 # combine some periods
@@ -16,7 +17,7 @@ burial_three_period_tidy <-
   mutate_at(21:ncol(.), as.numeric) %>%
   janitor::remove_empty(which = "cols") %>%
   mutate(total = rowSums(.[c(21:48, 50, 55, 56)], na.rm = TRUE)) %>% #prestige goods
-  mutate(Porcelain = rowSums(.[c(40:48, 55, 56)], na.rm = TRUE)) %>% #B&W, porcelain, anping, kendi
+  mutate(Porcelain = rowSums(.[c(40:48, 55, 56)], na.rm = TRUE)) %>% #B&W, porcelain, Anping, kendi
   mutate(Porcelain = ifelse(Porcelain == 0, NA, Porcelain)) %>%
   mutate(quantity = case_when(
     total == 0 ~ "none",
@@ -43,12 +44,12 @@ burial_three_period_tidy <-
          Agate_bead_high,
          #Agate_bead, #female burials
          #Golden_bead,
-         #Porcelain,
+         Porcelain,
          Gold_leaf, #prestige good
          fish_shape_knit, #prestige good
          #Bell, #children's burials
          quantity)
-         #total) # select to drop columns and uninformative variables:
+         #total) # select specific variable to drop columns (uninformative variables)
 
 # Histogram as a reference for the classification for gold bead and total amount in R script
 
@@ -57,6 +58,7 @@ burial_three_period_number <-
   burial_three_period_tidy %>%
   count(Phase)
 
+# filter pre burials
 burial_pre <-
   burial_three_period_tidy %>%
   filter(Phase == "pre") %>%
