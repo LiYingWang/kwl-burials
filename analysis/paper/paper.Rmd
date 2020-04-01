@@ -72,7 +72,7 @@ We used ergm package in R for the model specification. Every term in an ERGM mus
 
 1. edges: ties, a measure of density, equal to kstar(1) for undirected networks
 
-2. gwesp (geometrically weighted edgewise shared partners): a dyad-based configurations (not node-based) that counts the number of times that both nodes have a tie to a third node. It is a measure of the tendency for two actors who are tied to have x partners in common.
+2. gwesp (geometrically weighted edgewise shared partners): triad-based clustering based on a dyad-based configurations (not node-based) that counts the number of times that both nodes have a tie to a third node. It is a measure of the tendency for two actors who are tied to have x partners in common. In orther words, a tendency for those with shared partners to become tied, or tendency of ties to cluster together.
 
 3. gwdegree (geometrically weighted degree distribution): a parametric form that represents the frequency distribution for nodal degree, each node counts only once. The local configuration is degrees and stars that are equivalent representations for the distribution of node-based edge counts. A measure of the tendency of the number of edges into a node. gwdegree estimates the change in tie likelihood given the degree of the nodes involved, but with marginally decreasing weighting as degree increases(https://www.r-bloggers.com/ergm-tutorial/). This statistic captures the tendency towards centralisation in the degree distribution of the network.
 
@@ -82,25 +82,25 @@ We used ergm package in R for the model specification. Every term in an ERGM mus
 model.ergm <- burial_network_pre ~ 
   edges + # ties, a measure of density, equal to kstar(1) for undirected networks
   density +
-  gwdegree(0.5, fixed = TRUE)  +
-  triangle # triad relation, a measure of clustering or cohesion, also called transitive triple in undirected network
+  gwdegree(0.5, fixed = TRUE) +
+  triangle # triad relation, a measure of clustering or cohesion, also called transitive triple in undirected network, can be replaced by "gwdegree"
 summary(model.ergm)
 ```
 
 ```{r model-ergm-2}
+# check out the terms: http://mailman13.u.washington.edu/pipermail/statnet_help/2010/000575.html
+# also check here Morris et al. (2008)
 model.2 <- burial_network_pre ~ edges + # density
-  gwesp(0.2, fixed = TRUE) +  # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
-  # triad-based clustering according to dyad-based configurations instead of node-based
+  gwesp(0.2, fixed = TRUE) +  # transitivity(cohesion; triangle)
   # number means weight parameter alpha, which controls the rate of declining marginal returns
   # fixed = TRUE means the scale parameter lambda is fit as a curved exponential-family model
   # not much difference in a range of 0-1.5, the lower the value of the scaling parameter, the less likely the model is to be degenerate
   # ergm can estimate the parameter from the data by using fixed=FALSE
-  # http://mailman13.u.washington.edu/pipermail/statnet_help/2010/000575.html
+
   gwdegree(0.8, fixed = TRUE)  # popularity(degree; star), the frequency distribution for nodal degrees
   # tendency of being in contact with multiple partners, measures of centralisation
   # distribution of node-based edge counts, each node counts only once
   # number means weight parameter decay
-  # Morris et al. (2008)
   # The closer decay is to zero, the more gwdegree considers low degree nodes relative to high degree nodes
 summary(model.2)
 ```
@@ -108,13 +108,12 @@ summary(model.2)
 
 ```{r model-ergm-3}
 model.3 <- burial_network_pre ~ edges +  # the overall density of the network
-  nodematch('quantity') +    # quantity-based homophily, categorical nodal attribute
+  nodematch('quantity') + # quantity-based homophily, categorical nodal attribute
   # the similarity of connected nodes
-  gwesp(0.2, fixed = TRUE) +    # transitivity
-  gwdegree(0.8, fixed = TRUE)   # popularity
+  gwesp(0.2, fixed = TRUE) +  # transitivity
+  gwdegree(0.8, fixed = TRUE) # popularity
 summary(model.3)
 ```
-
 
 Normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) is viewed as a suitable prior model for the model parameters of interests in network analysis (Caimo et al, 2015). We specified the prior based on normal distribution that assumes a low density and high transitivity network. 
 
