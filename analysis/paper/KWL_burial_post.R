@@ -117,7 +117,87 @@ plot(burial_network_post,
      vertex.cex = 1.5)
 
 legend("topleft",
-       col = c(2, 3, 1, 4), # need to adjust each time
+       col = c(4, 3, 2, 1), # need to adjust each time
        pch    = 20,
        legend = unique(quantity),
        title  = 'Burial good counts')
+
+#------------------creating ERGM model-------------------------------------
+# every term in an ERGM must have an associated algorithm for computing its value for network
+
+model.ergm <- burial_network_post ~
+  edges + # ties, a measure of density, equal to kstar(1) for undirected networks
+  density +
+  gwdegree(0.5, fixed = TRUE)  +
+  triangle # triad relation, a measure of clustering or cohesion, also called transitive triple in undirected network
+summary(model.ergm)
+
+model.2 <- burial_network_post ~ edges + # density
+  gwesp(0.2, fixed = TRUE) +  # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
+  gwdegree(0.8, fixed = TRUE)  # popularity(degree; star), the frequency distribution for nodal degrees
+summary(model.2)
+
+#--------------------Bayesian inference for ERGMs-------------------------
+model.3 <- burial_network_post ~ edges +  # the overall density of the network
+  nodematch('quantity') +    # quantity-based homophily, the similarity of connected nodes
+  gwesp(0.2, fixed = TRUE) +    # transitivity
+  gwdegree(0.8, fixed = TRUE)   # popularity
+summary(model.3)
+
+# Specify a prior distribution: normal distribution (low density and high transitivity)
+prior.mean <- c(-3, 0, 1, 0) # prior mean corresponds to mean for each parameter
+prior.sigma <- diag(3, 4, 4) # covariance matrix structure
+
+parpost <- bergm(model.3,
+                 prior.mean  = prior.mean,
+                 prior.sigma = prior.sigma,
+                 burn.in     = 200, # burn-in iterations for every chain of the populationm, drops the first 200
+                 main.iters  = 2000, # iterations for every chain of the population
+                 aux.iters   = 10000, # MCMC steps used for network simulation
+                 nchains     = 8, # number of chains of the population MCMC
+                 gamma       = 0.7) # scalar; parallel adaptive direction sampling move factor, acceptance rate
+
+summary(parpost) # Each θ corresponds to the parameter specified in ERGM previously
+# In general, positive mean indicates postive correlation, while negative mean indicates negative correlation
+# there is different statistics between weighted and unweighted ties
+# θ1 = number of ties, θ2 = individuals with the same abundance of burial goods
+# θ3 = gwesp is negative that rejects the assumption that actors with multiple partners in common are more likely to be directed connected
+# θ4 =
+
+plot(parpost)
+
+# estimate the parameter posterior distribution using the pseudo-posterior calibration approach
+# this will take less than the exchange algorithm
+
+parpost2 <- bergmC(model.3,
+                   prior.mean  = prior.mean,
+                   prior.sigma = prior.sigma,
+                   iters       = 100,
+                   aux.iters   = 10000,
+                   noisy.nsim  = 1000,
+                   noisy.thin  = 1000,
+                   burnin      = 200,
+                   mcmc        = 10000,
+                   tunePL      = 1.5) # does not work
+
+# example here
+bergmC(formula,
+       prior.mean = NULL,
+       prior.sigma = NULL,
+       burn.in = 10000,
+       main.iters = 40000,
+       aux.iters = 3000,
+       V.proposal = 1.5,
+       thin = 1,
+       rm.iters = 500,
+       rm.a = 0.001,
+       rm.alpha = 0, n.aux.draws = 400, aux.thin = 50,
+       estimate = c("MLE", "CD"), ...)
+
+
+# Model assessment, Bayesian goodness of fit diagnostics:
+bgof(parpost,
+     aux.iters = 10000,
+     n.deg     = 14,
+     n.dist    = 15,
+     n.esp     = 9)
