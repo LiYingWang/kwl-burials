@@ -163,7 +163,7 @@ burial_network_pre <-
 # plot
 plot(burial_network_pre, vertex.cex = 1) # It seems the last two nodes are missing?? only 27 nodes
 
-#-----------------------Bayesian ------------------------------
+#-----------------------Bayesian ERGMs ------------------------------
 library(statnet)
 library(Bergm)
 
