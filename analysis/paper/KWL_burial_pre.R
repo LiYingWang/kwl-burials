@@ -257,7 +257,7 @@ summary(parpost) # Each θ corresponds to the parameter specified in ERGM previo
 # there is different statistics between weighted and unweighted ties
 # θ1 = number of ties, θ2 = individuals with the same abundance of burial goods
 # θ3 = gwesp is negative that rejects the assumption that actors with multiple partners in common are more likely to be directed connected
-# θ4 =
+# θ4 = gwdegree, negative estimates means strong edges are not necessarily centralised or dispersed in the degree distribution.
 
 plot(parpost)
 

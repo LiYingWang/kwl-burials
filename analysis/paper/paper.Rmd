@@ -52,10 +52,18 @@ The archaeological sites in northeastern Taiwan show some evidence of accumulati
 
 Based on the quantity and quality of grave goods among burials, we can reconstruct social networks from the distribution of prestige goods, including imported ceramic and beads based on the principle that prestige materials usually relate to social status. We build network where burials represent actors (nodes in the network) linked by sharing the same prestige goods. 
 
-
+We assume burial network represents the relations among people and social structure based on the argument that 
 # Methods
 
+Our purpose is to understand the characteristics of burial network and the mechanism of the relationship influence on the pattern of accumulation of wealth during different foreign contact periods. Previous studies have shown that there are some evidence of social inequality observed on this site but the degree and causes remains unclear. To answer our question about the shifts in social inequality during and after the arrival of foreign presence, we hypothesize: 
+
+• Hypothesis 1: There are significant reciprocal structure effects in burial network before the contact
+• Hypothesis 2: There are significant transitivity structure effects in burial network after the contact
+• Hypothesis 3: There are significant popularity structure effects in in burial network after the contact
+
 ## Exponential Random Graph Models
+
+We want to know 
 
 some concepts:
 - endogenous statistics that ties are modelled based on the existence of other ties
@@ -63,8 +71,6 @@ some concepts:
 
 
 ## Statistics
-We want to know 
-
 ERGM- consider transitivity by taking into account high-order k-triangles. Triangles and higher order cycles
 
 We used ergm package in R for the model specification. Every term in an ERGM must have an associated algorithm for computing its value for network [@Morris2008]. The terms we selected for nwtwork specification include:
@@ -77,7 +83,7 @@ We used ergm package in R for the model specification. Every term in an ERGM mus
 
 # Results
 
-```{r model-ergm-1}
+```{r pre-model-ergm-1}
 model.ergm <- burial_network_pre ~ 
   edges + # ties, a measure of density, equal to kstar(1) for undirected networks
   density +
@@ -86,7 +92,7 @@ model.ergm <- burial_network_pre ~
 summary(model.ergm)
 ```
 
-```{r model-ergm-2}
+```{r pre-model-ergm-2}
 # check out the terms: http://mailman13.u.washington.edu/pipermail/statnet_help/2010/000575.html
 # also check here Morris et al. (2008)
 model.2 <- burial_network_pre ~ edges + # density
@@ -105,7 +111,7 @@ summary(model.2)
 ```
 
 
-```{r model-ergm-3}
+```{r pre-model-ergm-3}
 model.3 <- burial_network_pre ~ edges +  # the overall density of the network
   nodematch('quantity') + # quantity-based homophily, categorical nodal attribute
   # the similarity of connected nodes
@@ -116,7 +122,7 @@ summary(model.3)
 
 Normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) is viewed as a suitable prior model for the model parameters of interests in network analysis [@Caimo2017]. We specified the prior based on normal distribution that assumes a low density and high transitivity network. 
 
-```{r model-bergm}
+```{r pre-model-bergm}
 # Specify a prior distribution: normal distribution (low density and high transitivity)
 prior.mean <- c(-3, 0, 1, 0) # prior mean corresponds to mean for each parameter
 # follow Alberto Caimo et al. (2015) hospital example
