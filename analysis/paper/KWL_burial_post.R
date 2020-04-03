@@ -194,10 +194,12 @@ bergmC(formula,
        rm.alpha = 0, n.aux.draws = 400, aux.thin = 50,
        estimate = c("MLE", "CD"), ...)
 
-
 # Model assessment, Bayesian goodness of fit diagnostics:
 bgof(parpost,
      aux.iters = 10000,
      n.deg     = 14,
      n.dist    = 15,
      n.esp     = 9)
+
+
+
