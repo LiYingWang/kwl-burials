@@ -38,7 +38,7 @@ Burials provide valuable information about social structures that reflect not on
 
 Exponential Random Graph Models (ERGMs) are an important family of statistical model for network analysis to describe the formation of ties in a network. In traditional statistical model for network, a dyad, the pair of nodes, is measured by the presence of a tie according to the attributes of the nodes or ties, where each predictor variable for forming a tie is measured separately. In contrast to traditional model where variables not interacting with each other, ERGMs assumes the formation of a tie is influenced by the presence or absence of other ties or attributes of nodes and ties (Robins et al. 2007). In a network using ERGMs, predictor variables, called "network statistics", are direct functions of the ties themselves that the probability of occurrence of the configuration of ties can be hypothesized [@Morris2008]. This approach enables networks to be constructed in a variety of assumption and contexts to model social network in the past using archaeological data [@Amati2019]. However, ERGMs are difficult to compute because their normalizing constant, which depends on model parameters, is intractable. A Bayesian framework allows for parameter inference using MCMC strategies which avoid the need for computationally intensive calculations of the normalizing constants. 
 
-Using the R language, we use Bayesian SNA to study burials from Kiwulan, an Iron Age site in northeast Taiwan. We view individual burials as actors or nodes in the social network with ties drawn between burials when the presence of the same variables that can represent the same "community" or social group. We test hypotheses about the distribution of influence in the network to identify network or corporate mode conditions. We ask the questions: 1. Do the observed burial data indicate a more clustered network than a distribution of random networks with similar qualities? 2. Whether European colonial activities in 17 century Taiwan resulted in the emergence of social inequality in an indigenous society can be detected by burials networks. We expect the network to present a higher degree of clustering (e.g. the number of completed triangles in the network) in the European contact period that might hint at social heterogeneity during this period. This study helps to expand the use of burials in understanding the indirect effects of a colonial presence on indigenous groups. A Bayesian approach enables the efficient quantification for uncertainty, parametrization, and model evaluation of social network metrics.
+Using the R language, we use Bayesian SNA to study burials from Kiwulan, an Iron Age site in northeast Taiwan. We view individual burials as actors or nodes in the social network with ties drawn between burials when the presence of the same variables that can represent the same "community" or social group. We test hypotheses about the distribution of influence in the network to identify network or corporate mode conditions. We ask the questions: 1. Do the observed burial data indicate a more clustered network than a distribution of random networks with similar qualities? 2. Whether European colonial activities in 17 century Taiwan resulted in the emergence of social inequality in an indigenous society can be detected by burials networks. 3. How the relations among burials may affect the quantity of burial goods? We expect the network to present a higher degree of clustering (e.g. the number of completed triangles in the network) in the European contact period that might hint at social heterogeneity during this period. This study helps to expand the use of burials in understanding the indirect effects of a colonial presence on indigenous groups. A Bayesian approach enables the efficient quantification for uncertainty, parametrization, and model evaluation of social network metrics.
 
 # Archaeological background
 
@@ -53,24 +53,26 @@ The archaeological sites in northeastern Taiwan show some evidence of accumulati
 Based on the quantity and quality of grave goods among burials, we can reconstruct social networks from the distribution of prestige goods, including imported ceramic and beads based on the principle that prestige materials usually relate to social status. We build network where burials represent actors (nodes in the network) linked by sharing the same prestige goods. 
 
 We assume burial network represents the relations among people and social structure based on the argument that 
+## Bayesian inference for Exponential Random Graph Models
+
+Bayesian approach to ERGMs is an efficient computational tool for social network analysis because it incorporates prior information about the network effects into the model and offers uncertainty quantification by evaluating the posterior distribution of the parameters associated with the network effects [@Caimo2015; @Nemmers2019]. This provides better estimations for complex social network models with heterogeneous data [@Caimo2017].
+
 # Methods
 
-Our purpose is to understand the characteristics of burial network and the mechanism of the relationship influence on the pattern of accumulation of wealth during different foreign contact periods. Previous studies have shown that there are some evidence of social inequality observed on this site but the degree and causes remains unclear. To answer our question about the shifts in social inequality during and after the arrival of foreign presence, we hypothesize: 
+Our purpose is to understand the characteristics of burial network and the mechanism of the relationship influence on the pattern of accumulation of wealth during different foreign contact periods. Previous studies have shown that there are some evidence of social inequality observed from Kiwulan but the degree over time and causes remain unclear. To answer our question for the shifts in social inequality during and after the arrival of the foreign presences, we hypothesize: 
 
 • Hypothesis 1: There are significant reciprocal structure effects in burial network before the contact
 • Hypothesis 2: There are significant transitivity structure effects in burial network after the contact
 • Hypothesis 3: There are significant popularity structure effects in in burial network after the contact
 
-## Exponential Random Graph Models
+The computational processes in this paper were performed by the ergm package for simulation and model specification and then bergm package using R programming [@Hunter2008; @Morris2008; @Caimo2014]. We set the number of chains to eight. For each chain, the number of burn-in iterations is 200 and the number of iterations after the burn-in is 2000. We set the number of iterations used to simulate a network y′ at each iteration to 10000.
 
-We want to know 
+## Statistics
 
 some concepts:
 - endogenous statistics that ties are modelled based on the existence of other ties
 - exogenous statistics that ties are formed according to monadic or dyadic node attributes
 
-
-## Statistics
 ERGM- consider transitivity by taking into account high-order k-triangles. Triangles and higher order cycles
 
 We used ergm package in R for the model specification. Every term in an ERGM must have an associated algorithm for computing its value for network [@Morris2008]. The terms we selected for nwtwork specification include:
