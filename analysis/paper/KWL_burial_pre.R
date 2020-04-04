@@ -297,6 +297,9 @@ bgof(parpost,
      n.dist    = 15,
      n.esp     = 9)
 
+# An estimated ERGM is fitting perfectly a certain observed network if the red line falls inside this interval
+# a result that is very difficult to obtain in practice (Caimo 2017)
+
 #-------------------------set different parameters------------------------------
 # three competing models based on ERGM formulas to fit the data using gwesp and gwdegree
 

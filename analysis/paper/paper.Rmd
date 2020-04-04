@@ -65,7 +65,7 @@ Our purpose is to understand the characteristics of burial network and the mecha
 • Hypothesis 2: There are significant transitivity structure effects in burial network after the contact
 • Hypothesis 3: There are significant popularity structure effects in in burial network after the contact
 
-The computational processes in this paper were performed by the ergm package for simulation and model specification and then bergm package using R programming [@Hunter2008; @Morris2008; @Caimo2014]. We set the number of chains to eight. For each chain, the number of burn-in iterations is 200 and the number of iterations after the burn-in is 2000. We set the number of iterations used to simulate a network y′ at each iteration to 10000.
+The computational processes in this paper were performed by the ergm package for simulation and model specification and then bergm package using R programming [@Hunter2008; @Morris2008; @Caimo2014]. We set the number of chains to eight. For each chain, the number of burn-in iterations is 200 and the number of iterations after the burn-in is 2000. We set the number of iterations used to simulate a network y′ at each iteration to 10000. The models are assessed by goodness-of-fit (GOF) diagnostics in the Bayesian framework, where the observed network is compared with a set of networks simulated from the estimated posterior distribution of the parameters of the model [@Caimo2011; @Caimo2017]. This provides a statistical way to check how well the estimated posterior parameter distribution can reproduce networks similar to the general structural features of the observed network. 
 
 ## Statistics
 
@@ -151,6 +151,8 @@ The summary presents the statistics that each θ corresponds to the parameter sp
 θ2 = individuals with the same abundance of burial goods
 θ3 = gwesp, a positive sign suggests a tendency of burials in our sample to group together in closed transitive structures. In mortuary context, clustering implies a tendency of burials with the same status indicated by prestige goods to be organised in closed structures. Burials with multiple prestige goods in common are more likely to be directed connected.
 θ4 = gwdegree, negative estimates reflect an increased likelihood on ties to higher-degree nodes, or the strong edges are not necessarily centralised or dispersed in the degree distribution.
+
+Figure shows the Bayesian goodness of fit diagnostics plots where the red lines represent the distributions of the observed data and the box plots represent the GOF distributions of 10000 network graphs simulated from ERGMs based on the estimated posterior distribution. The grey lines mark the 95% intervals. 
 
 inline code `r x` example
 
