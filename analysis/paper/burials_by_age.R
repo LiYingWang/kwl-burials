@@ -2,160 +2,252 @@ library(readxl)
 library(tidyverse)
 library(here)
 
-burial <- read_excel(here("index", "data", "burials", "Kiwulan_Burials.xlsx"))
+burial <- read_excel(here("analysis", "data", "raw_data", "Kiwulan_Burials.xlsx"))
 
-# combine some age column 
-burial_age <- 
-  burial %>% 
-  mutate(Phase = ifelse(Phase == 'euro', 'post', Phase)) %>% 
-  filter(!is.na(Phase), !is.na(Age)) %>% 
+# burial data with combined age and three phases
+burial_three_period_age_tidy <-
+  burial %>%
+  rename(burial_label = ID) %>%
+  mutate(Phase = ifelse(Phase == 'euro', 'post', Phase)) %>%
+  filter(!is.na(Phase)) %>%
   mutate(Gold_leaf = ifelse(Gold_leaf == "shatter", "1", Gold_leaf),
          Stoneware = ifelse(Stoneware == "base", "1", Stoneware),
-         Stamped_ceramic = ifelse(Stamped_ceramic == "cluster", "1", Stamped_ceramic)) %>% 
-  mutate(`Indo-Pacific_bead` = as.numeric(`Indo-Pacific_bead`),
-         `Gold_leaf` = as.numeric(`Gold_leaf`),
-         Stoneware = as.numeric(Stoneware)) %>% 
-  mutate(Age_com = case_when(
+         Stamped_ceramic = ifelse(Stamped_ceramic == "cluster", "1", Stamped_ceramic)) %>%
+  mutate_at(21:ncol(.), as.numeric) %>%
+  janitor::remove_empty(which = "cols") %>%
+  mutate(total = rowSums(.[c(21:48, 50, 55, 56)], na.rm = TRUE)) %>% #prestige goods
+  mutate(Porcelain = rowSums(.[c(40:48, 55, 56)], na.rm = TRUE)) %>% #B&W, porcelain, Anping, kendi
+  mutate(Porcelain = ifelse(Porcelain == 0, NA, Porcelain)) %>%
+  mutate(quantity = case_when(
+    total == 0 ~ "none",
+    total > 0 & total <= 7 ~ "low",
+    total > 7 & total < 100 ~ "medium",
+    total >= 100 ~ "high",
+    TRUE ~ "")) %>% # the classification is based on the result of histogram
+  mutate(Age_scale = case_when(
     `Age` %in% c("1","2") ~ "0-12",
     `Age` == "3" ~ "12~20",
-    `Age` %in% c("4","5","6","7","8") ~ "+20", 
-    TRUE ~ "other")) 
+    `Age` %in% c("4","5","6","7","8") ~ "+20",
+    TRUE ~ "NA")) %>%
+  mutate(Gold_bead_low = ifelse(Golden_bead == 1, 1, NA),
+         Gold_bead_med = ifelse(Golden_bead > 1 & Golden_bead <10, 1, NA),
+         Gold_bead_high = ifelse(Golden_bead > 10, 1, NA),
+         Agate_bead_low = ifelse(Agate_bead == 1, 1, NA),
+         Agate_bead_med = ifelse(Agate_bead > 1 & Agate_bead <10, 1, NA),
+         Agate_bead_high = ifelse(Agate_bead > 10, 1, NA),
+         `Indo-Pacific_bead_low` = ifelse(`Indo-Pacific_bead` < 100, 1, NA),
+         `Indo-Pacific_bead_med` = ifelse(`Indo-Pacific_bead` > 100 & `Indo-Pacific_bead` < 900, 1, NA),
+         `Indo-Pacific_bead_high` = ifelse(`Indo-Pacific_bead` > 900, 1, NA)) %>% #based on the result of histogram
+  select(burial_label,
+         Phase,
+         Age_scale,
+         Gold_bead_low,
+         Gold_bead_med,
+         Gold_bead_high,
+         Agate_bead_low,
+         Agate_bead_med,
+         Agate_bead_high,
+         #Agate_bead, #female burials
+         #Golden_bead,
+         Porcelain,
+         Gold_leaf, #prestige good
+         fish_shape_knit, #prestige good
+         #Bell, #children's burials
+         quantity)
+         #total) # select specific variable to drop columns (uninformative variables)
 
-# drop all columns that grave goods occur in less than 5 burials for testing
-burial_age_tidy <- 
-  burial_age[, colSums(is.na(burial_age)) < max(colSums(is.na(burial_age)))-4] %>% 
-  select(-Stamped_ceramic)
-#---------------------------------------------------------------------------------
+# number of each phase
+burial_three_period_age_number <-
+  burial_three_period_age_tidy %>%
+  count(Phase)
 
-# filter the data before European contact
-pre17_dat <- 
-  burial_age_tidy %>% 
-  filter(Phase == "pre")
+# filter pre burials
+burial_pre <-
+  burial_three_period_age_tidy %>%
+  filter(Phase == "pre") %>%
+  janitor::remove_empty(which = "cols")
 
-# create matrix 
-burial_mat_pre17 <- matrix(0, nrow = nrow(pre17_dat), ncol = nrow(pre17_dat))
+# create node list using burial index by phase
+#--------------------pre--------------------------------
+nodes_pre <-
+  burial_three_period_age_tidy %>%
+  filter(Phase == "pre") %>%
+  select(burial_label) %>%
+  rowid_to_column("id")
 
-for(i in 1:nrow(pre17_dat)){
-  for(j in 19:ncol(pre17_dat)){
-    pre17_dat[, j][is.na(pre17_dat[, j])] <- 0
-    
-    if(pre17_dat[i , j] > 0){
-      idx <- which(pre17_dat[, j] > 0)
-      burial_mat_pre17[i, idx] <- burial_mat_pre17[i, idx] + 1
-    }
-  }
-}
+# pair wise combinations for burials as index for later map function
+library(gtools)
+burial_comb_pre = combinations(length(nodes_pre$burial_label), #t(combn(nodes_pre$burial_label, 2))
+                               2, nodes_pre$burial_label,
+                               repeats = TRUE)
+colnames(burial_comb_pre) = c("burial_1", "burial_2")
+burial_comb_pre = as_tibble(burial_comb_pre)
 
-diag(burial_mat_pre17) <- 0
+# create list for each burial that contains the burial good types and their counts
+edge_list_pre <-
+  burial_three_period_age_tidy %>%
+  select(burial_label, 4:11) %>% # need to change for each exploration
+  pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
+  #mutate(burial_connection = rep(unique(burial_label), length.out = length(burial_label)))
+  group_by(burial_label) %>%
+  nest()
 
-# network
-library(igraph)
+# pair-wise list
+common_counts_lst_pre <-
+  map2(burial_comb_pre$burial_1,
+       burial_comb_pre$burial_2,
+       ~bind_cols(
+         edge_list_pre %>%
+           filter(burial_label == .x) %>%
+           unnest(data),
+         edge_list_pre %>%
+           filter(burial_label == .y) %>%
+           unnest(data)) %>%
+         rowwise() %>%
+         mutate(common_counts = sum(count, count1)))
 
-burial_G_pre17 <- graph.adjacency(burial_mat_pre17, 
-                                  mode = "undirected",
-                                  weighted = TRUE)
-plot(burial_G_pre17,
-     edge.width = E(burial_G_pre17)$weight)
+# count of ornament types in common between each pair of burials
+common_counts_vct_pre <- map_int(common_counts_lst_pre, ~sum(!is.na(.x$common_counts)))
 
-E(burial_G_pre17)$weight
+burial_comb_with_common_counts_pre <-
+  burial_comb_pre %>%
+  mutate(common_counts = common_counts_vct_pre) %>%
+  mutate(common_counts = ifelse(burial_1 == burial_2, 0, common_counts)) # use 0 for self loop
 
-# calculate density
-edge_density(burial_G_pre17)
+# change label to ids for node linking
+edges_pre <-
+  burial_comb_with_common_counts_pre %>%
+  left_join(nodes_pre, by = c("burial_1" = "burial_label")) %>%
+  rename(from = id) %>%
+  left_join(nodes_pre, by = c("burial_2" = "burial_label")) %>%
+  rename(to = id)
 
-# degree centrality
-degrees_pre17 <- rowSums(burial_G_pre17)
+edges_for_network_pre <-
+  select(edges_pre, from, to, common_counts) %>%
+  filter (!common_counts == 0) # remove rows with no goods in common
+# %>% mutate(common_counts = ifelse(common_counts > 1, 1, common_counts)) # for unweighted network
 
-# sd in centrality
-sd(degrees_pre17)
+#1--------------------network analysis using ggraph pkg------------------------------
+library(tidygraph)
+library(ggraph)
 
-# test example
-#devtools::install_github("acaimo/Bergm", force = TRUE)
-#install.packages("statnet", repos = "http://cran.r-project.org")
-library(statnet)
-library(Bergm)
+relation_tidy_pre <- tbl_graph(nodes = nodes_pre,
+                               edges = edges_for_network_pre,
+                               directed = FALSE)
+
+relation_tidy_pre %>%
+  activate(edges) %>%
+  arrange(desc(common_counts))
+
+ggraph(relation_tidy_pre) +
+  geom_edge_link() +
+  geom_node_point() +
+  theme_graph()
+
+ggraph(relation_tidy_pre, layout = "graphopt") +
+  geom_node_point() +
+  geom_edge_link(aes(width = common_counts), alpha = 0.8) +
+  scale_edge_width(range = c(0.2, 2)) +
+  geom_node_text(aes(label = burial_label), repel = TRUE) +
+  labs(edge_width = "common item") +
+  theme_graph()
+
+#2-------------------network analysis using network pkg-------------------------------
 library(network)
 
-# create network for pre-European
-detach("package:igraph") # some conflicts between igraph and statnet
-burial_net_pre17 <- network(x = burial_mat_pre17, # the network object
-                            directed = FALSE, # specify whether the network is directed
-                            loops = FALSE, # do we allow self ties (should not allow them)
-                            matrix.type = "adjacency" # the type of input
-)
+burial_network_pre <-
+  network(edges_for_network_pre, # the network object
+          vertex.attr = nodes_pre, # node list
+          directed = FALSE, # specify whether the network is directed
+          ignore.eval = FALSE, # FALSE = weighted
+          loops = FALSE, # do we allow self ties (should not allow them)
+          matrix.type = "edgelist") # the type of input
 
-# Add attributes to the network object burial_net_pre17
-set.vertex.attribute(burial_net_pre17, "Age", burial_age_tidy$Age_com)
+# plot
+plot(burial_network_pre, vertex.cex = 1) # It seems the last two nodes are missing?? only 27 nodes
 
-# can't see color?
+#-----------------------Bayesian ERGMs ------------------------------
+library(statnet)
+library(Bergm)
+
+# Add attributes to the network object burial_network_pre
+set.vertex.attribute(burial_network_pre, "quantity", burial_pre$quantity)
+set.vertex.attribute(burial_network_pre, "age", burial_pre$Age_scale)
+
+# plot
 set.seed(30)
-CS <- colorspace::rainbow_hcl(3)
-VA <- get.vertex.attribute(burial_net_pre17, "Age")
-plot(burial_net_pre17, 
-     vertex.col = CS[VA], 
-     vertex.cex = 2, 
-     main = "Before European Contact")
-legend("topleft", 
-       pt.bg  = CS[unique(VA)], 
-       pt.cex = 1.2,
-       pch    = 21, 
-       legend = unique(VA), 
-       title  = 'Ages')
+quantity <- get.vertex.attribute(burial_network_pre, "quantity")
+age <- get.vertex.attribute(burial_network_pre, "age")
 
-set.seed(30)
-VA_post <- get.vertex.attribute(burial_net_pre17, "Age")
-plot(burial_net_pre17, 
-     vertex.col = "Age", 
-     vertex.cex = 2)
+ID <- get.vertex.attribute(burial_network_pre, "burial_label") # not sure how to get id on the network plot
+plot(burial_network_pre,
+     vertex.col = "age", # quantity
+     vertex.cex = 1.5)
+
 legend("topleft",
-       pch = 16, 
-       col = c(1, 2, 3, 4), 
-       legend = unique(VA_post), 
-       title = 'Ages')
+       col = c(3, 1, 2, 4), # need to adjust each time
+       pch    = 20,
+       legend = unique(age),# quantity
+       title  = 'Burial good counts')
 
-# ERGM with three network statistics:
-model.1 <- burial_net_pre17 ~ edges + 
-  kstar(2) + triangle
-summary(model.1)
+# ? can't get the items in legend in order
+# ? tried as.factor and set their level but does not work
+# ? can't match color with categories, using an odd method at the moment
 
-# ERGM- consider transitivity by taking into account high-order k-triangles.
-model.2 <- burial_net_pre17 ~ edges+ # density
-  gwesp(1, fixed = TRUE) +  # transitivity
-  gwdegree(1, fixed = TRUE)  # popularity
+#------------------creating ERGM model-------------------------------------
+# model 1 considers density and triad relations (for cluster)
+model.ergm <- burial_network_pre ~
+  edges + # ties, a measure of density, equal to kstar(1) for undirected networks
+  density +
+  gwdegree(0.5, fixed = TRUE)  +
+  triangle # triad relation, a measure of clustering or cohesion, also called transitive triple in undirected network
+summary(model.ergm)
+
+# model 2 considers cluster and degree
+model.2 <- burial_network_pre ~ edges + # density
+  gwesp(0.2, fixed = TRUE) +  # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
+  gwdegree(0.8, fixed = TRUE)  # popularity(degree; star), the frequency distribution for nodal degrees
 summary(model.2)
 
-# Bayesian inference for ERGMs:
-model.3 <- burial_net_pre17 ~ edges +  # density
-  nodematch('Age') +    # Age-based homophily
-  gwesp(0.1, fixed = TRUE) +    # transitivity, change from 0.5 to 0.1 and it works
-  gwdegree(0.1, fixed = TRUE)   # popularity, change from 0.5 to 0.1 and it works
+# model 2 considers cluster, degree, and node attributes
+model.3 <- burial_network_pre ~ edges +  # the overall density of the network
+  nodematch('quantity') + # quantity-based homophily, categorical nodal attribute, the similarity of connected nodes
+  nodematch('age') +
+  gwesp(0.2, fixed = TRUE) +    # transitivity
+  gwdegree(0.8, fixed = TRUE)   # popularity
 summary(model.3)
 
-# set a prior distribution to null, and work on smaller sampling size, it works
-prior.mean <- NULL
-prior.sigma <- NULL
+#--------------------Bayesian inference for ERGMs-------------------------
+# Specify a prior distribution: normal distribution (low density and high transitivity)
+prior.mean <- c(-3, 0, 0, 1, 0) # prior mean corresponds to mean for each parameter
+# follow Alberto Caimo et al. (2015) hospital example
+prior.sigma <- diag(3, 5, 5) # covariance matrix structure
+# normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
+# where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
 
-parpost <- bergm(model.3,
+# Estimated posterior means, medians and 95% credible intervals for Models.3
+# bergmM: Bayesian exponential random graphs models under missing data using the approximate exchange algorithm
+parpost <- bergmM(model.3,
                  prior.mean  = prior.mean,
                  prior.sigma = prior.sigma,
-                 burn.in     = 200,
-                 main.iters  = 20,
-                 aux.iters   = 100, 
-                 nchains     = 8, 
-                 gamma       = 0.5)
+                 burn.in     = 200, # burn-in iterations for every chain of the population, drops the first 200
+                 main.iters  = 2000, # iterations for every chain of the population
+                 aux.iters   = 10000, # MCMC steps used for network simulation
+                 nchains     = 8, # number of chains of the population MCMC
+                 gamma       = 0.7) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
-summary(parpost)
+summary(parpost) # Each θ corresponds to the parameter specified in ERGM previously
+# In general, positive mean indicates postive correlation, while negative mean indicates negative correlation
+# there is different statistics between weighted and unweighted ties
+# θ1 = number of ties, θ2 = individuals with the same abundance of burial goods
+# θ3 = gwesp is negative that rejects the assumption that actors with multiple partners in common are more likely to be directed connected
+# θ4 = gwdegree, negative estimates means strong edges are not necessarily centralised or dispersed in the degree distribution.
+
 plot(parpost)
 
-# Bayesian parameter inference procedure, doesn't work when dealing with larger samples
-post <- bergm(model.3, 
-              mean.prior = mean.prior,
-              sigma.prior = sigma.prior,
-              aux.iters = 2000, # number of iterations for step 1.ii
-              burn.in = 300, # number of burnin iterations for each chain
-              main.iters = 2500, # number of iterations for each chain (after burnin)
-              nchains = 6, # number of chains
-              gamma = 0.6, # gamma parameter (tuned to get ~20% acceptance probability)
-)
-
-# visualize the results of the MCMC estimation
-summary(post)
+# Model assessment, Bayesian goodness of fit diagnostics:
+bgof(parpost,
+     aux.iters = 10000,
+     n.deg     = 14,
+     n.dist    = 15,
+     n.esp     = 9)
