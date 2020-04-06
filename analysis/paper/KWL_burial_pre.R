@@ -223,6 +223,8 @@ model.2 <- burial_network_pre ~ edges + # density
   # tendency of being in contact with multiple partners, measures of centralisation
   # distribution of node-based edge counts, each node counts only once
   # number means weight parameter decay
+  # The closer decay is to zero, the more high- and low-degree nodes. The bigger the number, the more middle-degree nodes.
+  # negative values of θGWD are consistent with a network more centralized than expected by chance.
   # Morris et al. (2008)
 summary(model.2)
 

@@ -248,6 +248,6 @@ plot(parpost)
 # Model assessment, Bayesian goodness of fit diagnostics:
 bgof(parpost,
      aux.iters = 10000,
-     n.deg     = 14,
+     n.deg     = 20,
      n.dist    = 15,
-     n.esp     = 9)
+     n.esp     = 15)
