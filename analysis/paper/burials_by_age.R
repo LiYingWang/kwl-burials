@@ -86,7 +86,7 @@ burial_comb_pre = as_tibble(burial_comb_pre)
 # create list for each burial that contains the burial good types and their counts
 edge_list_pre <-
   burial_three_period_age_tidy %>%
-  select(burial_label, 4:11) %>% # need to change for each exploration
+  select(burial_label, 4:12) %>% # need to change for each exploration
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   #mutate(burial_connection = rep(unique(burial_label), length.out = length(burial_label)))
   group_by(burial_label) %>%
@@ -209,7 +209,7 @@ model.2 <- burial_network_pre ~ edges + # density
   gwdegree(0.8, fixed = TRUE)  # popularity(degree; star), the frequency distribution for nodal degrees
 summary(model.2)
 
-# model 2 considers cluster, degree, and node attributes
+# model 3 considers cluster, degree, and node attributes
 model.3 <- burial_network_pre ~ edges +  # the overall density of the network
   nodematch('quantity') + # quantity-based homophily, categorical nodal attribute, the similarity of connected nodes
   nodematch('age') +
