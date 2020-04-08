@@ -192,8 +192,8 @@ legend("topleft",
 # predict ties, as function of network structures,
 # endogenous statistics that ties are modelled based on the existence of other ties
 # exogenous statistics that ties are formed according to monadic or dyadic node attributes
-# Kiwulan case
 # https://www.r-bloggers.com/ergm-tutorial/
+# https://rdrr.io/cran/ergm/man/ergm-terms.html
 
 # every term in an ERGM must have an associated algorithm for computing its value for network
 # Morris et al. 2008
@@ -229,6 +229,7 @@ model.2 <- burial_network_pre ~ edges + # density
 summary(model.2)
 
 #--------------------Bayesian inference for ERGMs-------------------------
+# https://rdrr.io/cran/Bergm/man/bergmM.html
 model.3 <- burial_network_pre ~ edges +  # the overall density of the network
   nodematch('quantity') +    # quantity-based homophily, categorical nodal attribute
   # the similarity of connected nodes

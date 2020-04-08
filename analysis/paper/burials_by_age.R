@@ -181,8 +181,11 @@ age <- get.vertex.attribute(burial_network_pre, "age")
 
 ID <- get.vertex.attribute(burial_network_pre, "burial_label") # not sure how to get id on the network plot
 plot(burial_network_pre,
+     displaylabels = TRUE,
      vertex.col = "age", # quantity
-     vertex.cex = 1.5)
+     vertex.cex = degree(burial_network_pre, cmode = 'indegree') / 5, # size nodes to their in-degree
+     #vertex.sides = ifelse(burial_network_pre %v% "", 4, 50),
+     pad = 1) #protects the labels from getting clipped
 
 legend("topleft",
        col = c(3, 1, 2, 4), # need to adjust each time
@@ -248,7 +251,7 @@ plot(parpost)
 # try 4 competing models
 m1 <- burial_network_pre ~ edges +
   nodematch("age") +
-  nodematch("quantity")+
+  nodematch("quantity") +
   gwesp(0.8, fixed = TRUE) +
   gwdegree(0.5, fixed = TRUE)
 

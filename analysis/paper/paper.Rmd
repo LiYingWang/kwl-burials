@@ -199,7 +199,7 @@ some concepts:
 
 # Methods
 
-We use burial data from different time periods at Kiwulan and consider the effects of both exogenous and endogenous factors that could provide meaningful explanation of the characteristics of burial network and tendency of burials correlate with each other. To be specific, our purpose is to understand the underlying mechanisms of the network structures and how the relationship influence on the pattern of accumulation of wealth during different foreign contact periods. We focus on connectivity, clusters, centralization, and homophily among those burials that could reflect the social relations between individuals guided by social structures.Previous studies have shown that there are some evidence of social inequality observed from Kiwulan but the degree over time and causes remain unclear. To answer our question for the shifts in social inequality to a more wealth differentiation during and after the arrival of the foreign presences, we hypothesize: 
+We use burial data from different time periods at Kiwulan and consider the effects of both exogenous and endogenous factors that could provide meaningful explanation of the characteristics of burial network and tendency of burials correlate with each other. To be specific, our purpose is to understand the underlying mechanisms of the network structures and how the relationship influence on the pattern of accumulation of wealth during different foreign contact periods. We focus on connectivity, clusters, centralization, and homophily among those burials that could reflect the social relations between individuals guided by social structures. Previous studies have shown that there are some evidence of social inequality observed from Kiwulan but the degree over time and causes remain unclear. To answer our question for the shifts in social inequality to a more wealth differentiation during and after the arrival of the foreign presences, we hypothesize: 
 
 • Hypothesis 1: There are significant reciprocal structure effects in burial network before the contact
 • Hypothesis 2: There are significant transitivity structure effects in burial network after the contact
@@ -246,7 +246,6 @@ ggraph(relation_tidy_pre, layout = "graphopt") +
   theme_graph()
 ```
 
-
 ```{r network-ggraph}
 # network analysis using ggraph pkg
 library(tidygraph)
@@ -260,11 +259,7 @@ relation_tidy_pre %>%
   activate(edges) %>%
   arrange(desc(common_counts))
 
-ggraph(relation_tidy_pre) +
-  geom_edge_link() +
-  geom_node_point() +
-  theme_graph()
-
+# plot
 ggraph(relation_tidy_pre, layout = "graphopt") +
   geom_node_point() +
   geom_edge_link(aes(width = common_counts), alpha = 0.8) +
@@ -384,8 +379,6 @@ summary(parpost)
 plot(parpost)
 ```
 
-Normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) is viewed as a suitable prior model for the model parameters of interests in network analysis [@Caimo2017]. We specified the prior based on normal distribution that assumes a low density and high transitivity network. 
-
 The summary presents the statistics that each θ corresponds to the parameter specified in ERGM previously. In general, positive mean indicates positive correlation, while negative mean indicates negative correlation. 
 
 θ1 = number of ties
@@ -394,6 +387,7 @@ The summary presents the statistics that each θ corresponds to the parameter sp
 θ4 = gwdegree, negative estimates reflect an increased likelihood on ties to higher-degree nodes, or the strong edges are not necessarily centralised or dispersed in the degree distribution.
 
 The plots from left to right show estimated marginal posterior densities, trace plots, and autocorrelation plots.
+
 
 ```{r Bayesian-gof}
 # Model assessment, Bayesian goodness of fit diagnostics:
