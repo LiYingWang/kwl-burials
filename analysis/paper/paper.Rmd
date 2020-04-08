@@ -5,7 +5,7 @@ author:
   - Author Two
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
-    bookdown::html_document2:
+    bookdown::word_document2:
       fig_caption: yes
       reference_docx: "../templates/template.docx" # Insert path for the DOCX file
 bibliography: references.bib
@@ -183,7 +183,6 @@ The burial data we analyzed in this paper are collected from the upper component
 
 Burials were assigned to the pre-European period, European and post-European period, and Chinese period for network comparison. Since the sedimentary characteristics show vertical and lateral continuity cross units of AD section, depth is used as the first criterion for burial chronology. The chronology is then evaluated by the burials with light grey glazed jars, also called An-ping jars produced most likely in China and circulated in Southeast Asia from the late 16th to 18th century but are often found at sites with the European occupation in the early 17th century in Taiwan [@Berrocal2018; @Hsieh1995; @Ketel2011]. In addition to the diagnostic porcelain, three radiocarbon dates of charcoal associated with three different burials are used as another evidence to evaluate the chronology [@Chen2007]. Some burials that were heavily disturbed by modern construction are excluded to avoid misinterpreting from incomplete data. 
 
-
 The archaeological sites in northeastern Taiwan show some evidence of accumulation of imported prestige goods in burials (Chen 2005; Cheng 2008), which might indicate the pursuit of prestige or wealth. In addition to prestige, European colonial powers could have provided military support to indigenous allies. For example, Voss’s (2005) study of a colonial outpost in California shows that colonial residents have different identities and higher social status than other local indigenous people. A general model to summarize these case studies might be that the support of a colonial power combined with high local values for imported goods, might lead to competition among individuals. In this study, I will use this model of competition to explain the changes in social inequality at Kiwulan before and after European contact.
 
 Based on the quantity of grave goods among burials, we can reconstruct social networks from the distribution of prestige goods, including imported ceramic and beads based on the principle that prestige materials usually relate to social status. We build network where burials represent actors (nodes in the network) linked by sharing the same prestige goods. 
@@ -200,7 +199,7 @@ some concepts:
 
 # Methods
 
-We use burial data from different time periods at Kiwulan and consider the effects of both exogenous and endogenous factors that could provide meaningful explanation of the characteristics of burial network and tendency of burials correlate with each other. To be specific, our purpose is to understand the underlying mechanisms of the network structures and how the relationship influence on the pattern of accumulation of wealth during different foreign contact periods. We focus on connectivity, clusters, centralization, and homophily among those burials that could reflect the social relations between individuals guided by social structures.Previous studies have shown that there are some evidence of social inequality observed from Kiwulan but the degree over time and causes remain unclear. To answer our question for the shifts in social inequality to a more wealth differentiation during and after the arrival of the foreign presences, we hypothesize: 
+We use burial data from different time periods at Kiwulan and consider the effects of both exogenous and endogenous factors that could provide meaningful explanation of the characteristics of burial network and tendency of burials correlate with each other. To be specific, our purpose is to understand the underlying mechanisms of the network structures and how the relationship influence on the pattern of accumulation of wealth during different foreign contact periods. We focus on connectivity, clusters, centralization, and homophily among those burials that could reflect the social relations between individuals guided by social structures. Previous studies have shown that there are some evidence of social inequality observed from Kiwulan but the degree over time and causes remain unclear. To answer our question for the shifts in social inequality to a more wealth differentiation during and after the arrival of the foreign presences, we hypothesize: 
 
 • Hypothesis 1: There are significant reciprocal structure effects in burial network before the contact
 • Hypothesis 2: There are significant transitivity structure effects in burial network after the contact
@@ -214,13 +213,15 @@ Since the accumulation of imported prestige goods in burials is commonly observe
 
 ERGM- consider transitivity by taking into account high-order k-triangles. Triangles and higher order cycles
 
-We used ergm package in R for the model specification. Every term in an ERGM must have an associated algorithm for computing its value for network [@Morris2008]. The terms we selected for nwtwork specification include:
+We used ergm package in R for the model specification. Every term in an ERGM must have an associated algorithm for computing its value for network [@Morris2008]. The terms we selected for network specification include:
 
 1. edges: ties, a measure of density, equal to kstar(1) for undirected networks
 
 2. gwesp (geometrically weighted edgewise shared partners): triad-based clustering based on a dyad-based configurations (not node-based) that counts the number of times that both nodes have a tie to a third node. It is a measure of the tendency for two actors who are tied to have x partners in common. In other words, a tendency for those with shared partners to become tied, or tendency of ties to cluster together.
 
 3. gwdegree (geometrically weighted degree distribution): a parametric form that represents the frequency distribution for nodal degree, each node counts only once. The local configuration is degrees and stars that are equivalent representations for the distribution of node-based edge counts. A measure of the tendency of the number of edges into a node. This statistic captures the tendency towards centralisation in the degree distribution of the network.
+
+4. nodematch: uniform homophily that refers to the similarity of connected nodes. A statistics that counts the number of edges between nodes sharing the same covariate value or characteristics. 
 
 ```{r network-ggraph}
 # network analysis using ggraph pkg
@@ -235,11 +236,7 @@ relation_tidy_pre %>%
   activate(edges) %>%
   arrange(desc(common_counts))
 
-ggraph(relation_tidy_pre) +
-  geom_edge_link() +
-  geom_node_point() +
-  theme_graph()
-
+# plot
 ggraph(relation_tidy_pre, layout = "graphopt") +
   geom_node_point() +
   geom_edge_link(aes(width = common_counts), alpha = 0.8) +
@@ -330,9 +327,12 @@ model.3 <- burial_network_pre ~ edges +  # the overall density of the network
 summary(model.3)
 ```
 
+Normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) is viewed as a suitable prior model for the model parameters of interests in network analysis [@Caimo2017]. We specified the prior based on normal distribution that assumes a low density and high transitivity network. 
+
 ```{r Bayesian-ERGMs}
 # Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(-3, 0, 0, 1, 0) # prior mean corresponds to mean for each parameter
+# need to observe the graph and select suitable prior 
+prior.mean <- c(1, 0, 0, 3, 0) # prior mean corresponds to mean for each parameter
 # follow Alberto Caimo et al. (2015) hospital example
 prior.sigma <- diag(3, 5, 5) # covariance matrix structure
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
@@ -355,14 +355,15 @@ summary(parpost)
 plot(parpost)
 ```
 
-Normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) is viewed as a suitable prior model for the model parameters of interests in network analysis [@Caimo2017]. We specified the prior based on normal distribution that assumes a low density and high transitivity network. 
-
 The summary presents the statistics that each θ corresponds to the parameter specified in ERGM previously. In general, positive mean indicates positive correlation, while negative mean indicates negative correlation. 
 
 θ1 = number of ties
 θ2 = individuals with the same abundance of burial goods
 θ3 = gwesp, a positive sign suggests a tendency of burials in our sample to group together in closed transitive structures. In mortuary context, clustering implies a tendency of burials with the same status indicated by prestige goods to be organised in closed structures. Burials with multiple prestige goods in common are more likely to be directed connected.
 θ4 = gwdegree, negative estimates reflect an increased likelihood on ties to higher-degree nodes, or the strong edges are not necessarily centralised or dispersed in the degree distribution.
+
+The plots from left to right show estimated marginal posterior densities, trace plots, and autocorrelation plots.
+
 
 ```{r Bayesian-gof}
 # Model assessment, Bayesian goodness of fit diagnostics:
@@ -377,8 +378,6 @@ bgof(parpost,
 ```
 
 Figure shows the Bayesian goodness of fit diagnostics plots where the red lines represent the distributions of the observed data and the box plots represent the GOF distributions of 10000 network graphs simulated from ERGMs based on the estimated posterior distribution. The grey lines mark the 95% intervals. 
-
-inline code `r x` example
 
 # Discussion
 
