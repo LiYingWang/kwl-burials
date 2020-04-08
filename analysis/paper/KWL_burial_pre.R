@@ -302,36 +302,3 @@ bgof(parpost,
 # An estimated ERGM is fitting perfectly a certain observed network if the red line falls inside this interval
 # a result that is very difficult to obtain in practice (Caimo 2017)
 
-#-------------------------set different parameters------------------------------
-# three competing models based on ERGM formulas to fit the data using gwesp and gwdegree
-
-mod.1 <- burial_network_pre ~ edges +
-  gwesp(0.2, fixed = TRUE)
-summary(mod.1)
-
-mod.2 <- burial_network_pre ~ edges +
-  gwdegree(0.8, fixed = TRUE)
-summary(mod.2)
-
-mod.3 <- burial_network_pre ~ edges +
-  gwesp(0.2, fixed = TRUE) +
-  gwdegree(0.8, fixed = TRUE)
-summary(mod.3)
-
-mod.sel <- bergm(mod.1,
-                 prior.mean  = NULL,
-                 prior.sigma = NULL,
-                 aux.iters = 100, # auxiliary iterations used for network simulation
-                 main.iters = 20, # iterations for every chain of the population
-                 burn.in = 200, # burn-in iterations for every chain of the population
-                 nchains = 8, # number of chains of the population MCMC
-                 gammas = 0.5)
-
-summary(parpost)
-plot(parpost)
-
-mod.sel <- bergm(mod.1, iters = 25000,
-                 aux.iters = 2000,
-                 main.iters = rep(700, 3),
-                 burn.ins = rep(100, 3),
-                 gammas = c(1, 1, 0.8))

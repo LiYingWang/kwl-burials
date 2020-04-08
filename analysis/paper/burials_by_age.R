@@ -219,7 +219,7 @@ summary(model.3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(-3, 0, 0, 1, 0) # prior mean corresponds to mean for each parameter
+prior.mean <- c(1, 0, 0, 3, 0) # prior mean corresponds to mean for each parameter
 # follow Alberto Caimo et al. (2015) hospital example
 prior.sigma <- diag(3, 5, 5) # covariance matrix structure
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
@@ -245,9 +245,41 @@ summary(parpost) # Each θ corresponds to the parameter specified in ERGM previo
 
 plot(parpost)
 
+# try 4 competing models
+m1 <- burial_network_pre ~ edges +
+  nodematch("age") +
+  nodematch("quantity")+
+  gwesp(0.8, fixed = TRUE) +
+  gwdegree(0.5, fixed = TRUE)
+
+m2 <- burial_network_pre ~ edges +
+  nodematch("age") +
+  gwesp(0.2, fixed = TRUE) +
+  gwdegree(0.8, fixed = TRUE)
+
+m3 <- burial_network_pre ~ edges +
+  nodematch("quantity") +
+  gwesp(0.2, fixed = TRUE) +
+  gwdegree(0.8, fixed = TRUE)
+
+m4 <- burial_network_pre ~ edges +
+  gwesp(0.2, fixed = TRUE) +
+  gwdegree(0.8, fixed = TRUE)
+
+mod <- bergmM(m1,
+             prior.mean  = c(1, 0, 0, 3, 0),
+             prior.sigma = diag(3, 5, 5),
+             burn.in     = 200,
+             main.iters  = 2000,
+             aux.iters   = 10000,
+             nchains     = 8,
+             gamma       = 0.7)
+
+summary(mod)
+
 # Model assessment, Bayesian goodness of fit diagnostics:
-bgof(parpost,
+bgof(mod,
      aux.iters = 10000,
-     n.deg     = 20,
+     n.deg     = 14,
      n.dist    = 15,
-     n.esp     = 15)
+     n.esp     = 9)
