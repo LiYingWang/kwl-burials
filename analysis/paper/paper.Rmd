@@ -416,7 +416,7 @@ bgof(parpost,
 # a result that is very difficult to obtain in practice (Caimo 2017)
 ```
 
-Figure shows the Bayesian goodness of fit diagnostics plots where the red lines represent the distributions of the observed data and the box plots represent the GOF distributions of 10000 network graphs simulated from ERGMs based on the estimated posterior distribution. The grey lines mark the 95% intervals. 
+Figure shows the Bayesian goodness of fit diagnostics plots where the red lines represent the distributions of the observed data and the box plots represent the GOF distributions of 10000 network graphs simulated from ERGMs based on the estimated posterior distribution. The grey lines mark the 95% intervals. X-axis means the proportion of nodes
 
 # Discussion
 

@@ -252,7 +252,7 @@ plot(parpost)
 m1 <- burial_network_pre ~ edges +
   nodematch("age") +
   nodematch("quantity") +
-  gwesp(0.8, fixed = TRUE) +
+  gwesp(0.8, fixed = TRUE) + # start close to zero and move up, how well we do in matching the count of triangles
   gwdegree(0.5, fixed = TRUE)
 
 m2 <- burial_network_pre ~ edges +
@@ -270,7 +270,7 @@ m4 <- burial_network_pre ~ edges +
   gwdegree(0.8, fixed = TRUE)
 
 mod <- bergmM(m1,
-             prior.mean  = c(1, 0, 0, 3, 0),
+             prior.mean  = c(1, 0, 0, 5, 0),
              prior.sigma = diag(3, 5, 5),
              burn.in     = 200,
              main.iters  = 2000,
@@ -283,6 +283,6 @@ summary(mod)
 # Model assessment, Bayesian goodness of fit diagnostics:
 bgof(mod,
      aux.iters = 10000,
-     n.deg     = 14,
+     n.deg     = 15,
      n.dist    = 15,
-     n.esp     = 9)
+     n.esp     = 10)
