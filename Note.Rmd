@@ -6,6 +6,9 @@ https://www.r-bloggers.com/ergm-tutorial/
 Bergm toturial:
 http://acaimo.github.io/Bergm/tutorials/Dec_18.html
 
+# Ergms
+ERGM- consider transitivity by taking into account high-order k-triangles. Triangles and higher order cycles
+
 # Explore different combination of variables for Bergm
 1. there is difference in statistics (mean, sd) between weighed and unweighed ties
 2. difference in statistics when simplifying variables to agate and golden beads, plus a few types of prestige goods such as gold foil and fish-like shaped necklace. The mean looks fine

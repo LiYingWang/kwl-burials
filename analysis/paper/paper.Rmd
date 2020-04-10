@@ -212,8 +212,6 @@ Since the accumulation of imported prestige goods in burials is commonly observe
 
 ## Statistics
 
-ERGM- consider transitivity by taking into account high-order k-triangles. Triangles and higher order cycles
-
 We used ergm package in R for the model specification. Every term in an ERGM must have an associated algorithm for computing its value for network [@Morris2008]. The terms we selected for network specification include:
 
 1. edges: ties, a measure of density, equal to kstar(1) for undirected networks
@@ -222,7 +220,7 @@ We used ergm package in R for the model specification. Every term in an ERGM mus
 
 3. gwdegree (geometrically weighted degree distribution): a parametric form that represents the frequency distribution for nodal degree, each node counts only once. The local configuration is degrees and stars that are equivalent representations for the distribution of node-based edge counts. A measure of the tendency of the number of edges into a node. This statistic captures the tendency towards centralisation in the degree distribution of the network.
 
-4. nodematch: uniform homophily that refers to the similarity of connected nodes. A statistics that counts the number of edges between nodes sharing the same covariate value or characteristics. 
+4. nodematch: uniform homophily between nodes that refers to the similarity of connected nodes. A statistics that counts the number of edges between nodes sharing the same covariate value or characteristics. We use wealth index and age as covariants that reflects the similarity between nodes. 
 
 ```{r network-ggraph}
 # network analysis using ggraph pkg
@@ -352,7 +350,7 @@ model.3 <- burial_network_pre ~ edges +  # the overall density of the network
 summary(model.3)
 ```
 
-Normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) is viewed as a suitable prior model for the model parameters of interests in network analysis [@Caimo2017]. We specified the prior based on normal distribution that assumes a low density and high transitivity network. 
+Normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) is viewed as a suitable prior model for the model parameters of interests in network analysis if there is no previous observation for a network[@Caimo2017]. Since our original data presents a pattern of dense ties, we specified the prior based on our observation that assumes a high density and high transitivity network. 
 
 ```{r Bayesian-ERGMs}
 # Specify a prior distribution: normal distribution (low density and high transitivity)
@@ -379,6 +377,8 @@ summary(parpost)
 # plot the parameter posterior distribution
 plot(parpost)
 ```
+
+## Structure Effects
 
 The summary presents the statistics that each θ corresponds to the parameter specified in ERGM previously. In general, positive mean indicates positive correlation, while negative mean indicates negative correlation. 
 
