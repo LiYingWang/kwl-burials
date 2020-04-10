@@ -180,11 +180,20 @@ quantity <- get.vertex.attribute(burial_network_pre, "quantity")
 age <- get.vertex.attribute(burial_network_pre, "age")
 
 ID <- get.vertex.attribute(burial_network_pre, "burial_label")
+plot(burial_network_pre,
      displaylabels = TRUE,
-     vertex.col = "age", # quantity
+     vertex.col = "quantity",
      vertex.cex = degree(burial_network_pre, cmode = 'indegree') / 5, #size nodes to their in-degree
      #vertex.sides = ifelse(burial_network_pre %v% "", 4, 50),
      pad = 1) #protects the labels from getting clipped
+
+plot(burial_network_pre,
+     displaylabels = TRUE,
+     vertex.col = "quantity",
+     vertex.cex = degree(burial_network_pre, cmode = 'indegree') / 5, #size nodes to their in-degre
+     pad = 1) #protects the labels from getting clipped
+
+
 
 legend("topleft",
        col = c(3, 1, 2, 4), # need to adjust each time
@@ -220,8 +229,8 @@ model.3 <- burial_network_pre ~ edges +  # the overall density of the network
 summary(model.3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
-# Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(1, 0, 0, 3, 0) # prior mean corresponds to mean for each parameter
+# prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
+prior.mean <- c(1, 0, 0, 3, 0) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
 prior.sigma <- diag(3, 5, 5) # covariance matrix structure
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests

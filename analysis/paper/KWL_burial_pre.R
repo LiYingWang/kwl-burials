@@ -173,10 +173,12 @@ set.vertex.attribute(burial_network_pre, "quantity", burial_pre$quantity)
 # plot
 set.seed(30)
 quantity <- get.vertex.attribute(burial_network_pre, "quantity")
-ID <- get.vertex.attribute(burial_network_pre, "burial_label") # not sure how to get id on the network plot
+ID <- get.vertex.attribute(burial_network_pre, "burial_label")
 plot(burial_network_pre,
+     displaylabels = TRUE,
      vertex.col = "quantity",
-     vertex.cex = 1.5)
+     vertex.cex = degree(burial_network_pre, cmode = 'indegree') / 5, #size nodes to their in-degre
+     pad = 1) #protects the labels from getting clipped
 
 legend("topleft",
        col = c(2, 3, 1, 4), # need to adjust each time
