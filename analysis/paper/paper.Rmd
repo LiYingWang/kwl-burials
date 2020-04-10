@@ -191,7 +191,8 @@ We assume burial network represents the relations among people and social struct
 
 ## Bayesian inference for Exponential Random Graph Models
 
-Bayesian approach to ERGMs is an efficient computational tool for social network analysis because it incorporates prior information about the network effects into the model and offers uncertainty quantification by evaluating the posterior distribution of the parameters associated with the network effects [@Caimo2015; @Nemmers2019]. This provides better estimations for complex social network models with heterogeneous data [@Caimo2017]. 
+Bayesian approach to ERGMs is an efficient computational tool for social network analysis because it incorporates prior information about the network effects into the model and offers uncertainty quantification by evaluating the posterior distribution of the parameters associated with the network effects [@Caimo2015; @Nemmers2019]. This provides better estimations for complex social network models with heterogeneous data [@Caimo2017]. For archaeological data, missing data could be a problem leading to misinterpretation, which can be also reduced by using Bayesian modelling that provides average 80% correct prediction for the ties and allow 25% false with a third of data missing [@Koskinen2010].
+
 
 some concepts:
 - endogenous statistics that ties are modelled based on the existence of other ties
