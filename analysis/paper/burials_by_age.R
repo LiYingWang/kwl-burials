@@ -29,6 +29,10 @@ burial_three_period_age_tidy <-
     `Age` == "3" ~ "12~20",
     `Age` %in% c("4","5","6","7","8") ~ "+20",
     TRUE ~ "NA")) %>%
+  mutate(gender = case_when(
+    `Gender` %in% c("1","2") ~ "male",
+    `Gender` %in% c("3","4") ~ "female",
+    TRUE ~ "NA")) %>%
   mutate(Gold_bead_low = ifelse(Golden_bead == 1, 1, NA),
          Gold_bead_med = ifelse(Golden_bead > 1 & Golden_bead <10, 1, NA),
          Gold_bead_high = ifelse(Golden_bead > 10, 1, NA),
@@ -41,6 +45,7 @@ burial_three_period_age_tidy <-
   select(burial_label,
          Phase,
          Age_scale,
+         gender,
          Gold_bead_low,
          Gold_bead_med,
          Gold_bead_high,
@@ -86,7 +91,7 @@ burial_comb_pre = as_tibble(burial_comb_pre)
 # create list for each burial that contains the burial good types and their counts
 edge_list_pre <-
   burial_three_period_age_tidy %>%
-  select(burial_label, 4:12) %>% # need to change for each exploration
+  select(burial_label, 5:13) %>% # need to change for each exploration
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   #mutate(burial_connection = rep(unique(burial_label), length.out = length(burial_label)))
   group_by(burial_label) %>%
@@ -173,6 +178,7 @@ library(Bergm)
 # Add attributes to the network object burial_network_pre
 set.vertex.attribute(burial_network_pre, "quantity", burial_pre$quantity)
 set.vertex.attribute(burial_network_pre, "age", burial_pre$Age_scale)
+set.vertex.attribute(burial_network_pre, "gender", burial_pre$gender)
 
 # plot
 set.seed(30)
@@ -192,8 +198,6 @@ plot(burial_network_pre,
      vertex.col = "quantity",
      vertex.cex = degree(burial_network_pre, cmode = 'indegree') / 5, #size nodes to their in-degre
      pad = 1) #protects the labels from getting clipped
-
-
 
 legend("topleft",
        col = c(3, 1, 2, 4), # need to adjust each time
@@ -224,15 +228,16 @@ summary(model.2)
 model.3 <- burial_network_pre ~ edges +  # the overall density of the network
   nodematch('quantity') + # quantity-based homophily, categorical nodal attribute, the similarity of connected nodes
   nodematch('age') +
+  nodematch('gender') +
   gwesp(0.2, fixed = TRUE) +    # transitivity
   gwdegree(0.8, fixed = TRUE)   # popularity
 summary(model.3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(1, 0, 0, 3, 0) # positive prior number for edge means high density
+prior.mean <- c(1, 0, 0, 0, 3, 0) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(3, 5, 5) # covariance matrix structure
+prior.sigma <- diag(3, 6, 6) # covariance matrix structure
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
 
@@ -256,10 +261,19 @@ summary(parpost) # Each θ corresponds to the parameter specified in ERGM previo
 
 plot(parpost)
 
+# Bayesian Model assessment
+bgof(parpost,
+     aux.iters = 10000,
+     n.deg     = 15,
+     n.dist    = 15,
+     n.esp     = 10)
+
+
 # try 4 competing models
 m1 <- burial_network_pre ~ edges +
   nodematch("age") +
   nodematch("quantity") +
+  nodematch("gender") +
   gwesp(0.8, fixed = TRUE) + # start close to zero and move up, how well we do in matching the count of triangles
   gwdegree(0.5, fixed = TRUE)
 
@@ -278,8 +292,8 @@ m4 <- burial_network_pre ~ edges +
   gwdegree(0.8, fixed = TRUE)
 
 mod <- bergmM(m1,
-             prior.mean  = c(1, 0, 0, 5, 0),
-             prior.sigma = diag(3, 5, 5),
+             prior.mean  = c(1, 0, 0, 0, 5, 0),
+             prior.sigma = diag(3, 6, 6),
              burn.in     = 200,
              main.iters  = 2000,
              aux.iters   = 10000,
