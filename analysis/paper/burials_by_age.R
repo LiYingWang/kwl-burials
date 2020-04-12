@@ -275,7 +275,7 @@ m1 <- burial_network_pre ~ edges +
   nodematch("quantity") +
   nodematch("gender") +
   gwesp(0.8, fixed = TRUE) + # start close to zero and move up, how well we do in matching the count of triangles
-  gwdegree(0.5, fixed = TRUE)
+  gwdegree(0.2, fixed = TRUE)
 
 m2 <- burial_network_pre ~ edges +
   nodematch("age") +
@@ -292,7 +292,7 @@ m4 <- burial_network_pre ~ edges +
   gwdegree(0.8, fixed = TRUE)
 
 mod <- bergmM(m1,
-             prior.mean  = c(1, 0, 0, 0, 5, 0),
+             prior.mean  = c(1, 0, 0, 0, 10, 0),
              prior.sigma = diag(3, 6, 6),
              burn.in     = 200,
              main.iters  = 2000,
@@ -307,4 +307,4 @@ bgof(mod,
      aux.iters = 10000,
      n.deg     = 15,
      n.dist    = 15,
-     n.esp     = 10)
+     n.esp     = 15)
