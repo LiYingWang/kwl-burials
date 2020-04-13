@@ -219,7 +219,7 @@ model.2 <- burial_network_pre ~ edges + # density
   # number means weight parameter alpha, which controls the rate of declining marginal returns
   # fixed = TRUE means the scale parameter lambda is fit as a curved exponential-family model
   # not much difference in a range of 0-1.5, the lower the value, the less likely the model is to be degenerate
-  # start close to zero and move up, looking for how well it matches the count of triangles
+  # start close to zero and move up, looking for how well it matches the count of triangles, https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2443947/
   # ergm can estimate the parameter from the data by using fixed=FALSE
   # http://mailman13.u.washington.edu/pipermail/statnet_help/2010/000575.html
   gwdegree(0.8, fixed = TRUE)  # popularity(degree; star), the frequency distribution for nodal degrees
