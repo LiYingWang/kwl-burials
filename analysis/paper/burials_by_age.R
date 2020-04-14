@@ -184,8 +184,8 @@ set.vertex.attribute(burial_network_pre, "gender", burial_pre$gender)
 set.seed(30)
 quantity <- get.vertex.attribute(burial_network_pre, "quantity")
 age <- get.vertex.attribute(burial_network_pre, "age")
-
 ID <- get.vertex.attribute(burial_network_pre, "burial_label")
+
 plot(burial_network_pre,
      displaylabels = TRUE,
      vertex.col = "quantity",
@@ -207,7 +207,7 @@ legend("topleft",
 
 # ? can't get the items in legend in order
 # ? tried as.factor and set their level but does not work
-# ? can't match color with categories, using an odd method at the moment
+# ? can't match color with categories, adjust manually every time
 
 #------------------creating ERGM model-------------------------------------
 # model 1 considers density and triad relations (for cluster)
@@ -293,7 +293,7 @@ m4 <- burial_network_pre ~ edges +
   gwdegree(0.8, fixed = TRUE)
 
 mod <- bergmM(m1,
-             prior.mean  = c(1, 0, 0, 0, 5, 0, 0),
+             prior.mean  = c(2, 0, 0, 0, 5, 0, 0),
              prior.sigma = diag(3, 7, 7),
              burn.in     = 200,
              main.iters  = 2000,
@@ -309,4 +309,9 @@ bgof(mod,
      n.deg     = 15,
      n.dist    = 15,
      n.esp     = 15)
+
+#-------------------------using hergm--------------------------
+
+
+
 
