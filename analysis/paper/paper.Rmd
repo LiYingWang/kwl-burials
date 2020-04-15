@@ -84,6 +84,10 @@ burial_three_period_tidy <-
     `Age` == "3" ~ "12~20",
     `Age` %in% c("4","5","6","7","8") ~ "+20",
     TRUE ~ "NA")) %>%
+    mutate(gender = case_when(
+    `Gender` %in% c("1","2") ~ "male",
+    `Gender` %in% c("3","4") ~ "female",
+    TRUE ~ "NA")) %>%
   mutate(Gold_bead_low = ifelse(Golden_bead == 1, 1, NA),
          Gold_bead_med = ifelse(Golden_bead > 1 & Golden_bead <10, 1, NA),
          Gold_bead_high = ifelse(Golden_bead > 10, 1, NA),
@@ -97,6 +101,7 @@ burial_three_period_tidy <-
   select(burial_label,
          Phase,
          Age_scale,
+         gender,
          Gold_bead_low,
          Gold_bead_med,
          Gold_bead_high,
@@ -118,7 +123,7 @@ burial_three_period_number <-
   count(Phase)
 ```
 
-```{r network-object-pre}
+```{r prep-network-object-pre}
 # filter pre burials
 burial_pre <-
   burial_three_period_tidy %>%
@@ -144,7 +149,7 @@ burial_comb_pre = as_tibble(burial_comb_pre)
 # create list for each burial that contains the burial good types and their counts
 edge_list_pre <-
   burial_three_period_tidy %>%
-  select(burial_label, 4:12) %>% # need to change for each exploration
+  select(burial_label, 5:13) %>% # need to change for each exploration
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   #mutate(burial_connection = rep(unique(burial_label), length.out = length(burial_label)))
   group_by(burial_label) %>%
@@ -184,6 +189,71 @@ edges_for_network_pre <-
   select(edges_pre, from, to, common_counts) %>%
   filter (!common_counts == 0) # remove rows with no goods in common
  # %>% mutate(common_counts = ifelse(common_counts > 1, 1, common_counts)) # for unweighted network
+```
+
+```{r prep-network-object-post}
+# filter post burials
+burial_post <-
+  burial_three_period_tidy %>%
+  filter(Phase == "post") %>%
+  janitor::remove_empty(which = "cols")
+
+# create node list
+nodes_post <-
+  burial_three_period_tidy %>%
+  filter(Phase == "post") %>%
+  select(burial_label) %>%
+  rowid_to_column("id")
+
+# pair wise combinations for burials as index for later map function
+library(gtools)
+burial_comb_post = combinations(length(nodes_post$burial_label),
+                               2, nodes_post$burial_label,
+                               repeats = TRUE)
+colnames(burial_comb_post) = c("burial_1", "burial_2")
+burial_comb_post = as_tibble(burial_comb_post)
+
+# create list for each burial that contains the burial good types and their counts
+edge_list_post <-
+  burial_three_period_tidy %>%
+  select(burial_label, 5:13) %>% # need to change for each exploration
+  pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
+  group_by(burial_label) %>%
+  nest()
+
+# pair-wise list
+common_counts_lst_post <-
+  map2(burial_comb_post$burial_1,
+       burial_comb_post$burial_2,
+       ~bind_cols(
+         edge_list_post %>%
+           filter(burial_label == .x) %>%
+           unnest(data),
+         edge_list_post %>%
+           filter(burial_label == .y) %>%
+           unnest(data)) %>%
+         rowwise() %>%
+         mutate(common_counts = sum(count, count1)))
+
+# count of ornament types in common between each pair of burials
+common_counts_vct_post <- map_int(common_counts_lst_post, ~sum(!is.na(.x$common_counts)))
+
+burial_comb_with_common_counts_post <-
+  burial_comb_post %>%
+  mutate(common_counts = common_counts_vct_post) %>%
+  mutate(common_counts = ifelse(burial_1 == burial_2, 0, common_counts)) # use 0 for self loop
+
+# change label to ids for node linking
+edges_post <-
+  burial_comb_with_common_counts_post %>%
+  left_join(nodes_post, by = c("burial_1" = "burial_label")) %>%
+  rename(from = id) %>%
+  left_join(nodes_post, by = c("burial_2" = "burial_label")) %>%
+  rename(to = id)
+
+edges_for_network_post <-
+  select(edges_post, from, to, common_counts) %>%
+  filter (!common_counts == 0) # remove rows with no goods in common
 ```
 
 <!--archaeological setting-->
@@ -244,7 +314,7 @@ We used ergm package in R for the model specification. Every term in an ERGM mus
 # network analysis using ggraph pkg
 library(tidygraph)
 library(ggraph)
-
+# pre-Euro
 relation_tidy_pre <- tbl_graph(nodes = nodes_pre,
                                edges = edges_for_network_pre,
                                directed = FALSE)
@@ -261,23 +331,18 @@ ggraph(relation_tidy_pre, layout = "graphopt") +
   geom_node_text(aes(label = burial_label), repel = TRUE) +
   labs(edge_width = "common item") +
   theme_graph()
-```
 
-```{r network-ggraph}
-# network analysis using ggraph pkg
-library(tidygraph)
-library(ggraph)
-
-relation_tidy_pre <- tbl_graph(nodes = nodes_pre,
-                               edges = edges_for_network_pre,
+# post-Euro
+relation_tidy_post <- tbl_graph(nodes = nodes_post,
+                               edges = edges_for_network_post,
                                directed = FALSE)
 
-relation_tidy_pre %>%
+relation_tidy_post %>%
   activate(edges) %>%
   arrange(desc(common_counts))
 
 # plot
-ggraph(relation_tidy_pre, layout = "graphopt") +
+ggraph(relation_tidy_post, layout = "graphopt") +
   geom_node_point() +
   geom_edge_link(aes(width = common_counts), alpha = 0.8) +
   scale_edge_width(range = c(0.2, 2)) +
@@ -286,9 +351,7 @@ ggraph(relation_tidy_pre, layout = "graphopt") +
   theme_graph()
 ```
 
-
-```{r network-network-pkg}
-# network analysis using network pkg
+```{r network-object}
 library(network)
 
 burial_network_pre <-
@@ -299,9 +362,15 @@ burial_network_pre <-
           loops = FALSE, # do we allow self ties (should not allow them)
           matrix.type = "edgelist") # the type of input
 
-# plot
-plot(burial_network_pre, vertex.cex = 1) # last two nodes are missing?? only 27 nodes
+burial_network_post <-
+  network(edges_for_network_post,
+          vertex.attr = nodes_post,
+          directed = FALSE,
+          ignore.eval = FALSE, 
+          loops = FALSE, 
+          matrix.type = "edgelist") 
 ```
+
 
 ```{r add-node-attribute-color}
 # prepare notwork objects for Bayesian ERGMs 
@@ -311,17 +380,18 @@ library(Bergm)
 # Add attributes to the network object burial_network_pre
 set.vertex.attribute(burial_network_pre, "quantity", burial_pre$quantity)
 set.vertex.attribute(burial_network_pre, "age", burial_pre$Age_scale)
+set.vertex.attribute(burial_network_pre, "gender", burial_pre$gender)
 
 # plot
 set.seed(30)
 quantity <- get.vertex.attribute(burial_network_pre, "quantity")
 age <- get.vertex.attribute(burial_network_pre, "age")
 
-ID <- get.vertex.attribute(burial_network_pre, "burial_label") # not sure how to get id on the network plot
-
 plot(burial_network_pre,
-     vertex.col = "quantity", # age
-     vertex.cex = 1.5)
+     displaylabels = TRUE,
+     vertex.col = "quantity",
+     vertex.cex = degree(burial_network_pre, cmode = 'indegree')/5, #size nodes
+     pad = 1) 
 
 legend("topleft",
        col = c(2, 3, 1, 4), # need to adjust each time
@@ -331,6 +401,30 @@ legend("topleft",
 
 #? can't get the items in legend in order, tried as.factor and set their level but does not work
 #? can't match color with categories, using an odd method at the moment
+
+# Add attributes to the network object burial_network_post
+set.vertex.attribute(burial_network_post, "quantity", burial_post$quantity)
+set.vertex.attribute(burial_network_post, "age", burial_post$Age_scale)
+set.vertex.attribute(burial_network_post, "gender", burial_post$gender)
+
+# plot
+set.seed(30)
+quantity <- get.vertex.attribute(burial_network_post, "quantity")
+age <- get.vertex.attribute(burial_network_post, "age")
+ID <- get.vertex.attribute(burial_network_post, "burial_label") # not sure how to get id on the network plot
+
+plot(burial_network_post,
+     displaylabels = TRUE,
+     vertex.col = "quantity",
+     vertex.cex = degree(burial_network_post, cmode = 'indegree') / 13, #size nodes to their in-degree
+     #vertex.sides = ifelse(burial_network_pre %v% "", 4, 50),
+     pad = 1)
+
+legend("topleft",
+       col = c(4, 3, 2, 1), # need to adjust each time
+       pch    = 20,
+       legend = unique(quantity),
+       title  = 'Burial good counts')
 ```
 
 ## ERGM parameter estimation
@@ -362,13 +456,14 @@ summary(model.2)
 
 # model 3 with node attributes
 model.3 <- burial_network_pre ~ edges +  # the overall density of the network
-  nodematch('quantity') + # quantity-based homophily, categorical nodal attribute, the similarity of connected nodes
+  nodematch('quantity') + # quantity-based homophily
   nodematch('age') +
-  gwesp(0.2, fixed = TRUE) +    # transitivity
-  gwdegree(0.8, fixed = TRUE)   # popularity
+  nodematch('gender') +
+  gwesp(0.75, fixed = TRUE) +    # transitivity
+  gwnsp(0.75, fixed = TRUE) +
+  gwdegree(0.2, fixed = TRUE) # popularity
 summary(model.3)
 ```
-
 
 <!--interpretation of Bayesian modeling--> 
 
@@ -377,9 +472,9 @@ Normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) is viewed as a suitable p
 ```{r Bayesian-ERGMs}
 # Specify a prior distribution: normal distribution (low density and high transitivity)
 # need to observe the graph and select suitable prior 
-prior.mean <- c(1, 0, 0, 3, 0) # prior mean corresponds to mean for each parameter
+prior.mean <- c(2, 0, 0, 0, 5, 0, 0) 
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(3, 5, 5) # covariance matrix structure
+prior.sigma <- diag(3, 7) # covariance matrix structure
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
 
 # Estimated posterior means, medians and 95% credible intervals for Models.3
@@ -391,7 +486,7 @@ parpost <- bergmM(model.3,
                   main.iters  = 2000, # iterations for every chain of the population
                   aux.iters   = 10000, # MCMC steps used for network simulation
                   nchains     = 8, # number of chains of the population MCMC
-                  gamma       = 0.7) # scalar; parallel adaptive direction sampling move factor, acceptance rate
+                  gamma       = 0.2) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
 # summary of parameter estimation
 summary(parpost)
@@ -411,29 +506,13 @@ The summary presents the statistics that each θ corresponds to the parameter sp
 
 The plots from left to right show estimated marginal posterior densities, trace plots, and autocorrelation plots.
 
-
 ```{r Bayesian-gof}
 # Model assessment, Bayesian goodness of fit diagnostics:
 bgof(parpost,
      aux.iters = 10000,
-     n.deg     = 14,
+     n.deg     = 15,
      n.dist    = 15,
-     n.esp     = 9)
-
-# An estimated ERGM is fitting perfectly a certain observed network if the red line falls inside this interval
-# a result that is very difficult to obtain in practice (Caimo 2017)
-```
-
-Figure shows the Bayesian goodness of fit diagnostics plots where the red lines represent the distributions of the observed data and the box plots represent the GOF distributions of 10000 network graphs simulated from ERGMs based on the estimated posterior distribution. The grey lines mark the 95% intervals. 
-
-
-```{r Bayesian-gof}
-# Model assessment, Bayesian goodness of fit diagnostics:
-bgof(parpost,
-     aux.iters = 10000,
-     n.deg     = 14,
-     n.dist    = 15,
-     n.esp     = 9)
+     n.esp     = 15)
 
 # An estimated ERGM is fitting perfectly a certain observed network if the red line falls inside this interval
 # a result that is very difficult to obtain in practice (Caimo 2017)
