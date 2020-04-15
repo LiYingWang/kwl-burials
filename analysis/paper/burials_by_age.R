@@ -293,7 +293,7 @@ m4 <- burial_network_pre ~ edges +
   gwdegree(0.8, fixed = TRUE)
 
 mod <- bergmM(m1,
-             prior.mean  = c(2, 0, 0, 0, 5, -1, 0),
+             prior.mean  = c(2, 0, 0, 0, 4, -1, 0),
              prior.sigma = diag(3, 7, 7),
              burn.in     = 200,
              main.iters  = 2000,
