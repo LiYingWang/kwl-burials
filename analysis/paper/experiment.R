@@ -66,3 +66,13 @@ library("hergm")
 # Download package from CRAN archive
 require(devtools)
 install_version("hergm", version = "4.1-6", repos = "http://cran.us.r-project.org")
+
+data("kapferer", package = "hergm")
+gplot(kapferer,
+      gmode = "graph",
+      mode = "kamadakawai",
+      displaylabels = FALSE)
+
+ergm(kapferer ~ edges_ij +
+       triangle_ijk)
+
