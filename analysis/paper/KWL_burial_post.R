@@ -1,13 +1,13 @@
 #-----------------------European----------------------------
 # filter post burials
 burial_post <-
-  burial_three_period_tidy %>%
+  burial_three_period_age_tidy %>%
   filter(Phase == "post") %>%
   janitor::remove_empty(which = "cols")
 
 # create node list
 nodes_post <-
-  burial_three_period_tidy %>%
+  burial_three_period_age_tidy %>%
   filter(Phase == "post") %>%
   select(burial_label) %>%
   rowid_to_column("id")
@@ -22,8 +22,8 @@ burial_comb_post = as_tibble(burial_comb_post)
 
 # create list for each burial that contains the burial good types and their counts
 edge_list_post <-
-  burial_three_period_tidy %>%
-  select(burial_label, 3:10) %>% # need to change for each exploration
+  burial_three_period_age_tidy %>%
+  select(burial_label, 5:13) %>% # need to change for each exploration
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   group_by(burial_label) %>%
   nest()
@@ -99,22 +99,29 @@ burial_network_post <-
           matrix.type = "edgelist") # the type of input
 
 # plot
-plot(burial_network_post, vertex.cex = 1) # It seems the last two nodes are missing?? only 27 nodes
+plot(burial_network_post, vertex.cex = 1)
 
 #-----------------------Bayesian ERGMs------------------------------
 library(statnet)
 library(Bergm)
 
-# Add attributes to the network object burial_network_pre
+# Add attributes to the network object burial_network_post
 set.vertex.attribute(burial_network_post, "quantity", burial_post$quantity)
+set.vertex.attribute(burial_network_post, "age", burial_post$Age_scale)
+set.vertex.attribute(burial_network_post, "gender", burial_post$gender)
 
 # plot
 set.seed(30)
 quantity <- get.vertex.attribute(burial_network_post, "quantity")
+age <- get.vertex.attribute(burial_network_post, "age")
 ID <- get.vertex.attribute(burial_network_post, "burial_label") # not sure how to get id on the network plot
+
 plot(burial_network_post,
+     displaylabels = TRUE,
      vertex.col = "quantity",
-     vertex.cex = 1.5)
+     vertex.cex = degree(burial_network_post, cmode = 'indegree') / 12, #size nodes to their in-degree
+     #vertex.sides = ifelse(burial_network_pre %v% "", 4, 50),
+     pad = 1)
 
 legend("topleft",
        col = c(4, 3, 2, 1), # need to adjust each time
@@ -166,40 +173,29 @@ summary(parpost) # Each θ corresponds to the parameter specified in ERGM previo
 
 plot(parpost)
 
-# estimate the parameter posterior distribution using the pseudo-posterior calibration approach
-# this will take less than the exchange algorithm
+# test for different terms
+m1 <- burial_network_post ~ edges +
+  nodematch("age") +
+  nodematch("quantity") +
+  nodematch("gender") +
+  gwesp(1.8, fixed = TRUE) + # start close to zero and move up, how well we do in matching the count of triangles
+  gwnsp(1.8, fixed = TRUE) +
+  gwdegree(0.1, fixed = TRUE)
 
-parpost2 <- bergmC(model.3,
-                   prior.mean  = prior.mean,
-                   prior.sigma = prior.sigma,
-                   iters       = 100,
-                   aux.iters   = 10000,
-                   noisy.nsim  = 1000,
-                   noisy.thin  = 1000,
-                   burnin      = 200,
-                   mcmc        = 10000,
-                   tunePL      = 1.5) # does not work
+mod <- bergmM(m1,
+              prior.mean  = c(3, 0, 0, 0, 3, -1, 0),
+              prior.sigma = diag(3, 7, 7),
+              burn.in     = 200,
+              main.iters  = 2000,
+              aux.iters   = 10000,
+              nchains     = 8,
+              gamma       = 0.2)
 
-# example here
-bergmC(formula,
-       prior.mean = NULL,
-       prior.sigma = NULL,
-       burn.in = 10000,
-       main.iters = 40000,
-       aux.iters = 3000,
-       V.proposal = 1.5,
-       thin = 1,
-       rm.iters = 500,
-       rm.a = 0.001,
-       rm.alpha = 0, n.aux.draws = 400, aux.thin = 50,
-       estimate = c("MLE", "CD"), ...)
+summary(mod)
 
 # Model assessment, Bayesian goodness of fit diagnostics:
-bgof(parpost,
+bgof(mod,
      aux.iters = 10000,
-     n.deg     = 14,
+     n.deg     = 20,
      n.dist    = 15,
-     n.esp     = 9)
-
-
-
+     n.esp     = 25)
