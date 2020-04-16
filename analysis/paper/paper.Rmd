@@ -373,6 +373,7 @@ burial_network_post <-
           matrix.type = "edgelist") 
 ```
 
+The pre-European network shows three subgroups that possessing the same types of burial goods: medium amount of carnelian bead on the right, medium amount of gold-foil beads on the left, and porcelains in the middle. Although burials with different amount of burial goods can be identified, there is no clear clusters demonstrating the sharing of prestige goods is limited to burials with rich goods. 
 
 ```{r add-node-attribute-color}
 # prepare notwork objects for Bayesian ERGMs 
