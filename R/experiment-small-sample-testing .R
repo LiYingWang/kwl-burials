@@ -78,7 +78,7 @@ burial_comb_pre = as_tibble(burial_comb_pre)
 # create list for each burial that contains the burial good types and their counts
 edge_list_pre <-
   burial_pre_small %>%
-  select(burial_label, 3:10) %>% # need to change for each exploration
+  select(burial_label, 3:9) %>% # need to change for each exploration
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   #mutate(burial_connection = rep(unique(burial_label), length.out = length(burial_label)))
   group_by(burial_label) %>%
@@ -109,9 +109,9 @@ burial_comb_with_common_counts_pre <-
 # change label to ids for node linking
 edges_pre <-
   burial_comb_with_common_counts_pre %>%
-  left_join(nodes_pre, by = c("burial_1" = "burial_label")) %>%
+  left_join(nodes_pre_small, by = c("burial_1" = "burial_label")) %>%
   rename(from = id) %>%
-  left_join(nodes_pre, by = c("burial_2" = "burial_label")) %>%
+  left_join(nodes_pre_small, by = c("burial_2" = "burial_label")) %>%
   rename(to = id)
 
 edges_for_network_pre <-
