@@ -57,8 +57,8 @@ burial_pre <-
   filter(Phase == "pre") %>%
   janitor::remove_empty(which = "cols")
 
-# get the first 10
-burial_pre_small <- burial_pre[1:10,]
+# get the first 15
+burial_pre_small <- burial_pre[1:15,]
 
 # create node list using burial index by phase
 #--------------------pre--------------------------------
@@ -118,3 +118,70 @@ edges_for_network_pre <-
   select(edges_pre, from, to, common_counts) %>%
   filter (!common_counts == 0) # remove rows with no goods in common
 # %>% mutate(common_counts = ifelse(common_counts > 1, 1, common_counts)) # for unweighted network
+
+#-----------------------Bayesian ERGMs ------------------------------
+library(statnet)
+library(Bergm)
+
+# Add attributes to the network object burial_network_pre
+set.vertex.attribute(burial_network_pre, "quantity", burial_pre$quantity)
+
+# plot
+set.seed(30)
+quantity <- get.vertex.attribute(burial_network_pre, "quantity")
+ID <- get.vertex.attribute(burial_network_pre, "burial_label")
+plot(burial_network_pre,
+     displaylabels = TRUE,
+     vertex.col = "quantity",
+     vertex.cex = degree(burial_network_pre, cmode = 'indegree') / 5, #size nodes to their in-degre
+     pad = 1) #protects the labels from getting clipped
+
+legend("topleft",
+       col = c(2, 3, 1, 4), # need to adjust each time
+       pch    = 20,
+       legend = unique(quantity),
+       title  = 'Burial good counts')
+
+#------------------creating ERGM model-------------------------------------
+model.ergm <- burial_network_pre ~
+  edges + # ties, a measure of density, equal to kstar(1) for undirected networks
+  density +
+  gwdegree(0.5, fixed = TRUE)  +
+  triangle # triad relation, a measure of clustering or cohesion, also called transitive triple in undirected network
+summary(model.ergm)
+
+model.2 <- burial_network_pre ~ edges + # density
+  gwesp(0.2, fixed = TRUE) +
+  gwdegree(0.8, fixed = TRUE)
+summary(model.2)
+
+#--------------------Bayesian inference for ERGMs-------------------------
+model.3 <- burial_network_pre ~ edges +  # the overall density of the network
+  nodematch('quantity') +    # quantity-based homophily, categorical nodal attribute
+  gwesp(0.2, fixed = TRUE) +    # transitivity
+  gwdegree(0.8, fixed = TRUE)   # popularity
+summary(model.3)
+
+# Specify a prior distribution: normal distribution (low density and high transitivity)
+prior.mean <- c(-1, 0, 1, 0) # prior mean corresponds to mean for each parameter
+# follow Alberto Caimo et al. (2015) hospital example
+prior.sigma <- diag(3, 4, 4) # covariance matrix structure
+
+parpost <- bergm(model.3,
+                 prior.mean  = prior.mean,
+                 prior.sigma = prior.sigma,
+                 burn.in     = 200, # burn-in iterations for every chain of the population, drops the first 200
+                 main.iters  = 2000, # iterations for every chain of the population
+                 aux.iters   = 10000, # MCMC steps used for network simulation
+                 nchains     = 8, # number of chains of the population MCMC
+                 gamma       = 0.7) # scalar; parallel adaptive direction sampling move factor, acceptance rate
+
+summary(parpost)
+plot(parpost)
+
+# Bayesian Model assessment
+bgof(parpost,
+     aux.iters = 10000,
+     n.deg     = 10,
+     n.dist    = 10,
+     n.esp     = 10)
