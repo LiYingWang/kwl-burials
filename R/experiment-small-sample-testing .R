@@ -48,14 +48,15 @@ burial_three_period_tidy <-
          Gold_leaf, #prestige good
          fish_shape_knit, #prestige good
          #Bell, #children's burials
-         quantity)
-#total) # select specific variable to drop columns (uninformative variables)
+         quantity) +#total) # select specific variable to drop columns (uninformative variables)
 
 # filter pre-burials
 burial_pre <-
   burial_three_period_tidy %>%
   filter(Phase == "pre") %>%
-  janitor::remove_empty(which = "cols")
+  janitor::remove_empty(which = "cols") +
+  filter(quantity != "none")
+
 
 # get the first 15
 burial_pre_small <- burial_pre[1:15,]
@@ -120,8 +121,17 @@ edges_for_network_pre <-
 # %>% mutate(common_counts = ifelse(common_counts > 1, 1, common_counts)) # for unweighted network
 
 #-----------------------Bayesian ERGMs ------------------------------
+library(network)
 library(statnet)
 library(Bergm)
+
+burial_network_pre <-
+  network(edges_for_network_pre, # the network object
+          vertex.attr = nodes_pre_small, # node list
+          directed = FALSE, # specify whether the network is directed
+          ignore.eval = FALSE, # FALSE = weighted
+          loops = FALSE, # do we allow self ties (should not allow them)
+          matrix.type = "edgelist") # the type of input
 
 # Add attributes to the network object burial_network_pre
 set.vertex.attribute(burial_network_pre, "quantity", burial_pre$quantity)
@@ -151,21 +161,21 @@ model.ergm <- burial_network_pre ~
 summary(model.ergm)
 
 model.2 <- burial_network_pre ~ edges + # density
-  gwesp(0.2, fixed = TRUE) +
+  gwesp(0, fixed = TRUE) +
   gwdegree(0.8, fixed = TRUE)
 summary(model.2)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 model.3 <- burial_network_pre ~ edges +  # the overall density of the network
   nodematch('quantity') +    # quantity-based homophily, categorical nodal attribute
-  gwesp(0.2, fixed = TRUE) +    # transitivity
-  gwdegree(0.8, fixed = TRUE)   # popularity
+  gwesp(0, fixed = TRUE) + # transitivity
+  gwnsp(0.1, fixed = TRUE) +
+  gwdegree(0.5, fixed = TRUE)   # popularity
 summary(model.3)
 
-# Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(-1, 0, 1, 0) # prior mean corresponds to mean for each parameter
-# follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(3, 4, 4) # covariance matrix structure
+# Specify a prior distribution: normal distribution (high density and high transitivity)
+prior.mean <- c(-3, 1, 2, -1, 1) # prior mean corresponds to mean for each parameter
+prior.sigma <- diag(3, 5, 5) # covariance matrix structure
 
 parpost <- bergm(model.3,
                  prior.mean  = prior.mean,
@@ -180,8 +190,12 @@ summary(parpost)
 plot(parpost)
 
 # Bayesian Model assessment
-bgof(parpost,
-     aux.iters = 10000,
-     n.deg     = 10,
-     n.dist    = 10,
-     n.esp     = 10)
+bgof <- bgof(parpost,
+             aux.iters = 10000,
+             n.deg     = 10,
+             n.dist    = 10,
+             n.esp     = 10)
+
+png("analysis/figures/test/prior111-11.png")
+boxplot(bgof$sim.degree)
+dev.off()

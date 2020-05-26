@@ -70,13 +70,15 @@ burial_three_period_age_number <-
 burial_pre <-
   burial_three_period_age_tidy %>%
   filter(Phase == "pre") %>%
-  janitor::remove_empty(which = "cols")
+  janitor::remove_empty(which = "cols") %>%
+  filter(quantity != "none") # remove burial without burial goods
 
 # create node list using burial index by phase
 #--------------------pre--------------------------------
 nodes_pre <-
   burial_three_period_age_tidy %>%
   filter(Phase == "pre") %>%
+  filter(quantity != "none") %>% # remove burial without burial goods
   select(burial_label) %>%
   rowid_to_column("id")
 
@@ -189,20 +191,15 @@ ID <- get.vertex.attribute(burial_network_pre, "burial_label")
 plot(burial_network_pre,
      displaylabels = TRUE,
      vertex.col = "quantity",
-     vertex.cex = degree(burial_network_pre, cmode = 'indegree') / 5, #size nodes to their in-degree
+     vertex.cex = 2,
+     #vertex.cex = degree(burial_network_pre, cmode = 'indegree') / 5, #size nodes to their in-degre
      #vertex.sides = ifelse(burial_network_pre %v% "", 4, 50),
      pad = 1) #protects the labels from getting clipped
 
-plot(burial_network_pre,
-     displaylabels = TRUE,
-     vertex.col = "quantity",
-     vertex.cex = degree(burial_network_pre, cmode = 'indegree') / 5, #size nodes to their in-degre
-     pad = 1) #protects the labels from getting clipped
-
 legend("topleft",
-       col = c(3, 1, 2, 4), # need to adjust each time
+       col = c(2, 3, 1), # need to adjust each time
        pch    = 20,
-       legend = unique(age),# quantity
+       legend = unique(quantity),# quantity
        title  = 'Burial good counts')
 
 # ? can't get the items in legend in order

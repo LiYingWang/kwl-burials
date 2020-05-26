@@ -1,15 +1,18 @@
-#-----------------------European----------------------------
+#-----------------------post-European----------------------------
+# run preparation code in burials_by_age.R
 # filter post burials
 burial_post <-
   burial_three_period_age_tidy %>%
   filter(Phase == "post") %>%
-  janitor::remove_empty(which = "cols")
+  janitor::remove_empty(which = "cols") %>%
+  filter(quantity != "none") # remove burial without burial goods
 
 # create node list
 nodes_post <-
   burial_three_period_age_tidy %>%
   filter(Phase == "post") %>%
   select(burial_label) %>%
+  filter(quantity != "none") %>%
   rowid_to_column("id")
 
 # pair wise combinations for burials as index for later map function
@@ -119,15 +122,15 @@ ID <- get.vertex.attribute(burial_network_post, "burial_label") # not sure how t
 plot(burial_network_post,
      displaylabels = TRUE,
      vertex.col = "quantity",
-     vertex.cex = degree(burial_network_post, cmode = 'indegree') / 12, #size nodes to their in-degree
+     #vertex.cex = degree(burial_network_post, cmode = 'indegree') / 12, #size nodes to their in-degree
      #vertex.sides = ifelse(burial_network_pre %v% "", 4, 50),
      pad = 1)
 
 legend("topleft",
-       col = c(4, 3, 2, 1), # need to adjust each time
+       col = c(3, 2, 1), # need to adjust each time
        pch    = 20,
        legend = unique(quantity),
-       title  = 'Burial good counts')
+       title  = 'Burial goods quantity')
 
 #------------------creating ERGM model-------------------------------------
 # every term in an ERGM must have an associated algorithm for computing its value for network
