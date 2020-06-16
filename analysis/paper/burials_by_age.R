@@ -1,66 +1,3 @@
-library(readxl)
-library(tidyverse)
-library(here)
-
-burial <- read_excel(here("analysis", "data", "raw_data", "Kiwulan_Burials.xlsx"))
-
-# burial data with combined age and three phases
-burial_three_period_age_tidy <-
-  burial %>%
-  rename(burial_label = ID) %>%
-  mutate(Phase = ifelse(Phase == 'euro', 'post', Phase)) %>%
-  filter(!is.na(Phase)) %>%
-  mutate(Gold_leaf = ifelse(Gold_leaf == "shatter", "1", Gold_leaf),
-         Stoneware = ifelse(Stoneware == "base", "1", Stoneware),
-         Stamped_ceramic = ifelse(Stamped_ceramic == "cluster", "1", Stamped_ceramic)) %>%
-  mutate_at(21:ncol(.), as.numeric) %>%
-  janitor::remove_empty(which = "cols") %>%
-  mutate(total = rowSums(.[c(21:48, 50, 55, 56)], na.rm = TRUE)) %>% #prestige goods
-  mutate(Porcelain = rowSums(.[c(40:48, 55, 56)], na.rm = TRUE)) %>% #B&W, porcelain, Anping, kendi
-  mutate(Porcelain = ifelse(Porcelain == 0, NA, Porcelain)) %>%
-  mutate(quantity = case_when(
-    total == 0 ~ "none",
-    total > 0 & total <= 7 ~ "low",
-    total > 7 & total < 100 ~ "medium",
-    total >= 100 ~ "high",
-    TRUE ~ "")) %>% # the classification is based on the result of histogram
-  mutate(Age_scale = case_when(
-    `Age` %in% c("1","2") ~ "0-12",
-    `Age` == "3" ~ "12~20",
-    `Age` %in% c("4","5","6","7","8") ~ "+20",
-    TRUE ~ "NA")) %>%
-  mutate(gender = case_when(
-    `Gender` %in% c("1","2") ~ "male",
-    `Gender` %in% c("3","4") ~ "female",
-    TRUE ~ "NA")) %>%
-  mutate(Gold_bead_low = ifelse(Golden_bead == 1, 1, NA),
-         Gold_bead_med = ifelse(Golden_bead > 1 & Golden_bead <10, 1, NA),
-         Gold_bead_high = ifelse(Golden_bead > 10, 1, NA),
-         Agate_bead_low = ifelse(Agate_bead == 1, 1, NA),
-         Agate_bead_med = ifelse(Agate_bead > 1 & Agate_bead <10, 1, NA),
-         Agate_bead_high = ifelse(Agate_bead > 10, 1, NA),
-         `Indo-Pacific_bead_low` = ifelse(`Indo-Pacific_bead` < 100, 1, NA),
-         `Indo-Pacific_bead_med` = ifelse(`Indo-Pacific_bead` > 100 & `Indo-Pacific_bead` < 900, 1, NA),
-         `Indo-Pacific_bead_high` = ifelse(`Indo-Pacific_bead` > 900, 1, NA)) %>% #based on the result of histogram
-  select(burial_label,
-         Phase,
-         Age_scale,
-         gender,
-         Gold_bead_low,
-         Gold_bead_med,
-         Gold_bead_high,
-         Agate_bead_low,
-         Agate_bead_med,
-         Agate_bead_high,
-         #Agate_bead, #female burials
-         #Golden_bead,
-         Porcelain,
-         Gold_leaf, #prestige good
-         fish_shape_knit, #prestige good
-         #Bell, #children's burials
-         quantity)
-         #total) # select specific variable to drop columns (uninformative variables)
-
 # number of each phase
 burial_three_period_age_number <-
   burial_three_period_age_tidy %>%
@@ -93,7 +30,7 @@ burial_comb_pre = as_tibble(burial_comb_pre)
 # create list for each burial that contains the burial good types and their counts
 edge_list_pre <-
   burial_three_period_age_tidy %>%
-  select(burial_label, 5:13) %>% # need to change for each exploration
+  select(burial_label, 6:14) %>% # need to change for each exploration
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   #mutate(burial_connection = rep(unique(burial_label), length.out = length(burial_label)))
   group_by(burial_label) %>%
@@ -111,7 +48,7 @@ common_counts_lst_pre <-
            filter(burial_label == .y) %>%
            unnest(data)) %>%
          rowwise() %>%
-         mutate(common_counts = sum(count, count1)))
+         mutate(common_counts = sum(count...3, count...6)))
 
 # count of ornament types in common between each pair of burials
 common_counts_vct_pre <- map_int(common_counts_lst_pre, ~sum(!is.na(.x$common_counts)))
@@ -181,6 +118,7 @@ library(Bergm)
 set.vertex.attribute(burial_network_pre, "quantity", burial_pre$quantity)
 set.vertex.attribute(burial_network_pre, "age", burial_pre$Age_scale)
 set.vertex.attribute(burial_network_pre, "gender", burial_pre$gender)
+set.vertex.attribute(burial_network_pre, "ritual", burial_pre$ritual)
 
 # plot
 set.seed(30)
@@ -217,7 +155,7 @@ summary(model.ergm)
 
 # model 2 considers cluster and degree
 model.2 <- burial_network_pre ~ edges + # density
-  gwesp(0.2, fixed = TRUE) +  # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
+  gwesp(0.75, fixed = TRUE) +  # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
   gwdegree(0.8, fixed = TRUE)  # popularity(degree; star), the frequency distribution for nodal degrees
 summary(model.2)
 
@@ -226,28 +164,29 @@ model.3 <- burial_network_pre ~ edges +  # the overall density of the network
   nodematch('quantity') + # quantity-based homophily, categorical nodal attribute, the similarity of connected nodes
   nodematch('age') +
   nodematch('gender') +
-  gwesp(0.2, fixed = TRUE) +    # transitivity
+  nodematch('ritual') +
+  gwesp(0.75, fixed = TRUE) +    # transitivity
   gwdegree(0.8, fixed = TRUE)   # popularity
 summary(model.3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(1, 0, 0, 0, 3, 0) # positive prior number for edge means high density
+prior.mean <- c(-1, 0, 0, 0, 0, 3, 0) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(3, 6, 6) # covariance matrix structure
+prior.sigma <- diag(5, 7, 7) # covariance matrix structure
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
 
 # Estimated posterior means, medians and 95% credible intervals for Models.3
 # bergmM: Bayesian exponential random graphs models under missing data using the approximate exchange algorithm
 parpost <- bergmM(model.3,
-                 prior.mean  = prior.mean,
-                 prior.sigma = prior.sigma,
-                 burn.in     = 200, # burn-in iterations for every chain of the population, drops the first 200
-                 main.iters  = 2000, # iterations for every chain of the population
-                 aux.iters   = 10000, # MCMC steps used for network simulation
-                 nchains     = 8, # number of chains of the population MCMC
-                 gamma       = 0.7) # scalar; parallel adaptive direction sampling move factor, acceptance rate
+                  prior.mean  = prior.mean,
+                  prior.sigma = prior.sigma,
+                  burn.in     = 200, # burn-in iterations for every chain of the population, drops the first 200
+                  main.iters  = 2000, # iterations for every chain of the population
+                  aux.iters   = 10000, # MCMC steps used for network simulation
+                  nchains     = 6, # number of chains of the population MCMC
+                  gamma       = 0.5) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
 summary(parpost) # Each θ corresponds to the parameter specified in ERGM previously
 # In general, positive mean indicates postive correlation, while negative mean indicates negative correlation

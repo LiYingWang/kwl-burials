@@ -33,6 +33,10 @@ burial_three_period_age_tidy <-
     `Gender` %in% c("1","2") ~ "male",
     `Gender` %in% c("3","4") ~ "female",
     TRUE ~ "NA")) %>%
+  mutate(ritual = case_when(
+    `Stamped_ceramic` == "2" ~ "two pots",
+    `Stamped_ceramic` == "1" ~ "one pot",
+    TRUE ~ "NA")) %>%
   mutate(Gold_bead_low = ifelse(Golden_bead == 1, 1, NA),
          Gold_bead_med = ifelse(Golden_bead > 1 & Golden_bead <10, 1, NA),
          Gold_bead_high = ifelse(Golden_bead > 10, 1, NA),
@@ -46,6 +50,7 @@ burial_three_period_age_tidy <-
          Phase,
          Age_scale,
          gender,
+         ritual,
          Gold_bead_low,
          Gold_bead_med,
          Gold_bead_high,
