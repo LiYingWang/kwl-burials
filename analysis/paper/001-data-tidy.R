@@ -50,7 +50,7 @@ burial_three_period_age_tidy <-
          Phase,
          Age_scale,
          gender,
-         ritual,
+         ritual, # consider to remove if not very informative
          Gold_bead_low,
          Gold_bead_med,
          Gold_bead_high,
@@ -59,7 +59,7 @@ burial_three_period_age_tidy <-
          Agate_bead_high,
          #Agate_bead, #female burials
          #Golden_bead,
-         Porcelain,
+         Porcelain, #prestige good
          Gold_leaf, #prestige good
          fish_shape_knit, #prestige good
          #Bell, #children's burials
