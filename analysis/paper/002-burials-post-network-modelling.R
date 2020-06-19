@@ -1,5 +1,5 @@
 #-----------------------post-European----------------------------
-# run preparation code in burials_by_age.R
+# run preparation code in 001-data-tidy.R
 # filter post burials
 burial_post <-
   burial_three_period_age_tidy %>%
@@ -11,8 +11,8 @@ burial_post <-
 nodes_post <-
   burial_three_period_age_tidy %>%
   filter(Phase == "post") %>%
-  select(burial_label) %>%
   filter(quantity != "none") %>%
+  select(burial_label) %>%
   rowid_to_column("id")
 
 # pair wise combinations for burials as index for later map function
@@ -26,7 +26,7 @@ burial_comb_post = as_tibble(burial_comb_post)
 # create list for each burial that contains the burial good types and their counts
 edge_list_post <-
   burial_three_period_age_tidy %>%
-  select(burial_label, 5:13) %>% # need to change for each exploration
+  select(burial_label, 6:14) %>% # need to change for each exploration
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   group_by(burial_label) %>%
   nest()
@@ -43,7 +43,7 @@ common_counts_lst_post <-
            filter(burial_label == .y) %>%
            unnest(data)) %>%
          rowwise() %>%
-         mutate(common_counts = sum(count, count1)))
+         mutate(common_counts = sum(count...3, count...6)))
 
 # count of ornament types in common between each pair of burials
 common_counts_vct_post <- map_int(common_counts_lst_post, ~sum(!is.na(.x$common_counts)))
@@ -112,6 +112,7 @@ library(Bergm)
 set.vertex.attribute(burial_network_post, "quantity", burial_post$quantity)
 set.vertex.attribute(burial_network_post, "age", burial_post$Age_scale)
 set.vertex.attribute(burial_network_post, "gender", burial_post$gender)
+set.vertex.attribute(burial_network_post, "ritual", burial_post$ritual)
 
 # plot
 set.seed(30)
@@ -143,20 +144,24 @@ model.ergm <- burial_network_post ~
 summary(model.ergm)
 
 model.2 <- burial_network_post ~ edges + # density
-  gwesp(0.2, fixed = TRUE) +  # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
+  gwesp(1.8, fixed = TRUE) +  # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
   gwdegree(0.8, fixed = TRUE)  # popularity(degree; star), the frequency distribution for nodal degrees
 summary(model.2)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 model.3 <- burial_network_post ~ edges +  # the overall density of the network
   nodematch('quantity') +    # quantity-based homophily, the similarity of connected nodes
-  gwesp(0.2, fixed = TRUE) +    # transitivity
+  nodematch('age') +
+  nodematch('gender') +
+  nodematch('ritual') +
+  gwesp(1.8, fixed = TRUE) + # start close to zero and move up, how well we do in matching the count of triangles
+  gwnsp(1.8, fixed = TRUE) +
   gwdegree(0.8, fixed = TRUE)   # popularity
 summary(model.3)
 
 # Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(-3, 0, 1, 0) # prior mean corresponds to mean for each parameter
-prior.sigma <- diag(3, 4, 4) # covariance matrix structure
+prior.mean <- c(-1, 0, 0, 0, 0, 3, -1, 0) # prior mean corresponds to mean for each parameter
+prior.sigma <- diag(5, 8, 8) # covariance matrix structure
 
 parpost <- bergm(model.3,
                  prior.mean  = prior.mean,
@@ -164,40 +169,15 @@ parpost <- bergm(model.3,
                  burn.in     = 200, # burn-in iterations for every chain of the populationm, drops the first 200
                  main.iters  = 2000, # iterations for every chain of the population
                  aux.iters   = 10000, # MCMC steps used for network simulation
-                 nchains     = 8, # number of chains of the population MCMC
-                 gamma       = 0.7) # scalar; parallel adaptive direction sampling move factor, acceptance rate
+                 nchains     = 6, # number of chains of the population MCMC
+                 gamma       = 0.5) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
-summary(parpost) # Each θ corresponds to the parameter specified in ERGM previously
-# In general, positive mean indicates postive correlation, while negative mean indicates negative correlation
-# there is different statistics between weighted and unweighted ties
-# θ1 = number of ties, θ2 = individuals with the same abundance of burial goods
-# θ3 = gwesp is negative that rejects the assumption that actors with multiple partners in common are more likely to be directed connected
-# θ4 =
+summary(parpost)
 
 plot(parpost)
 
-# test for different terms
-m1 <- burial_network_post ~ edges +
-  nodematch("age") +
-  nodematch("quantity") +
-  nodematch("gender") +
-  gwesp(1.8, fixed = TRUE) + # start close to zero and move up, how well we do in matching the count of triangles
-  gwnsp(1.8, fixed = TRUE) +
-  gwdegree(0.1, fixed = TRUE)
-
-mod <- bergmM(m1,
-              prior.mean  = c(3, 0, 0, 0, 3, -1, 0),
-              prior.sigma = diag(3, 7, 7),
-              burn.in     = 200,
-              main.iters  = 2000,
-              aux.iters   = 10000,
-              nchains     = 8,
-              gamma       = 0.2)
-
-summary(mod)
-
 # Model assessment, Bayesian goodness of fit diagnostics:
-bgof(mod,
+bgof(parpost,
      aux.iters = 10000,
      n.deg     = 20,
      n.dist    = 15,

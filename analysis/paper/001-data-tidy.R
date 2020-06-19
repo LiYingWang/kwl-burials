@@ -65,3 +65,8 @@ burial_three_period_age_tidy <-
          #Bell, #children's burials
          quantity)
 #total) # select specific variable to drop columns (uninformative variables)
+
+# number of each phase
+burial_three_period_age_number <-
+  burial_three_period_age_tidy %>%
+  count(Phase)

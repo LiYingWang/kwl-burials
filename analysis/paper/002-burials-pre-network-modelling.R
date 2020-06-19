@@ -1,8 +1,5 @@
-# number of each phase
-burial_three_period_age_number <-
-  burial_three_period_age_tidy %>%
-  count(Phase)
-
+#-----------------------pre-European----------------------------
+# run preparation code in 001-data-tidy.R
 # filter pre burials
 burial_pre <-
   burial_three_period_age_tidy %>%
@@ -165,15 +162,16 @@ model.3 <- burial_network_pre ~ edges +  # the overall density of the network
   nodematch('age') +
   nodematch('gender') +
   nodematch('ritual') +
-  gwesp(0.75, fixed = TRUE) +    # transitivity
-  gwdegree(0.8, fixed = TRUE)   # popularity
+  gwesp(0.75, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
+  gwnsp(0.75, fixed = TRUE) +
+  gwdegree(0.8, fixed = TRUE)
 summary(model.3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(-1, 0, 0, 0, 0, 3, 0) # positive prior number for edge means high density
+prior.mean <- c(-1, 0, 0, 0, 0, 3, -1, 0) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(5, 7, 7) # covariance matrix structure
+prior.sigma <- diag(5, 8, 8) # covariance matrix structure
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
 
@@ -188,12 +186,7 @@ parpost <- bergmM(model.3,
                   nchains     = 6, # number of chains of the population MCMC
                   gamma       = 0.5) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
-summary(parpost) # Each θ corresponds to the parameter specified in ERGM previously
-# In general, positive mean indicates postive correlation, while negative mean indicates negative correlation
-# there is different statistics between weighted and unweighted ties
-# θ1 = number of ties, θ2 = individuals with the same abundance of burial goods
-# θ3 = gwesp is negative that rejects the assumption that actors with multiple partners in common are more likely to be directed connected
-# θ4 = gwdegree, negative estimates means strong edges are not necessarily centralised or dispersed in the degree distribution.
+summary(parpost)
 
 plot(parpost)
 
