@@ -64,7 +64,7 @@ burial <- read_excel(here("analysis", "data", "raw_data", "Kiwulan_Burials.xlsx"
 
 ```{r tidy-data}
 # combine some periods
-burial_three_period_tidy <-
+burial_three_period_age_tidy <-
   burial %>%
   rename(burial_label = ID) %>%
   mutate(Phase = ifelse(Phase == 'euro', 'post', Phase)) %>%
@@ -82,15 +82,19 @@ burial_three_period_tidy <-
     total > 0 & total <= 7 ~ "low",
     total > 7 & total < 100 ~ "medium",
     total >= 100 ~ "high",
-    TRUE ~ "other")) %>% # the classification is based on the result of histogram
+    TRUE ~ "")) %>% # the classification is based on the result of histogram
   mutate(Age_scale = case_when(
     `Age` %in% c("1","2") ~ "0-12",
     `Age` == "3" ~ "12~20",
     `Age` %in% c("4","5","6","7","8") ~ "+20",
     TRUE ~ "NA")) %>%
-    mutate(gender = case_when(
+  mutate(gender = case_when(
     `Gender` %in% c("1","2") ~ "male",
     `Gender` %in% c("3","4") ~ "female",
+    TRUE ~ "NA")) %>%
+  mutate(ritual = case_when(
+    `Stamped_ceramic` == "2" ~ "two pots",
+    `Stamped_ceramic` == "1" ~ "one pot",
     TRUE ~ "NA")) %>%
   mutate(Gold_bead_low = ifelse(Golden_bead == 1, 1, NA),
          Gold_bead_med = ifelse(Golden_bead > 1 & Golden_bead <10, 1, NA),
@@ -100,12 +104,12 @@ burial_three_period_tidy <-
          Agate_bead_high = ifelse(Agate_bead > 10, 1, NA),
          `Indo-Pacific_bead_low` = ifelse(`Indo-Pacific_bead` < 100, 1, NA),
          `Indo-Pacific_bead_med` = ifelse(`Indo-Pacific_bead` > 100 & `Indo-Pacific_bead` < 900, 1, NA),
-         `Indo-Pacific_bead_high` = ifelse(`Indo-Pacific_bead` > 900, 1, NA)) %>% 
-  # the low-med-high index is determined by interpretation for histograms for those burial good types
+         `Indo-Pacific_bead_high` = ifelse(`Indo-Pacific_bead` > 900, 1, NA)) %>% #based on the result of histogram
   select(burial_label,
          Phase,
          Age_scale,
          gender,
+         ritual, # consider to remove if not very informative
          Gold_bead_low,
          Gold_bead_med,
          Gold_bead_high,
@@ -114,30 +118,33 @@ burial_three_period_tidy <-
          Agate_bead_high,
          #Agate_bead, #female burials
          #Golden_bead,
-         Porcelain,
+         Porcelain, #prestige good
          Gold_leaf, #prestige good
          fish_shape_knit, #prestige good
          #Bell, #children's burials
          quantity)
-         #total) # select specific variable to drop columns (uninformative variables)
 
 # number of each phase
-burial_three_period_number <-
-  burial_three_period_tidy %>%
+burial_three_period_age_number <-
+  burial_three_period_age_tidy %>%
   count(Phase)
+
+pre_E <- burial_three_period_age_number$Phase[4]
+post_E <- burial_three_period_age_number$Phase[3]
+
 ```
 
 ```{r prep-network-object-pre}
 # filter pre burials
 burial_pre <-
-  burial_three_period_tidy %>%
+  burial_three_period_age_tidy %>%
   filter(Phase == "pre") %>%
-  janitor::remove_empty(which = "cols")
+  janitor::remove_empty(which = "cols") 
 
 # create node list using burial index by phase
 #--------------------pre--------------------------------
 nodes_pre <-
-  burial_three_period_tidy %>%
+  burial_three_period_age_tidy %>%
   filter(Phase == "pre") %>%
   select(burial_label) %>%
   rowid_to_column("id")
@@ -152,8 +159,8 @@ burial_comb_pre = as_tibble(burial_comb_pre)
 
 # create list for each burial that contains the burial good types and their counts
 edge_list_pre <-
-  burial_three_period_tidy %>%
-  select(burial_label, 5:13) %>% # need to change for each exploration
+  burial_three_period_age_tidy %>%
+  select(burial_label, 6:14) %>% # need to change for each exploration
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   #mutate(burial_connection = rep(unique(burial_label), length.out = length(burial_label)))
   group_by(burial_label) %>%
@@ -161,23 +168,23 @@ edge_list_pre <-
 
 # pair-wise list
 common_counts_lst_pre <-
-map2(burial_comb_pre$burial_1,
-     burial_comb_pre$burial_2,
-     ~bind_cols(
-       edge_list_pre %>%
-       filter(burial_label == .x) %>%
-       unnest(data),
-       edge_list_pre %>%
-         filter(burial_label == .y) %>%
-         unnest(data)) %>%
-       rowwise() %>%
-       mutate(common_counts = sum(count, count1)))
+  map2(burial_comb_pre$burial_1,
+       burial_comb_pre$burial_2,
+       ~bind_cols(
+         edge_list_pre %>%
+           filter(burial_label == .x) %>%
+           unnest(data),
+         edge_list_pre %>%
+           filter(burial_label == .y) %>%
+           unnest(data)) %>%
+         rowwise() %>%
+         mutate(common_counts = sum(count...3, count...6)))
 
 # count of ornament types in common between each pair of burials
 common_counts_vct_pre <- map_int(common_counts_lst_pre, ~sum(!is.na(.x$common_counts)))
 
 burial_comb_with_common_counts_pre <-
-burial_comb_pre %>%
+  burial_comb_pre %>%
   mutate(common_counts = common_counts_vct_pre) %>%
   mutate(common_counts = ifelse(burial_1 == burial_2, 0, common_counts)) # use 0 for self loop
 
@@ -192,20 +199,22 @@ edges_pre <-
 edges_for_network_pre <-
   select(edges_pre, from, to, common_counts) %>%
   filter (!common_counts == 0) # remove rows with no goods in common
- # %>% mutate(common_counts = ifelse(common_counts > 1, 1, common_counts)) # for unweighted network
+# %>% mutate(common_counts = ifelse(common_counts > 1, 1, common_counts)) # for unweighted network
 ```
 
 ```{r prep-network-object-post}
 # filter post burials
 burial_post <-
-  burial_three_period_tidy %>%
+  burial_three_period_age_tidy %>%
   filter(Phase == "post") %>%
-  janitor::remove_empty(which = "cols")
+  janitor::remove_empty(which = "cols") %>%
+  filter(quantity != "none") # remove burial without burial goods
 
 # create node list
 nodes_post <-
-  burial_three_period_tidy %>%
+  burial_three_period_age_tidy %>%
   filter(Phase == "post") %>%
+  filter(quantity != "none") %>%
   select(burial_label) %>%
   rowid_to_column("id")
 
@@ -219,8 +228,8 @@ burial_comb_post = as_tibble(burial_comb_post)
 
 # create list for each burial that contains the burial good types and their counts
 edge_list_post <-
-  burial_three_period_tidy %>%
-  select(burial_label, 5:13) %>% # need to change for each exploration
+  burial_three_period_age_tidy %>%
+  select(burial_label, 6:14) %>% # need to change for each exploration
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   group_by(burial_label) %>%
   nest()
@@ -237,7 +246,7 @@ common_counts_lst_post <-
            filter(burial_label == .y) %>%
            unnest(data)) %>%
          rowwise() %>%
-         mutate(common_counts = sum(count, count1)))
+         mutate(common_counts = sum(count...3, count...6)))
 
 # count of ornament types in common between each pair of burials
 common_counts_vct_post <- map_int(common_counts_lst_post, ~sum(!is.na(.x$common_counts)))
@@ -266,7 +275,7 @@ We analyzed burial data collected from the upper component of Kiwulan site, an I
 Previous studies on burials suggest a presence of uneven distribution of prestige goods across burials. However, there is a debate over whether the differentiation between burials hints an economic inequality supporting an egalitarian society [@Hsieh2012], or political inequality indicating a stratified society [@Cheng2008]. @Cheng2008 interprets the unequal distribution of prestige materials, especially the gold-foil beads between burials, as evidence for hierarchy. However, @Hsieh2012 suggests a relatively egalitarian society based on the comparative analysis of frequency and proportion of all burial goods. She found that the burials with rich goods were usually associated with elders, which might indicate achieved, rather than inherited, status. The earliest record of the use of prestige goods in burials can be traced back around the European arrival according to historical records from the Spanish and the Chinese [@Borao2009; @LiandWu2006]. For example, the Spanish document by a Spanish Priest described that the Spanish soldier used agate beads to exchange materials from local indigenous people since they were valuable in their culture [@LiandWu2006]. In addition, there was a custom that people would bury imported materials with deceased to display their status and influence [@LiandWu2006]. Despite we observed the economic differentiation in burial goods and the high value of imported goods according to historical documents, the degree of inequality over time, and which variable decides the changes remain unclear. Analyzing and comparing burial data from different phases using network analysis approaches will give an insight into the degree and changes in social inequality. This is important to understand the social reactions of Kiwulan residents in the context of the foreign contact. 
 
 <!--chronology-->
-We assigned burials to the pre-European period (n = 26), European and post-European period (n = 45) for network comparison according to depth, radiocarbon dates, diagnostic materials, stratigraphic data, and previous studies. Since the sedimentary characteristics show vertical and lateral continuity cross units of AD section, depth is used as the first criterion for burial chronology. The chronology is then evaluated by the burials with time marker, light gray glazed jars, also called An-ping jars. The jars were believed to be produced in Southeast China and circulated in Southeast Asia from the late 16th to 18th century, but are often found at sites with the European occupation in the early 17th century in Taiwan [@Berrocal2018; @Hsieh1995; @Ketel2011]. In addition to the diagnostic jars, three radiocarbon dates of charcoal associated with three different burials are used as another evidence to evaluate the chronology [@Chen2007]. Some burials that were heavily disturbed by modern construction are excluded to avoid misinterpreting due to incomplete data. With the information of burials, including quantity of grave goods, types of grave goods, burial identities, we can reconstruct social relations between individuals by linking them according to similar prestige goods. This is based on the assumption that the prestige goods imply social practices of trade, exchange, and gifting that reflect social relations between individuals [@Coward2013, pp. 252]. Also, prestige materials usually relate to a representation of social status, where the same economic or social class, tend to use similar goods as a status indicators [citations]. Therefore, we build network where burials represent actors (nodes in the network) that are linked when they have th same prestige goods in common. The prestige goods we identified including agate beads, gold-foil beads, imported Chinese porcelains, gold foils, and fish-shaped ornaments, according to previous research [@Cheng2008; @Hsieh2009; @Hsieh2012; @Wang2011] and the description in historical records [@Borao2009; @LiandWu2006]. 
+We assigned burials to the pre-European period (n = `r pre_E`), European and post-European period (n = `r post_E`) for network comparison according to depth, radiocarbon dates, diagnostic materials, stratigraphic data, and previous studies. Since the sedimentary characteristics show vertical and lateral continuity cross units of AD section, depth is used as the first criterion for burial chronology. The chronology is then evaluated by the burials with time marker, light gray glazed jars, also called An-ping jars. The jars were believed to be produced in Southeast China and circulated in Southeast Asia from the late 16th to 18th century, but are often found at sites with the European occupation in the early 17th century in Taiwan [@Berrocal2018; @Hsieh1995; @Ketel2011]. In addition to the diagnostic jars, three radiocarbon dates of charcoal associated with three different burials are used as another evidence to evaluate the chronology [@Chen2007]. Some burials that were heavily disturbed by modern construction are excluded to avoid misinterpreting due to incomplete data. With the information of burials, including quantity of grave goods, types of grave goods, burial identities, we can reconstruct social relations between individuals by linking them according to similar prestige goods. This is based on the assumption that the prestige goods imply social practices of trade, exchange, and gifting that reflect social relations between individuals [@Coward2013, pp. 252]. Also, prestige materials usually relate to a representation of social status, where the same economic or social class, tend to use similar goods as a status indicators [citations]. Therefore, we build network where burials represent actors (nodes in the network) that are linked when they have th same prestige goods in common. The prestige goods we identified including agate beads, gold-foil beads, imported Chinese porcelains, gold foils, and fish-shaped ornaments, according to previous research [@Cheng2008; @Hsieh2009; @Hsieh2012; @Wang2011] and the description in historical records [@Borao2009; @LiandWu2006]. 
 
 # Methods
 
@@ -274,7 +283,7 @@ We assigned burials to the pre-European period (n = 26), European and post-Europ
 
 We analyzed archaeological burials from an Iron Age site, Kiwulan, in northeastern Taiwan based on data collected from published excavation report, and original fieldwork notes to generate networks. We do not include the burials in Chinese phase in our network analysis because of the small sample size. A network is a structure can be represented as a graph consisting of a set of nodes (actors) and edges (ties) connecting them [@Brughmans2018; @Robins2007]. In our case, burials are nodes linked by edges if any pair of burial has the prestige goods in common. Due to gold-foil beads and agate beads commonly found across burials with substantial differences in counts, we assigned those prestige goods into three levels based on the distribution of their counts to indicate quantity, high, medium, and low. That means if burial 1 and burial 2 both have high quantity of agate beads, then there will be a tie connecting them. For prestige goods not commonly found across burials, including imported porcelains, gold foils, and fish-shaped ornaments, we assign a tie between burials when they possess the good in common. Node attributes here include osteological data and mortuary practices, such as age, gender, burial ritual, and wealth level. Burial ritual is identified by locally made ceramics on the top of grave that suggests the presence of funeral feasting. Wealth level is an important attribute for economical inequality that we assigned the burials into three classes, high, medium, and low, as an index of wealth, based on the quantity of burial goods. Since burials tend to have multiple prestige goods in common, the network ties are weighted instead of binary data (where the value 1 represents a tie and the value 0 otherwise) [@Snijders2011]. For example, if two burials have both low quantity of glass beads and porcelain in common, the tie is given a value of 2. Our networks are non-directed, which means ties have no orientation forming the relationship between actors. 
 
-We hypothesized that after the start of the European presence in the 17th century, a group of ambitious individuals competed with each other for access to trade with the Europeans due to the high value of trade goods in their society. The high value of trade goods had been identified by the historical documents written by the Europeans and the Han Chinese [@Borao2009; @LiandWu2006]. In addition to valuable foreign goods, the indirect colonialism in northeastern Taiwan may suggest the potentially manipulation of the European colonial image by local ambitious individuals for building their personal status and power. This led to the monopolization of valuable goods among a small numbers of individuals and the society gradually switched to a structure with more social inequality. If the social inequality gradually increased in Kiwulan, then we will observe it from the burials by analyzing the networks generated by those social processes. Network analysis provides a way to understand the underlying mechanisms that shape the relationships between people at Kiwulan, and the effect of foreign contact on these relationships. Our purpose is to identify changes in network structure of burials before and after the foreign contacts, and explore which variables may have contributed to the observed economic inequality across burials using network analysis approaches. This is important to understand how an Indigenous society reacted to the presence of foreign imperial power. 
+Our hypothesis is that after the start of the European presence in the 17th century, a group of ambitious individuals competed with each other for access to trade with the Europeans due to the high value of trade goods in their society. The high value of trade goods had been identified by the historical documents written by the Europeans and the Han Chinese [@Borao2009; @LiandWu2006]. In addition to valuable foreign goods, the indirect colonialism in northeastern Taiwan may suggest the potentially manipulation of the European colonial image by local ambitious individuals for building their personal status and power. This led to the monopolization of valuable goods among a small numbers of individuals and the society gradually switched to a structure with more social inequality. If the social inequality gradually increased in Kiwulan, then we will observe it from the burials by analyzing the networks generated by those social processes. Network analysis provides a way to understand the underlying mechanisms that shape the relationships between people at Kiwulan, and the effect of foreign contact on these relationships. Our purpose is to identify changes in network structure of burials before and after the foreign contacts, and explore which variables may have contributed to the observed economic inequality across burials using network analysis approaches. This is important to understand how an Indigenous society reacted to the presence of foreign imperial power. 
 
 ## Model specification 
 <!--Network construction-->
@@ -291,11 +300,11 @@ kableExtra::kable(ergm_terms,
 
 <!--Bayesian approaches-->
 
-We analyzed social networks using the R programming language with bergm package for Bayesian exponential random graph models [@Caimo2014]. Bergm provides a framework for Bayesian parameter estimation on the result of exponential random graph models, which depends on ergm packages for simulation and model specification [@Hunter2008; @Morris2008; @Handcock2008]. Despite exponential random graph models can better describe a network by capturing the dependency structure, it is difficult to estimate model parameters and interpret the result due to the intractable normalizing constant and model degeneracy [@Caimo2014; @Jin2013]. A normalizing constant is a step to make probability distribution to integrate to one, which becomes hard to compute for larger set of networks [@Caimo2017bayesian]. Another problem is the degeneracy that means the probability models tend to overestimate a small number of extreme graphs by assigning too much weight, such as empty (all nodes unconnected) or complete graphs (all nodes connected) [@Schweinberger2011; @Caimo2014]. To overcome these limitations, Bayesian model applies Markov chain Monte Carlo (MCMC) simulation with the exchange algorithm, which solves computational problems in ERGMs [@Caimo2011]. 
+We analyzed social networks using the R programming language with bergm package for Bayesian exponential random graph models [@Caimo2014]. Bergm provides a framework for Bayesian parameter estimation on the result of exponential random graph models, which depends on ergm packages for simulation and model specification [@Hunter2008; @Morris2008; @Handcock2008]. Although exponential random graph models can better describe a network by capturing the dependency structure, it is difficult to estimate model parameters and interpret the result due to the intractable normalizing constant and model degeneracy [@Caimo2014; @Jin2013]. A normalizing constant is a step to make probability distribution to integrate to one, which becomes hard to compute for larger set of networks [@Caimo2017bayesian]. Another problem is the degeneracy that means the probability models tend to overestimate a small number of extreme graphs by assigning too much weight, such as empty (all nodes unconnected) or complete graphs (all nodes connected) [@Schweinberger2011; @Caimo2014]. To overcome these limitations, Bayesian model applies Markov chain Monte Carlo (MCMC) simulation with the exchange algorithm, which solves computational problems in ERGMs [@Caimo2011]. 
 
 <!--Model fitting and comparison--> 
 
-MCMC simulation can estimate the posterior distribution of interest by of random sampling without the need of normal distribution for the prior and likelihood. MCMC is a random probability distribution that describes a sequence of events or transitions (chain) from one state to another state following probabilistic rules. In Bayesian ERGMs, MCMC first selects a set of edges (or a set of empty pair of actors) with equal probability, and than switch to a pair of actors at random within that chosen set [@Caimo2011]. In our case, we set the number of chains to six. For each chain, the number of burn-in iterations is 200 and the number of iterations after the burn-in is 2000. We set the number of iterations used to simulate a network y′ at each iteration to 10,000. The models are assessed by goodness-of-fit (GOF) diagnostics in the Bayesian framework, where the observed network is compared with the set of networks simulated from the estimated posterior distribution of the parameters of the model [@Caimo2011; @Caimo2017]. This provides a statistical way to check how well the estimated posterior parameter distribution can reproduce networks similar to the general structural features of the observed network. Our observed networks, pre-European and post-European networks, followed the normal distribution that is a suitable prior model in network analysis that assumes networks with low density and high transitivity commonly observed in real world [@Caimo2017]. Since our original data implies higher transitivity due to potentially multiple groups having the same kind of burial good in common, we specified the prior based on our observation with higher transitivity. 
+Markov chain Monte Carlo (MCMC) is an estimation of posterior distribution of interest through directly random sampling the posterior without assuming the prior is a normal distribution. We can obtain a distribution by constructing a Markov chain that describes a sequence of moves from current state to the next state following probabilistic rules based on algorithms. This enables a random or stochastic simulation in a long run without depending on the previous move. More chains ensures a more desirable distribution close to the target distribution that we study, which is called the convergence of the Markov chains. In Bayesian ERGMs, MCMC first selects a set of edges (or a set of empty pair of actors) with equal probability, and than switch to a pair of actors at random within the chosen set [@Caimo2011]. In our case, we set the number of chains to six. For each chain, the number of burn-in iterations is 200 and the number of iterations after the burn-in is 2000. We set the number of iterations used to simulate a network y′ at each iteration to 10,000. The models are assessed by goodness-of-fit (GOF) diagnostics in the Bayesian framework, where the observed network is compared with the set of networks simulated from the estimated posterior distribution of the parameters of the model [@Caimo2011; @Caimo2017]. This provides a statistical approach to check how well the estimated posterior parameter distribution can reproduce networks similar to the general structural features of the observed network. Our observed networks, pre-European and post-European networks, followed the normal distribution that is a suitable prior model in network analysis that assumes networks with low density and high transitivity commonly observed in real world [@Caimo2017]. Since our original data implies higher transitivity due to potentially multiple groups having the same kind of burial good in common, we specified the prior based on our observation with high transitivity and low density. 
 
 <!-- Goodness-of-fit assessment-->
 
@@ -362,7 +371,7 @@ burial_network_post <-
           matrix.type = "edgelist") 
 ```
 
-The pre-European network shows three subgroups that possessing the same types of burial goods: medium amount of carnelian bead on the right, medium amount of gold-foil beads on the left, and porcelains in the middle. Although burials with different amount of burial goods can be identified, there is no clear clusters demonstrating the sharing of prestige goods is limited to burials with rich goods. 
+The pre-European network shows three subgroups that possessing the same types of burial goods: medium amount of carnelian bead on the right, medium amount of gold-foil beads on the left, and porcelains in the middle. Although burials with different amount of burial goods can be identified, there is no clear clusters demonstrating the sharing of prestige goods only for burials with rich goods. 
 
 ```{r add-node-attribute-color}
 # prepare notwork objects for Bayesian ERGMs 

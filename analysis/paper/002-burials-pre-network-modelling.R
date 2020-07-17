@@ -4,15 +4,15 @@
 burial_pre <-
   burial_three_period_age_tidy %>%
   filter(Phase == "pre") %>%
-  janitor::remove_empty(which = "cols") %>%
-  filter(quantity != "none") # remove burial without burial goods
+  janitor::remove_empty(which = "cols")
+  #filter(quantity != "none") # remove burial without burial goods
 
 # create node list using burial index by phase
 #--------------------pre--------------------------------
 nodes_pre <-
   burial_three_period_age_tidy %>%
   filter(Phase == "pre") %>%
-  filter(quantity != "none") %>% # remove burial without burial goods
+  #filter(quantity != "none") %>% # remove burial without burial goods
   select(burial_label) %>%
   rowid_to_column("id")
 
