@@ -116,12 +116,9 @@ burial_three_period_age_tidy <-
          Agate_bead_low,
          Agate_bead_med,
          Agate_bead_high,
-         #Agate_bead, #female burials
-         #Golden_bead,
          Porcelain, #prestige good
          Gold_leaf, #prestige good
          fish_shape_knit, #prestige good
-         #Bell, #children's burials
          quantity)
 
 # number of each phase
@@ -131,7 +128,6 @@ burial_three_period_age_number <-
 
 pre_E <- burial_three_period_age_number$Phase[4]
 post_E <- burial_three_period_age_number$Phase[3]
-
 ```
 
 ```{r prep-network-object-pre}
