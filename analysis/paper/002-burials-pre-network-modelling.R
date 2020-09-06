@@ -150,10 +150,24 @@ model.ergm <- burial_network_pre ~
   triangle # triad relation, a measure of clustering or cohesion, also called transitive triple in undirected network
 summary(model.ergm)
 
-# model 2 considers cluster and degree
+# Edgewise Shared Partners
+summary(burial_network_pre ~ esp(0:10))
+summary(burial_network_pre ~ gwdegree(0:10))
+
+# model 2 considers cluster and degree, Morris et al. (2008)
+# check out the terms: http://mailman13.u.washington.edu/pipermail/statnet_help/2010/000575.html
 model.2 <- burial_network_pre ~ edges + # density
-  gwesp(0.75, fixed = TRUE) +  # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
+  gwesp(0.75, fixed = TRUE) +
+  # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
+  # number means weight parameter alpha, which controls the rate of declining marginal returns
+  # fixed = TRUE means the scale parameter lambda is fit as a curved exponential-family model
+  # not much difference in a range of 0-1.5, the lower the value of the scaling parameter, the less likely the model is to be degenerate
+  # ergm can estimate the parameter from the data by using fixed=FALSE
   gwdegree(0.8, fixed = TRUE)  # popularity(degree; star), the frequency distribution for nodal degrees
+  # tendency of being in contact with multiple partners, measures of centralisation
+  # distribution of node-based edge counts, each node counts only once
+  # number means weight parameter decay
+  # The closer decay is to zero, the more gwdegree considers low degree nodes relative to high degree nodes
 summary(model.2)
 
 # model 3 considers cluster, degree, and node attributes
