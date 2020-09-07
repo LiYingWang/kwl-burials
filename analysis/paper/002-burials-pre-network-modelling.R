@@ -116,6 +116,7 @@ set.vertex.attribute(burial_network_pre, "quantity", burial_pre$quantity)
 set.vertex.attribute(burial_network_pre, "age", burial_pre$Age_scale)
 set.vertex.attribute(burial_network_pre, "gender", burial_pre$gender)
 set.vertex.attribute(burial_network_pre, "ritual", burial_pre$ritual)
+set.vertex.attribute(burial_network_pre, "total", burial_pre$total)
 
 # plot
 set.seed(30)
@@ -176,16 +177,17 @@ model.3 <- burial_network_pre ~ edges +  # the overall density of the network
   nodematch('age') +
   nodematch('gender') +
   nodematch('ritual') +
+  absdiff('total') +
   gwesp(0.75, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
-  gwnsp(0.75, fixed = TRUE) +
+  gwnsp(0.75, fixed = TRUE) + #prior = -1
   gwdegree(0.8, fixed = TRUE)
 summary(model.3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(-1, 0, 0, 0, 0, 3, -1, 0) # positive prior number for edge means high density
+prior.mean <- c(-1, 0, 0, 0, 0, 0, 3, -1, 0) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(5, 8, 8) # covariance matrix structure
+prior.sigma <- diag(5, 9, 9) # covariance matrix structure
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
 

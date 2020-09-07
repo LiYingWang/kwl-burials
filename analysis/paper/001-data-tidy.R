@@ -63,8 +63,8 @@ burial_three_period_age_tidy <-
          Gold_leaf, #prestige good
          fish_shape_knit, #prestige good
          #Bell, #children's burials
-         quantity)
-#total) # select specific variable to drop columns (uninformative variables)
+         quantity,
+         total) # select specific variable to drop columns (uninformative variables)
 
 # number of each phase
 burial_three_period_age_number <-
