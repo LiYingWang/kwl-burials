@@ -288,6 +288,11 @@ We use Bayesian inference on exponential random graph models (ERGMs) to quantify
 
 Table \@ref(tab:ergm-terms-table) lists the configurations we used for the model specification for burials with archaeological interpretations. Every parameter in an ERGM has an associated algorithm for computing its value for a network [@Morris2008]. We test our hypothesis by measuring reciprocity, transitivity, popularity, and homophily structure effects. We expect that if our hypothesis is a good match with the data then we should see less reciprocally, less transitivity, but higher popularity structure effects after the European presence. This structure infers the presence of a few individuals as centers having more relations with others with a decrease in small and multiple groups, which hints the emergence of social inequality. We also consider homophily effects based on node attributes, including age, gender, ritual, and the degree of wealth, to explore the correlation between the tendency of connected nodes and the network ties overall. This can imply the major effect that contributes to the network that we observed and give an insight into the underlying mechanism of social inequality if any. 
 
+## Comparsion between networks
+
+We examined AIC values from ERGM models for two networks to ensure they are comparable. 
+
+
 ```{r ergm-terms-table}
 ergm_terms <- readxl::read_excel(here("analysis", "data", "raw_data", "ergm_term.xlsx")) 
 kableExtra::kable(ergm_terms,
@@ -367,7 +372,7 @@ burial_network_post <-
           matrix.type = "edgelist") 
 ```
 
-The pre-European network shows three subgroups that possessing the same types of burial goods: medium amount of carnelian bead on the right, medium amount of gold-foil beads on the left, and porcelains in the middle. Although burials with different amount of burial goods can be identified, there is no clear clusters demonstrating the sharing of prestige goods only for burials with rich goods. 
+The pre-European network shows three subgroups that possessing the same types of burial goods: medium amount of carnelian bead on the right, medium amount of gold-foil beads on the left, and porcelains in the middle. Although burials with different amount of burial goods can be identified, there is no clear clusters demonstrating the sharing of prestige goods only for burials with rich goods. The post-European network also presented subgroups with more edges connecting burials. 
 
 ```{r add-node-attribute-color}
 # prepare notwork objects for Bayesian ERGMs 
