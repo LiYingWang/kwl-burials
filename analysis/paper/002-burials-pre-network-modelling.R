@@ -133,7 +133,7 @@ plot(burial_network_pre,
      pad = 1) #protects the labels from getting clipped
 
 legend("topleft",
-       col = c(2, 3, 1), # need to adjust each time
+       col = c(2, 3, 1, 4), # need to adjust each time
        pch    = 20,
        legend = unique(quantity),# quantity
        title  = 'Burial good counts')
@@ -176,7 +176,6 @@ model.3 <- burial_network_pre ~ edges +  # the overall density of the network
   nodematch('quantity') + # quantity-based homophily, categorical nodal attribute, the similarity of connected nodes
   nodematch('age') +
   nodematch('gender') +
-  nodematch('ritual') +
   absdiff('total') +
   gwesp(0.75, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
   gwnsp(0.75, fixed = TRUE) + #prior = -1
@@ -185,9 +184,9 @@ summary(model.3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(-1, 0, 0, 0, 0, 0, 3, -1, 0) # positive prior number for edge means high density
+prior.mean <- c(-1, 0, 0, 0, 0, 3, -1, 0) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(5, 9, 9) # covariance matrix structure
+prior.sigma <- diag(5, 8, 8) # covariance matrix structure
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
 
