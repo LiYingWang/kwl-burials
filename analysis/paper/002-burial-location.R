@@ -26,7 +26,7 @@ KWL_burial_map <-
   filter(Phase.y != "disturbed") %>%
   ggplot() +
   geom_sf(aes(fill = Period)) +
-  geom_sf(data = post, color = 'blue', size = 0.2, alpha = 0.4) +
+  geom_sf(data = post, color = 'darkgray', size = 0.2, alpha = 0.4) +
   geom_sf(data = AD_data, fill = NA) +
   #geom_sf_text(data = AD_data, aes(label = `坑號`), size = 2.5,
                #alpha = 0.3, fontface = "bold") +
