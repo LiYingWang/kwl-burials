@@ -220,18 +220,29 @@ library(psych)
 
 # for observed GOF distribution
 obs_dist <- describe(stats_bgof$obs.dist * 1:length(stats_bgof$obs.dist))
-obs_degree <- describe(stats_bgof$obs.degree * 1:length(stats_bgof$obs.degree))
-obs_esp <- describe(stats_bgof$obs.esp * 1:length(stats_bgof$obs.esp))
+obs_degree <- describe(stats_bgof$obs.degree * 0:(length(stats_bgof$obs.degree)-1))
+obs_esp <- describe(stats_bgof$obs.esp * 0:(length(stats_bgof$obs.esp)-1))
 
 sim_dist <-
   describe(stats_bgof$sim.dist * rep(1:length(stats_bgof$obs.dist),
                                      times = length(stats_bgof$sim.dist)
                                      /length(stats_bgof$obs.dist)))
+mean(sim_dist$mean)
+mean(sim_dist$sd)
+mean(sim_dist$skew)
+
 sim_degree <-
-  describe(stats_bgof$sim.degree * rep(1:length(stats_bgof$obs.degree),
+  describe(stats_bgof$sim.degree * rep(0:(length(stats_bgof$obs.degree)-1),
                                        times = length(stats_bgof$sim.degree)
                                        /length(stats_bgof$obs.degree)))
+mean(sim_degree$mean)
+mean(sim_degree$sd)
+mean(sim_degree$skew)
+
 sim_esp <-
-  describe(stats_bgof$sim.esp * rep(1:length(stats_bgof$obs.esp),
+  describe(stats_bgof$sim.esp * rep(0:(length(stats_bgof$obs.esp)-1),
                                        times = length(stats_bgof$sim.esp)
                                        /length(stats_bgof$obs.esp)))
+mean(sim_esp$mean)
+mean(sim_esp$sd)
+mean(sim_esp$skew)
