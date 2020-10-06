@@ -206,8 +206,32 @@ summary(parpost)
 plot(parpost)
 
 # Bayesian Model assessment
+stats_bgof <-
 bgof(parpost,
      aux.iters = 10000,
      n.deg     = 15,
      n.dist    = 15,
      n.esp     = 10)
+
+summary(stats_bgof)
+
+# measure moments of distribution
+library(psych)
+
+# for observed GOF distribution
+obs_dist <- describe(stats_bgof$obs.dist * 1:length(stats_bgof$obs.dist))
+obs_degree <- describe(stats_bgof$obs.degree * 1:length(stats_bgof$obs.degree))
+obs_esp <- describe(stats_bgof$obs.esp * 1:length(stats_bgof$obs.esp))
+
+sim_dist <-
+  describe(stats_bgof$sim.dist * rep(1:length(stats_bgof$obs.dist),
+                                     times = length(stats_bgof$sim.dist)
+                                     /length(stats_bgof$obs.dist)))
+sim_degree <-
+  describe(stats_bgof$sim.degree * rep(1:length(stats_bgof$obs.degree),
+                                       times = length(stats_bgof$sim.degree)
+                                       /length(stats_bgof$obs.degree)))
+sim_esp <-
+  describe(stats_bgof$sim.esp * rep(1:length(stats_bgof$obs.esp),
+                                       times = length(stats_bgof$sim.esp)
+                                       /length(stats_bgof$obs.esp)))
