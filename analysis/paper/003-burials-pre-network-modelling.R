@@ -215,34 +215,49 @@ bgof(parpost,
 
 summary(stats_bgof)
 
-# measure moments of distribution
+# load library for measuring moments of distribution
 library(psych)
 
-# for observed GOF distribution
-obs_dist <- describe(stats_bgof$obs.dist * 1:length(stats_bgof$obs.dist))
+# calculate moments for observed and simulated GOF distribution
 obs_degree <- describe(stats_bgof$obs.degree * 0:(length(stats_bgof$obs.degree)-1))
+obs_dist <- describe(stats_bgof$obs.dist * 1:length(stats_bgof$obs.dist))
 obs_esp <- describe(stats_bgof$obs.esp * 0:(length(stats_bgof$obs.esp)-1))
-
-sim_dist <-
-  describe(stats_bgof$sim.dist * rep(1:length(stats_bgof$obs.dist),
-                                     times = length(stats_bgof$sim.dist)
-                                     /length(stats_bgof$obs.dist)))
-mean(sim_dist$mean)
-mean(sim_dist$sd)
-mean(sim_dist$skew)
 
 sim_degree <-
   describe(stats_bgof$sim.degree * rep(0:(length(stats_bgof$obs.degree)-1),
                                        times = length(stats_bgof$sim.degree)
                                        /length(stats_bgof$obs.degree)))
-mean(sim_degree$mean)
-mean(sim_degree$sd)
-mean(sim_degree$skew)
-
+sim_dist <-
+  describe(stats_bgof$sim.dist * rep(1:length(stats_bgof$obs.dist),
+                                     times = length(stats_bgof$sim.dist)
+                                     /length(stats_bgof$obs.dist)))
 sim_esp <-
   describe(stats_bgof$sim.esp * rep(0:(length(stats_bgof$obs.esp)-1),
                                        times = length(stats_bgof$sim.esp)
                                        /length(stats_bgof$obs.esp)))
-mean(sim_esp$mean)
-mean(sim_esp$sd)
-mean(sim_esp$skew)
+
+# make dataframes for distribution stats
+distribution_degree <-
+  data.frame("moments" = c("mean", "Variance", "Skewness"),
+             "Observed" = round(c(obs_degree$mean,
+                                  obs_degree$sd,
+                                  obs_degree$skew), 2),
+             "Model" = round(c(mean(sim_degree$mean),
+                               mean(sim_degree$sd),
+                               mean(sim_degree$skew)),2))
+distribution_dist <-
+  data.frame("moments" = c("mean", "Variance", "Skewness"),
+             "Observed" = round(c(obs_dist$mean,
+                                  obs_dist$sd,
+                                  obs_dist$skew), 2),
+             "Model" = round(c(mean(sim_dist$mean),
+                               mean(sim_dist$sd),
+                               mean(sim_dist$skew)),2))
+distribution_esp <-
+  data.frame("moments" = c("mean", "Variance", "Skewness"),
+             "Observed" = round(c(obs_esp$mean,
+                                  obs_esp$sd,
+                                  obs_esp$skew), 2),
+             "Model" = round(c(mean(sim_esp$mean),
+                               mean(sim_esp$sd),
+                               mean(sim_esp$skew)),2))
