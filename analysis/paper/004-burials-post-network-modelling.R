@@ -113,6 +113,7 @@ set.vertex.attribute(burial_network_post, "quantity", burial_post$quantity)
 set.vertex.attribute(burial_network_post, "age", burial_post$Age_scale)
 set.vertex.attribute(burial_network_post, "gender", burial_post$gender)
 set.vertex.attribute(burial_network_post, "ritual", burial_post$ritual)
+set.vertex.attribute(burial_network_post, "total", burial_post$total)
 
 # plot
 set.seed(30)
@@ -154,14 +155,15 @@ model.3 <- burial_network_post ~ edges +  # the overall density of the network
   nodematch('age') +
   nodematch('gender') +
   nodematch('ritual') +
+  absdiff('total') +
   gwesp(1.8, fixed = TRUE) + # start close to zero and move up, how well we do in matching the count of triangles
   gwnsp(1.8, fixed = TRUE) +
   gwdegree(0.8, fixed = TRUE)   # popularity
 summary(model.3)
 
 # Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(-1, 0, 0, 0, 0, 3, -1, 0) # prior mean corresponds to mean for each parameter
-prior.sigma <- diag(5, 8, 8) # covariance matrix structure
+prior.mean <- c(-1, 0, 0, 0, 0, 0, 3, -1, 0) # prior mean corresponds to mean for each parameter
+prior.sigma <- diag(5, 9, 9) # covariance matrix structure
 
 parpost <- bergm(model.3,
                  prior.mean  = prior.mean,
@@ -177,8 +179,56 @@ summary(parpost)
 plot(parpost)
 
 # Model assessment, Bayesian goodness of fit diagnostics:
-bgof(parpost,
-     aux.iters = 10000,
-     n.deg     = 20,
-     n.dist    = 15,
-     n.esp     = 25)
+bgof_post <-
+  bgof(parpost,
+       aux.iters = 10000,
+       n.deg     = 20,
+       n.dist    = 15,
+       n.esp     = 25)
+
+summary(bgof_post)
+
+# calculate moments for observed and simulated GOF distribution
+obs_degree_post <- describe(bgof_post$obs.degree * 0:(length(bgof_post$obs.degree)-1))
+obs_dist_post <- describe(bgof_post$obs.dist * 1:length(bgof_post$obs.dist))
+obs_esp_post <- describe(bgof_post$obs.esp * 0:(length(bgof_post$obs.esp)-1))
+
+sim_degree_post <-
+  describe(bgof_post$sim.degree * rep(0:(length(bgof_post$obs.degree)-1),
+                                       times = length(bgof_post$sim.degree)
+                                       /length(bgof_post$obs.degree)))
+sim_dist_post <-
+  describe(bgof_post$sim.dist * rep(1:length(bgof_post$obs.dist),
+                                     times = length(bgof_post$sim.dist)
+                                     /length(bgof_post$obs.dist)))
+sim_esp_post <-
+  describe(bgof_post$sim.esp * rep(0:(length(bgof_post$obs.esp)-1),
+                                    times = length(bgof_post$sim.esp)
+                                    /length(bgof_post$obs.esp)))
+
+# make dataframes for distribution stats
+distribution_degree_post <-
+  data.frame("moments" = c("Mean", "Variance", "Skewness"),
+             "Observed" = round(c(obs_degree_post$mean,
+                                  obs_degree_post$sd,
+                                  obs_degree_post$skew), 2),
+             "Model" = round(c(mean(sim_degree_post$mean),
+                               mean(sim_degree_post$sd),
+                               mean(sim_degree_post$skew)),2))
+distribution_dist_post <-
+  data.frame("moments" = c("Mean", "Variance", "Skewness"),
+             "Observed" = round(c(obs_dist_post$mean,
+                                  obs_dist_post$sd,
+                                  obs_dist_post$skew), 2),
+             "Model" = round(c(mean(sim_dist_post$mean),
+                               mean(sim_dist_post$sd),
+                               mean(sim_dist_post$skew)),2))
+distribution_esp_post <-
+  data.frame("moments" = c("Mean", "Variance", "Skewness"),
+             "Observed" = round(c(obs_esp_post$mean,
+                                  obs_esp_post$sd,
+                                  obs_esp_post$skew), 2),
+             "Model" = round(c(mean(sim_esp_post$mean),
+                               mean(sim_esp_post$sd),
+                               mean(sim_esp_post$skew)),2))
+

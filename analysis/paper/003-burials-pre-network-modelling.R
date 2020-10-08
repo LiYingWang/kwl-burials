@@ -144,12 +144,12 @@ legend("topleft",
 
 #------------------creating ERGM model-------------------------------------
 # model 1 considers density and triad relations (for cluster)
-model.ergm <- burial_network_pre ~
+model_pre_1 <- burial_network_pre ~
   edges + # ties, a measure of density, equal to kstar(1) for undirected networks
   density +
   gwdegree(0.5, fixed = TRUE)  +
   triangle # triad relation, a measure of clustering or cohesion, also called transitive triple in undirected network
-summary(model.ergm)
+summary(model_pre_1)
 
 # Edgewise Shared Partners
 summary(burial_network_pre ~ esp(0:10))
@@ -157,7 +157,7 @@ summary(burial_network_pre ~ gwdegree(0:10))
 
 # model 2 considers cluster and degree, Morris et al. (2008)
 # check out the terms: http://mailman13.u.washington.edu/pipermail/statnet_help/2010/000575.html
-model.2 <- burial_network_pre ~ edges + # density
+model_pre_2 <- burial_network_pre ~ edges + # density
   gwesp(0.75, fixed = TRUE) +
   # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
   # number means weight parameter alpha, which controls the rate of declining marginal returns
@@ -169,30 +169,31 @@ model.2 <- burial_network_pre ~ edges + # density
   # distribution of node-based edge counts, each node counts only once
   # number means weight parameter decay
   # The closer decay is to zero, the more gwdegree considers low degree nodes relative to high degree nodes
-summary(model.2)
+summary(model_pre_2)
 
 # model 3 considers cluster, degree, and node attributes
-model.3 <- burial_network_pre ~ edges +  # the overall density of the network
+model_pre_3 <- burial_network_pre ~ edges +  # the overall density of the network
   nodematch('quantity') + # quantity-based homophily, categorical nodal attribute, the similarity of connected nodes
   nodematch('age') +
   nodematch('gender') +
+  nodematch('ritual') +
   absdiff('total') +
   gwesp(0.75, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
   gwnsp(0.75, fixed = TRUE) + #prior = -1
   gwdegree(0.8, fixed = TRUE)
-summary(model.3)
+summary(model_pre_3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(-1, 0, 0, 0, 0, 3, -1, 0) # positive prior number for edge means high density
+prior.mean <- c(-1, 0, 0, 0, 0, 0, 3, -1, 0) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(5, 8, 8) # covariance matrix structure
+prior.sigma <- diag(5, 9, 9) # covariance matrix structure
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
 
 # Estimated posterior means, medians and 95% credible intervals for Models.3
 # bergmM: Bayesian exponential random graphs models under missing data using the approximate exchange algorithm
-parpost <- bergmM(model.3,
+pre_bergm <- bergmM(model_pre_3,
                   prior.mean  = prior.mean,
                   prior.sigma = prior.sigma,
                   burn.in     = 200, # burn-in iterations for every chain of the population, drops the first 200
@@ -201,63 +202,63 @@ parpost <- bergmM(model.3,
                   nchains     = 6, # number of chains of the population MCMC
                   gamma       = 0.5) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
-summary(parpost)
+summary(pre_bergm)
 
-plot(parpost)
+plot(pre_bergm)
 
 # Bayesian Model assessment
-stats_bgof <-
-bgof(parpost,
-     aux.iters = 10000,
-     n.deg     = 15,
-     n.dist    = 15,
-     n.esp     = 10)
+bgof_pre <-
+  bgof(pre_bergm,
+       aux.iters = 10000,
+       n.deg     = 15,
+       n.dist    = 15,
+       n.esp     = 10)
 
-summary(stats_bgof)
+summary(bgof_pre)
 
 # load library for measuring moments of distribution
 library(psych)
 
 # calculate moments for observed and simulated GOF distribution
-obs_degree <- describe(stats_bgof$obs.degree * 0:(length(stats_bgof$obs.degree)-1))
-obs_dist <- describe(stats_bgof$obs.dist * 1:length(stats_bgof$obs.dist))
-obs_esp <- describe(stats_bgof$obs.esp * 0:(length(stats_bgof$obs.esp)-1))
+obs_degree_pre <- describe(bgof_pre$obs.degree * 0:(length(bgof_pre$obs.degree)-1))
+obs_dist_pre <- describe(bgof_pre$obs.dist * 1:length(bgof_pre$obs.dist))
+obs_esp_pre <- describe(bgof_pre$obs.esp * 0:(length(bgof_pre$obs.esp)-1))
 
-sim_degree <-
-  describe(stats_bgof$sim.degree * rep(0:(length(stats_bgof$obs.degree)-1),
-                                       times = length(stats_bgof$sim.degree)
-                                       /length(stats_bgof$obs.degree)))
-sim_dist <-
-  describe(stats_bgof$sim.dist * rep(1:length(stats_bgof$obs.dist),
-                                     times = length(stats_bgof$sim.dist)
-                                     /length(stats_bgof$obs.dist)))
-sim_esp <-
-  describe(stats_bgof$sim.esp * rep(0:(length(stats_bgof$obs.esp)-1),
-                                       times = length(stats_bgof$sim.esp)
-                                       /length(stats_bgof$obs.esp)))
+sim_degree_pre <-
+  describe(bgof_pre$sim.degree * rep(0:(length(bgof_pre$obs.degree)-1),
+                                       times = length(bgof_pre$sim.degree)
+                                       /length(bgof_pre$obs.degree)))
+sim_dist_pre <-
+  describe(bgof_pre$sim.dist * rep(1:length(bgof_pre$obs.dist),
+                                     times = length(bgof_pre$sim.dist)
+                                     /length(bgof_pre$obs.dist)))
+sim_esp_pre <-
+  describe(bgof_pre$sim.esp * rep(0:(length(bgof_pre$obs.esp)-1),
+                                       times = length(bgof_pre$sim.esp)
+                                       /length(bgof_pre$obs.esp)))
 
 # make dataframes for distribution stats
 distribution_degree <-
-  data.frame("moments" = c("mean", "Variance", "Skewness"),
-             "Observed" = round(c(obs_degree$mean,
-                                  obs_degree$sd,
-                                  obs_degree$skew), 2),
-             "Model" = round(c(mean(sim_degree$mean),
-                               mean(sim_degree$sd),
-                               mean(sim_degree$skew)),2))
+  data.frame("moments" = c("Mean", "Variance", "Skewness"),
+             "Observed" = round(c(obs_degree_pre$mean,
+                                  obs_degree_pre$sd,
+                                  obs_degree_pre$skew), 2),
+             "Model" = round(c(mean(sim_degree_pre$mean),
+                               mean(sim_degree_pre$sd),
+                               mean(sim_degree_pre$skew)),2))
 distribution_dist <-
-  data.frame("moments" = c("mean", "Variance", "Skewness"),
-             "Observed" = round(c(obs_dist$mean,
-                                  obs_dist$sd,
-                                  obs_dist$skew), 2),
-             "Model" = round(c(mean(sim_dist$mean),
-                               mean(sim_dist$sd),
-                               mean(sim_dist$skew)),2))
+  data.frame("moments" = c("Mean", "Variance", "Skewness"),
+             "Observed" = round(c(obs_dist_pre$mean,
+                                  obs_dist_pre$sd,
+                                  obs_dist_pre$skew), 2),
+             "Model" = round(c(mean(sim_dist_pre$mean),
+                               mean(sim_dist_pre$sd),
+                               mean(sim_dist_pre$skew)),2))
 distribution_esp <-
-  data.frame("moments" = c("mean", "Variance", "Skewness"),
-             "Observed" = round(c(obs_esp$mean,
-                                  obs_esp$sd,
-                                  obs_esp$skew), 2),
-             "Model" = round(c(mean(sim_esp$mean),
-                               mean(sim_esp$sd),
-                               mean(sim_esp$skew)),2))
+  data.frame("moments" = c("Mean", "Variance", "Skewness"),
+             "Observed" = round(c(obs_esp_pre$mean,
+                                  obs_esp_pre$sd,
+                                  obs_esp_pre$skew), 2),
+             "Model" = round(c(mean(sim_esp_pre$mean),
+                               mean(sim_esp_pre$sd),
+                               mean(sim_esp_pre$skew)),2))
