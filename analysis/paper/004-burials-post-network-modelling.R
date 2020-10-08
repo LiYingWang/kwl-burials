@@ -155,15 +155,15 @@ model.3 <- burial_network_post ~ edges +  # the overall density of the network
   nodematch('age') +
   nodematch('gender') +
   nodematch('ritual') +
-  absdiff('total') +
+  #absdiff('total') +
   gwesp(1.8, fixed = TRUE) + # start close to zero and move up, how well we do in matching the count of triangles
   gwnsp(1.8, fixed = TRUE) +
   gwdegree(0.8, fixed = TRUE)   # popularity
 summary(model.3)
 
 # Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(-1, 0, 0, 0, 0, 0, 3, -1, 0) # prior mean corresponds to mean for each parameter
-prior.sigma <- diag(5, 9, 9) # covariance matrix structure
+prior.mean <- c(-1, 0, 0, 0, 0, 3, -1, 0) # prior mean corresponds to mean for each parameter
+prior.sigma <- diag(5, 8, 8) # covariance matrix structure
 
 parpost <- bergm(model.3,
                  prior.mean  = prior.mean,
@@ -172,7 +172,7 @@ parpost <- bergm(model.3,
                  main.iters  = 2000, # iterations for every chain of the population
                  aux.iters   = 10000, # MCMC steps used for network simulation
                  nchains     = 6, # number of chains of the population MCMC
-                 gamma       = 0.5) # scalar; parallel adaptive direction sampling move factor, acceptance rate
+                 gamma       = 0.2) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
 summary(parpost)
 

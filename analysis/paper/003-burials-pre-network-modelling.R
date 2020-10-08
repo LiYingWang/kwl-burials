@@ -177,7 +177,7 @@ model_pre_3 <- burial_network_pre ~ edges +  # the overall density of the networ
   nodematch('age') +
   nodematch('gender') +
   nodematch('ritual') +
-  absdiff('total') +
+  #absdiff('total') +
   gwesp(0.75, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
   gwnsp(0.75, fixed = TRUE) + #prior = -1
   gwdegree(0.8, fixed = TRUE)
@@ -185,9 +185,9 @@ summary(model_pre_3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(-1, 0, 0, 0, 0, 0, 3, -1, 0) # positive prior number for edge means high density
+prior.mean <- c(-1, 0, 0, 0, 0, 3, -1, 0) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(5, 9, 9) # covariance matrix structure
+prior.sigma <- diag(5, 8, 8) # covariance matrix structure
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
 
@@ -200,7 +200,7 @@ pre_bergm <- bergmM(model_pre_3,
                   main.iters  = 2000, # iterations for every chain of the population
                   aux.iters   = 10000, # MCMC steps used for network simulation
                   nchains     = 6, # number of chains of the population MCMC
-                  gamma       = 0.5) # scalar; parallel adaptive direction sampling move factor, acceptance rate
+                  gamma       = 0.2) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
 summary(pre_bergm)
 
