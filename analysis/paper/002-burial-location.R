@@ -27,7 +27,8 @@ df_pre_distance <-
   arrange(Id)
 
 pre_distance <-
-  st_distance(df_pre_distance$burial_cent)
+  st_distance(df_pre_distance$burial_cent) %>%
+  filter()
 
 # mapping burials over the AD section
 KWL_burial_map <-

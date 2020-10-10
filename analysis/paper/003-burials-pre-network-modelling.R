@@ -66,7 +66,7 @@ edges_pre <-
 edges_for_network_pre <-
   select(edges_pre, from, to, common_counts) %>%
   filter (!common_counts == 0) # remove rows with no goods in common
-# %>% mutate(common_counts = ifelse(common_counts > 1, 1, common_counts)) # for unweighted network
+  #mutate(common_counts = ifelse(common_counts > 1, 1, common_counts)) # for unweighted network
 
 #1--------------------network analysis using ggraph pkg------------------------------
 library(tidygraph)
@@ -96,6 +96,7 @@ ggraph(relation_tidy_pre, layout = "graphopt") +
 #2-------------------network analysis using network pkg-------------------------------
 library(network)
 
+attr(edges_for_network_pre, "n") = 29
 burial_network_pre <-
   network(edges_for_network_pre, # the network object
           vertex.attr = nodes_pre, # node list
@@ -105,9 +106,9 @@ burial_network_pre <-
           matrix.type = "edgelist") # the type of input
 
 # plot
-plot(burial_network_pre, vertex.cex = 1) # It seems the last two nodes are missing?? only 27 nodes
+plot(burial_network_pre, vertex.cex = 1) # exclude the last two nodes since no edges, 27 left
 
-#-----------------------Bayesian ERGMs ------------------------------
+#-----------------------attach attributes and make graphs------------------------------
 library(statnet)
 library(Bergm)
 
@@ -117,6 +118,15 @@ set.vertex.attribute(burial_network_pre, "age", burial_pre$Age_scale)
 set.vertex.attribute(burial_network_pre, "gender", burial_pre$gender)
 set.vertex.attribute(burial_network_pre, "ritual", burial_pre$ritual)
 set.vertex.attribute(burial_network_pre, "total", burial_pre$total)
+
+#get distance matrix, need to run 002 code first
+pre_distance_n <- network(pre_distance, directed = F)
+set.edge.attribute(pre_distance_n, "dist", pre_distance_n)
+
+test_1 <- burial_network_pre ~
+  edges +
+  edgecov(pre_distance_n, "dist")
+summary(test_1)
 
 # plot
 set.seed(30)

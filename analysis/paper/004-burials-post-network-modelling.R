@@ -168,7 +168,7 @@ prior.sigma <- diag(5, 8, 8) # covariance matrix structure
 parpost <- bergm(model.3,
                  prior.mean  = prior.mean,
                  prior.sigma = prior.sigma,
-                 burn.in     = 200, # burn-in iterations for every chain of the populationm, drops the first 200
+                 burn.in     = 200, # burn-in iterations for every chain of the population, drops the first 200
                  main.iters  = 2000, # iterations for every chain of the population
                  aux.iters   = 10000, # MCMC steps used for network simulation
                  nchains     = 6, # number of chains of the population MCMC
