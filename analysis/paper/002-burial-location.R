@@ -7,9 +7,25 @@ AD <- invisible(st_read(here("analysis", "data", "raw_data", "shapefiles", "AD_z
 AD_data <- invisible(st_read(here("analysis", "data", "raw_data", "shapefiles", "AD_withdata.shp"), quiet = TRUE))
 location <- invisible(st_read(here("analysis", "data", "raw_data", "shapefiles", "location.shp"), quiet = TRUE))
 
+# add burials
+burial_shape_all <-
+  burial_shape %>%
+  add_row(No_burial = "0",
+          geometry = st_sfc(st_polygon(
+            list(cbind(c(7042.647, 7022.647, 6900.222, 6930.222, 7042.647),
+                       c(-3600.926, -3662.926, -3620.555, -3560.555, -3600.926)))))) %>%
+  add_row(No_burial = "12",
+          geometry = st_sfc(st_polygon(
+            list(cbind(c(6968.425, 6948.256, 6835.349, 6865.666, 6968.425),
+                       c(-3480.565, -3537.027, -3490.789, -3440.327, -3480.565)))))) %>%
+  add_row(No_burial = "83",
+          geometry = st_sfc(st_polygon(
+            list(cbind(c(2121.777, 2055.836, 2015.355, 2081.239, 2121.777),
+                       c(-2647.565, -2730.027, -2688.789, -2595.327, -2647.565))))))
+
 # join and find centroid point of burial
 burial_three_period_age_tidy_geo <-
-  burial_shape %>%
+  burial_shape_all %>%
   right_join(burial_three_period_age_tidy,
             by = c("No_burial" = "burial_label")) %>%
   mutate(burial_cent = st_centroid(geometry)) %>%
@@ -19,6 +35,7 @@ burial_three_period_age_tidy_geo <-
     Phase.y == "chi" ~ "Chinese",
     TRUE ~ ""))
 
+
 df_pre_distance <-
   burial_three_period_age_tidy_geo %>%
   select(Id, No_burial, Phase.y, geometry, burial_cent) %>%
@@ -27,8 +44,7 @@ df_pre_distance <-
   arrange(Id)
 
 pre_distance <-
-  st_distance(df_pre_distance$burial_cent) %>%
-  filter()
+  st_distance(df_pre_distance$burial_cent)
 
 # mapping burials over the AD section
 KWL_burial_map <-
@@ -43,7 +59,7 @@ KWL_burial_map <-
                #alpha = 0.3, fontface = "bold") +
   scale_fill_viridis_d() +
   theme_minimal() +
-  blank() +
+  #blank() +
   north(AD_data, scale = 0.2, symbol = 3)
 
 
