@@ -4,14 +4,14 @@
 burial_post <-
   burial_three_period_age_tidy %>%
   filter(Phase == "post") %>%
-  janitor::remove_empty(which = "cols") %>%
-  filter(quantity != "none") # remove burial without burial goods
+  janitor::remove_empty(which = "cols")
+  #filter(quantity != "none") # remove burial without burial goods(49 -> 45)
 
 # create node list
 nodes_post <-
   burial_three_period_age_tidy %>%
   filter(Phase == "post") %>%
-  filter(quantity != "none") %>%
+  #filter(quantity != "none") %>%
   select(burial_label) %>%
   rowid_to_column("id")
 
@@ -115,6 +115,15 @@ set.vertex.attribute(burial_network_post, "gender", burial_post$gender)
 set.vertex.attribute(burial_network_post, "ritual", burial_post$ritual)
 set.vertex.attribute(burial_network_post, "total", burial_post$total)
 
+#get distance matrix, need to run 002 code first
+post_distance_n <- network(post_distance, directed = F)
+set.edge.attribute(post_distance_n, "dist", post_distance_n)
+
+test_2 <- burial_network_post ~
+  edges +
+  edgecov(post_distance_n, "dist")
+summary(test_2)
+
 # plot
 set.seed(30)
 quantity <- get.vertex.attribute(burial_network_post, "quantity")
@@ -150,7 +159,7 @@ model.2 <- burial_network_post ~ edges + # density
 summary(model.2)
 
 #--------------------Bayesian inference for ERGMs-------------------------
-model.3 <- burial_network_post ~ edges +  # the overall density of the network
+model.post.3 <- burial_network_post ~ edges +  # the overall density of the network
   nodematch('quantity') +    # quantity-based homophily, the similarity of connected nodes
   nodematch('age') +
   nodematch('gender') +
@@ -158,29 +167,30 @@ model.3 <- burial_network_post ~ edges +  # the overall density of the network
   #absdiff('total') +
   gwesp(1.8, fixed = TRUE) + # start close to zero and move up, how well we do in matching the count of triangles
   gwnsp(1.8, fixed = TRUE) +
-  gwdegree(0.8, fixed = TRUE)   # popularity
-summary(model.3)
+  gwdegree(0.8, fixed = TRUE) +
+  edgecov(post_distance_n, "dist")
+summary(model.post.3)
 
 # Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(-1, 0, 0, 0, 0, 3, -1, 0) # prior mean corresponds to mean for each parameter
-prior.sigma <- diag(5, 8, 8) # covariance matrix structure
+prior.mean <- c(-1, 0, 0, 0, 0, 3, -1, 0, -1) # prior mean corresponds to mean for each parameter
+prior.sigma <- diag(5, 9, 9) # covariance matrix structure
 
-parpost <- bergm(model.3,
+post_bergm <- bergmM(model.post.3,
                  prior.mean  = prior.mean,
                  prior.sigma = prior.sigma,
                  burn.in     = 200, # burn-in iterations for every chain of the population, drops the first 200
                  main.iters  = 2000, # iterations for every chain of the population
                  aux.iters   = 10000, # MCMC steps used for network simulation
                  nchains     = 6, # number of chains of the population MCMC
-                 gamma       = 0.2) # scalar; parallel adaptive direction sampling move factor, acceptance rate
+                 gamma       = 0.1) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
-summary(parpost)
+summary(post_bergm)
 
-plot(parpost)
+plot(post_bergm)
 
 # Model assessment, Bayesian goodness of fit diagnostics:
 bgof_post <-
-  bgof(parpost,
+  bgof(post_bergm,
        aux.iters = 10000,
        n.deg     = 20,
        n.dist    = 15,

@@ -23,7 +23,7 @@ burial_shape_all <-
             list(cbind(c(2121.777, 2055.836, 2015.355, 2081.239, 2121.777),
                        c(-2647.565, -2730.027, -2688.789, -2595.327, -2647.565))))))
 
-# join and find centroid point of burial
+# join and find centroid points of burials
 burial_three_period_age_tidy_geo <-
   burial_shape_all %>%
   right_join(burial_three_period_age_tidy,
@@ -35,7 +35,7 @@ burial_three_period_age_tidy_geo <-
     Phase.y == "chi" ~ "Chinese",
     TRUE ~ ""))
 
-
+# get distance between pre-E burials
 df_pre_distance <-
   burial_three_period_age_tidy_geo %>%
   select(Id, No_burial, Phase.y, geometry, burial_cent) %>%
@@ -45,6 +45,17 @@ df_pre_distance <-
 
 pre_distance <-
   st_distance(df_pre_distance$burial_cent)
+
+# get distance between post-E burials
+df_post_distance <-
+  burial_three_period_age_tidy_geo %>%
+  select(Id, No_burial, Phase.y, geometry, burial_cent) %>%
+  mutate(Id = as.numeric(No_burial)) %>%
+  filter(Phase.y == "post") %>%
+  arrange(Id)
+
+post_distance <-
+  st_distance(df_post_distance$burial_cent)
 
 # mapping burials over the AD section
 KWL_burial_map <-
@@ -59,7 +70,5 @@ KWL_burial_map <-
                #alpha = 0.3, fontface = "bold") +
   scale_fill_viridis_d() +
   theme_minimal() +
-  #blank() +
+  blank() +
   north(AD_data, scale = 0.2, symbol = 3)
-
-

@@ -96,6 +96,7 @@ ggraph(relation_tidy_pre, layout = "graphopt") +
 #2-------------------network analysis using network pkg-------------------------------
 library(network)
 
+# create network object
 attr(edges_for_network_pre, "n") = 29
 burial_network_pre <-
   network(edges_for_network_pre, # the network object
@@ -105,8 +106,7 @@ burial_network_pre <-
           loops = FALSE, # do we allow self ties (should not allow them)
           matrix.type = "edgelist") # the type of input
 
-# plot
-plot(burial_network_pre, vertex.cex = 1) # exclude the last two nodes since no edges, 27 left
+plot(burial_network_pre, vertex.cex = 1)
 
 #-----------------------attach attributes and make graphs------------------------------
 library(statnet)
@@ -148,9 +148,8 @@ legend("topleft",
        legend = unique(quantity),# quantity
        title  = 'Burial good counts')
 
-# ? can't get the items in legend in order
-# ? tried as.factor and set their level but does not work
-# ? can't match color with categories, adjust manually every time
+# ? can't get the items in legend in order, have tried as.factor for level
+# can't match color with categories, need to adjust manually every time
 
 #------------------creating ERGM model-------------------------------------
 # model 1 considers density and triad relations (for cluster)
@@ -190,14 +189,15 @@ model_pre_3 <- burial_network_pre ~ edges +  # the overall density of the networ
   #absdiff('total') +
   gwesp(0.75, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
   gwnsp(0.75, fixed = TRUE) + #prior = -1
-  gwdegree(0.8, fixed = TRUE)
+  gwdegree(0.8, fixed = TRUE) +
+  edgecov(pre_distance_n, "dist")
 summary(model_pre_3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(-1, 0, 0, 0, 0, 3, -1, 0) # positive prior number for edge means high density
+prior.mean <- c(-1, 0, 0, 0, 0, 3, -1, 0, -1) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(5, 8, 8) # covariance matrix structure
+prior.sigma <- diag(5, 9, 9) # covariance matrix structure
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
 
@@ -210,7 +210,7 @@ pre_bergm <- bergmM(model_pre_3,
                   main.iters  = 2000, # iterations for every chain of the population
                   aux.iters   = 10000, # MCMC steps used for network simulation
                   nchains     = 6, # number of chains of the population MCMC
-                  gamma       = 0.2) # scalar; parallel adaptive direction sampling move factor, acceptance rate
+                  gamma       = 0.1) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
 summary(pre_bergm)
 
