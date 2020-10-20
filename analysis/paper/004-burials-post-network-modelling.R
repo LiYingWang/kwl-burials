@@ -172,8 +172,8 @@ model.post.3 <- burial_network_post ~ edges +  # the overall density of the netw
 summary(model.post.3)
 
 # Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(-1, 0, 0, 0, 0, 3, -1, 0, -1) # prior mean corresponds to mean for each parameter
-prior.sigma <- diag(5, 9, 9) # covariance matrix structure
+prior.mean <- c(-1, 1, -1, 0, 0, 3, -1, 1, -1) # prior mean corresponds to mean for each parameter
+prior.sigma <- diag(3, 9, 9) # covariance matrix structure
 
 post_bergm <- bergmM(model.post.3,
                  prior.mean  = prior.mean,
@@ -192,9 +192,9 @@ plot(post_bergm)
 bgof_post <-
   bgof(post_bergm,
        aux.iters = 10000,
-       n.deg     = 20,
+       n.deg     = 40,
        n.dist    = 15,
-       n.esp     = 25)
+       n.esp     = 35)
 
 summary(bgof_post)
 

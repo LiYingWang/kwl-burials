@@ -188,16 +188,16 @@ model_pre_3 <- burial_network_pre ~ edges +  # the overall density of the networ
   nodematch('ritual') +
   #absdiff('total') +
   gwesp(0.75, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
-  gwnsp(0.75, fixed = TRUE) + #prior = -1
+  gwnsp(0.75, fixed = TRUE) + #0.75, #prior = -1
   gwdegree(0.8, fixed = TRUE) +
   edgecov(pre_distance_n, "dist")
 summary(model_pre_3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(-1, 0, 0, 0, 0, 3, -1, 0, -1) # positive prior number for edge means high density
+prior.mean <- c(-1, 1, -1, 0, 0, 3, -1, 1, -1) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(5, 9, 9) # covariance matrix structure
+prior.sigma <- diag(3, 9, 9) # covariance matrix structure
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
 
@@ -248,7 +248,7 @@ sim_esp_pre <-
                                        /length(bgof_pre$obs.esp)))
 
 # make dataframes for distribution stats
-distribution_degree <-
+distribution_degree_pre <-
   data.frame("moments" = c("Mean", "Variance", "Skewness"),
              "Observed" = round(c(obs_degree_pre$mean,
                                   obs_degree_pre$sd,
@@ -256,7 +256,7 @@ distribution_degree <-
              "Model" = round(c(mean(sim_degree_pre$mean),
                                mean(sim_degree_pre$sd),
                                mean(sim_degree_pre$skew)),2))
-distribution_dist <-
+distribution_dist_pre <-
   data.frame("moments" = c("Mean", "Variance", "Skewness"),
              "Observed" = round(c(obs_dist_pre$mean,
                                   obs_dist_pre$sd,
@@ -264,7 +264,7 @@ distribution_dist <-
              "Model" = round(c(mean(sim_dist_pre$mean),
                                mean(sim_dist_pre$sd),
                                mean(sim_dist_pre$skew)),2))
-distribution_esp <-
+distribution_esp_pre <-
   data.frame("moments" = c("Mean", "Variance", "Skewness"),
              "Observed" = round(c(obs_esp_pre$mean,
                                   obs_esp_pre$sd,
