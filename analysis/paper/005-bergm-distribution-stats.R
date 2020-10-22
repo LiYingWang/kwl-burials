@@ -22,7 +22,7 @@ edges_value <-
 
 trans_value <-
   ggplot(bergm_two_phases,
-       aes(x = gwesp.fixed.1.8, fill = phase)) +
+       aes(x = gwesp.fixed.0.75, fill = phase)) +
   geom_histogram(position = "identity") +
   theme_minimal()
 

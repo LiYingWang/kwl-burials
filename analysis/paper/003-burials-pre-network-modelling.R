@@ -198,6 +198,7 @@ summary(model_pre_3)
 prior.mean <- c(-1, 1, -1, 0, 0, 3, -1, 1, -1) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
 prior.sigma <- diag(3, 9, 9) # covariance matrix structure
+
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
 

@@ -165,8 +165,8 @@ model.post.3 <- burial_network_post ~ edges +  # the overall density of the netw
   nodematch('gender') +
   nodematch('ritual') +
   #absdiff('total') +
-  gwesp(1.8, fixed = TRUE) + # start close to zero and move up, how well we do in matching the count of triangles
-  gwnsp(1.8, fixed = TRUE) +
+  gwesp(0.75, fixed = TRUE) + # start close to zero and move up, how well we do in matching the count of triangles
+  gwnsp(0.75, fixed = TRUE) + # original 1.8
   gwdegree(0.8, fixed = TRUE) +
   edgecov(post_distance_n, "dist")
 summary(model.post.3)
