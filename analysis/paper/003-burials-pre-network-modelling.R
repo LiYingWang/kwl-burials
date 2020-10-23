@@ -117,16 +117,11 @@ set.vertex.attribute(burial_network_pre, "quantity", burial_pre$quantity)
 set.vertex.attribute(burial_network_pre, "age", burial_pre$Age_scale)
 set.vertex.attribute(burial_network_pre, "gender", burial_pre$gender)
 set.vertex.attribute(burial_network_pre, "ritual", burial_pre$ritual)
-set.vertex.attribute(burial_network_pre, "total", burial_pre$total)
+set.vertex.attribute(burial_network_pre, "burial_value", burial_pre$burial_value)
 
 #get distance matrix, need to run 002 code first
 pre_distance_n <- network(pre_distance, directed = F)
 set.edge.attribute(pre_distance_n, "dist", pre_distance_n)
-
-test_1 <- burial_network_pre ~
-  edges +
-  edgecov(pre_distance_n, "dist")
-summary(test_1)
 
 # plot
 set.seed(30)
@@ -167,7 +162,7 @@ summary(burial_network_pre ~ gwdegree(0:10))
 # model 2 considers cluster and degree, Morris et al. (2008)
 # check out the terms: http://mailman13.u.washington.edu/pipermail/statnet_help/2010/000575.html
 model_pre_2 <- burial_network_pre ~ edges + # density
-  gwesp(0.75, fixed = TRUE) +
+  gwesp(0.8, fixed = TRUE) +
   # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
   # number means weight parameter alpha, which controls the rate of declining marginal returns
   # fixed = TRUE means the scale parameter lambda is fit as a curved exponential-family model
@@ -186,7 +181,7 @@ model_pre_3 <- burial_network_pre ~ edges +  # the overall density of the networ
   nodematch('age') +
   nodematch('gender') +
   nodematch('ritual') +
-  #absdiff('total') +
+  absdiff('burial_value') +
   gwesp(0.75, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
   gwnsp(0.75, fixed = TRUE) + #0.75, #prior = -1
   gwdegree(0.8, fixed = TRUE) +
@@ -195,9 +190,9 @@ summary(model_pre_3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(-1, 1, -1, 0, 0, 3, -1, 1, -1) # positive prior number for edge means high density
+prior.mean <- c(-1, 1, -1, 0, 0, 1, 3, -1, 1, -1) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(3, 9, 9) # covariance matrix structure
+prior.sigma <- diag(3, 10, 10) # covariance matrix structure
 
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
@@ -246,30 +241,29 @@ sim_dist_pre <-
 sim_esp_pre <-
   describe(bgof_pre$sim.esp * rep(0:(length(bgof_pre$obs.esp)-1),
                                        times = length(bgof_pre$sim.esp)
-                                       /length(bgof_pre$obs.esp)))
+                                       /length(bgof_pre$obs.esp))) %>%
+  filter(mean != 0.00)
 
 # make dataframes for distribution stats
-distribution_degree_pre <-
+posterior_distribution_pre <-
   data.frame("moments" = c("Mean", "Variance", "Skewness"),
-             "Observed" = round(c(obs_degree_pre$mean,
+             "Observed.degree" = round(c(obs_degree_pre$mean,
                                   obs_degree_pre$sd,
                                   obs_degree_pre$skew), 2),
-             "Model" = round(c(mean(sim_degree_pre$mean),
+             "Model.degree" = round(c(mean(sim_degree_pre$mean),
                                mean(sim_degree_pre$sd),
-                               mean(sim_degree_pre$skew)),2))
-distribution_dist_pre <-
-  data.frame("moments" = c("Mean", "Variance", "Skewness"),
-             "Observed" = round(c(obs_dist_pre$mean,
-                                  obs_dist_pre$sd,
-                                  obs_dist_pre$skew), 2),
-             "Model" = round(c(mean(sim_dist_pre$mean),
-                               mean(sim_dist_pre$sd),
-                               mean(sim_dist_pre$skew)),2))
-distribution_esp_pre <-
-  data.frame("moments" = c("Mean", "Variance", "Skewness"),
-             "Observed" = round(c(obs_esp_pre$mean,
-                                  obs_esp_pre$sd,
-                                  obs_esp_pre$skew), 2),
-             "Model" = round(c(mean(sim_esp_pre$mean),
-                               mean(sim_esp_pre$sd),
-                               mean(sim_esp_pre$skew)),2))
+                               mean(sim_degree_pre$skew)),2),
+             "Observed.distance" = round(c(obs_dist_pre$mean,
+                                           obs_dist_pre$sd,
+                                           obs_dist_pre$skew), 2),
+             "Model.distance" = round(c(mean(sim_dist_pre$mean),
+                                        mean(sim_dist_pre$sd),
+                                        mean(sim_dist_pre$skew)),2),
+             "Observed.esp" = round(c(obs_esp_pre$mean,
+                                      obs_esp_pre$sd,
+                                      obs_esp_pre$skew), 2),
+             "Model.esp" = round(c(mean(sim_esp_pre$mean),
+                                   mean(sim_esp_pre$sd),
+                                   mean(sim_esp_pre$skew)),2),
+             "Phase" = "pre-European")
+

@@ -217,28 +217,25 @@ sim_esp_post <-
                                     /length(bgof_post$obs.esp)))
 
 # make dataframes for distribution stats
-distribution_degree_post <-
+posterior_distribution_post <-
   data.frame("moments" = c("Mean", "Variance", "Skewness"),
-             "Observed" = round(c(obs_degree_post$mean,
+             "Observed.degree" = round(c(obs_degree_post$mean,
                                   obs_degree_post$sd,
                                   obs_degree_post$skew), 2),
-             "Model" = round(c(mean(sim_degree_post$mean),
+             "Model.degree" = round(c(mean(sim_degree_post$mean),
                                mean(sim_degree_post$sd),
-                               mean(sim_degree_post$skew)),2))
-distribution_dist_post <-
-  data.frame("moments" = c("Mean", "Variance", "Skewness"),
-             "Observed" = round(c(obs_dist_post$mean,
-                                  obs_dist_post$sd,
-                                  obs_dist_post$skew), 2),
-             "Model" = round(c(mean(sim_dist_post$mean),
-                               mean(sim_dist_post$sd),
-                               mean(sim_dist_post$skew)),2))
-distribution_esp_post <-
-  data.frame("moments" = c("Mean", "Variance", "Skewness"),
-             "Observed" = round(c(obs_esp_post$mean,
-                                  obs_esp_post$sd,
-                                  obs_esp_post$skew), 2),
-             "Model" = round(c(mean(sim_esp_post$mean),
-                               mean(sim_esp_post$sd),
-                               mean(sim_esp_post$skew)),2))
+                               mean(sim_degree_post$skew)),2),
+             "Observed.distance" = round(c(obs_dist_post$mean,
+                                           obs_dist_post$sd,
+                                           obs_dist_post$skew), 2),
+             "Model.distance" = round(c(mean(sim_dist_post$mean),
+                                        mean(sim_dist_post$sd),
+                                        mean(sim_dist_post$skew)),2),
+             "Observed.esp" = round(c(obs_esp_post$mean,
+                                      obs_esp_post$sd,
+                                      obs_esp_post$skew), 2),
+             "Model.esp" = round(c(mean(sim_esp_post$mean),
+                                   mean(sim_esp_post$sd),
+                                   mean(sim_esp_post$skew)),2),
+             "Phase" = "post-European")
 
