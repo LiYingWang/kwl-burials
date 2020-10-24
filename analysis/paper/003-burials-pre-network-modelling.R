@@ -27,7 +27,7 @@ burial_comb_pre = as_tibble(burial_comb_pre)
 # create list for each burial that contains the burial good types and their counts
 edge_list_pre <-
   burial_three_period_age_tidy %>%
-  select(burial_label, 6:14) %>% # need to change for each exploration
+  select(burial_label, 6:15) %>% # need to change for each exploration
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   #mutate(burial_connection = rep(unique(burial_label), length.out = length(burial_label)))
   group_by(burial_label) %>%
@@ -182,8 +182,8 @@ model_pre_3 <- burial_network_pre ~ edges +  # the overall density of the networ
   nodematch('gender') +
   nodematch('ritual') +
   absdiff('burial_value') +
-  gwesp(0.75, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
-  gwnsp(0.75, fixed = TRUE) + #0.75, #prior = -1
+  gwesp(0.8, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
+  gwnsp(0.8, fixed = TRUE) + #0.75, #prior = -1
   gwdegree(0.8, fixed = TRUE) +
   edgecov(pre_distance_n, "dist")
 summary(model_pre_3)

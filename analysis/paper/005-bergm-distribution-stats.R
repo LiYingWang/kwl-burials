@@ -1,15 +1,20 @@
-# get data from network models
+# get data from pre-European model
 pre_bergm_stats <- as.data.frame(pre_bergm$Theta)
 colnames(pre_bergm_stats) <- pre_bergm$specs
 
 pre_bergm_stats <-
-  cbind(pre_bergm_stats, phase = "pre")
+  cbind(pre_bergm_stats, phase = "pre") %>%
+  rename("gwesp" = "gwesp.fixed.0.8",
+         "gwnsp" = "gwnsp.fixed.0.8")
 
+# get data from post-European model
 post_bergm_stats <- as.data.frame(post_bergm$Theta)
 colnames(post_bergm_stats) <- post_bergm$specs
 
 post_bergm_stats <-
-  cbind(post_bergm_stats, phase = "post")
+  cbind(post_bergm_stats, phase = "post") %>%
+  rename("gwesp" = "gwesp.fixed.1.7",
+         "gwnsp" = "gwnsp.fixed.1.7")
 
 bergm_two_phases <-
   rbind(pre_bergm_stats, post_bergm_stats)
@@ -18,19 +23,19 @@ bergm_two_phases <-
 edges_value <-
   ggplot(bergm_two_phases,
        aes(x = edges, fill = phase)) +
-  geom_histogram(position = "identity") +
+  geom_histogram(alpha = 0.8, position = "identity") +
   theme_minimal()
 
 trans_value <-
   ggplot(bergm_two_phases,
-       aes(x = gwesp.fixed.0.75, fill = phase)) +
-  geom_histogram(position = "identity") +
+       aes(x = gwesp, fill = phase)) +
+  geom_histogram(alpha = 0.8, position = "identity") +
   theme_minimal()
 
 degree_value <-
   ggplot(bergm_two_phases,
        aes(x = gwdeg.fixed.0.8, fill = phase)) +
-  geom_histogram(position = "identity") +
+  geom_histogram(alpha = 0.8, position = "identity") +
   theme_minimal()
 
 dist_value <-

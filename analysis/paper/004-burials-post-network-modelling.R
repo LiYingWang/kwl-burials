@@ -26,7 +26,7 @@ burial_comb_post = as_tibble(burial_comb_post)
 # create list for each burial that contains the burial good types and their counts
 edge_list_post <-
   burial_three_period_age_tidy %>%
-  select(burial_label, 6:14) %>% # need to change for each exploration
+  select(burial_label, 6:15) %>% # need to change for each exploration
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   group_by(burial_label) %>%
   nest()
@@ -113,7 +113,7 @@ set.vertex.attribute(burial_network_post, "quantity", burial_post$quantity)
 set.vertex.attribute(burial_network_post, "age", burial_post$Age_scale)
 set.vertex.attribute(burial_network_post, "gender", burial_post$gender)
 set.vertex.attribute(burial_network_post, "ritual", burial_post$ritual)
-set.vertex.attribute(burial_network_post, "total", burial_post$total)
+set.vertex.attribute(burial_network_post, "burial_value", burial_post$burial_value)
 
 #get distance matrix, need to run 002 code first
 post_distance_n <- network(post_distance, directed = F)
@@ -154,7 +154,7 @@ model.ergm <- burial_network_post ~
 summary(model.ergm)
 
 model.2 <- burial_network_post ~ edges + # density
-  gwesp(1.8, fixed = TRUE) +  # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
+  gwesp(1.7, fixed = TRUE) +  # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
   gwdegree(0.8, fixed = TRUE)  # popularity(degree; star), the frequency distribution for nodal degrees
 summary(model.2)
 
@@ -164,16 +164,16 @@ model.post.3 <- burial_network_post ~ edges +  # the overall density of the netw
   nodematch('age') +
   nodematch('gender') +
   nodematch('ritual') +
-  #absdiff('total') +
-  gwesp(0.75, fixed = TRUE) + # start close to zero and move up, how well we do in matching the count of triangles
-  gwnsp(0.75, fixed = TRUE) + # original 1.8
+  absdiff('burial_value') +
+  gwesp(1.7, fixed = TRUE) + # start close to zero and move up, how well we do in matching the count of triangles
+  gwnsp(1.7, fixed = TRUE) + # original 1.8
   gwdegree(0.8, fixed = TRUE) +
   edgecov(post_distance_n, "dist")
 summary(model.post.3)
 
 # Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(-1, 1, -1, 0, 0, 3, -1, 1, -1) # prior mean corresponds to mean for each parameter
-prior.sigma <- diag(3, 9, 9) # covariance matrix structure
+prior.mean <- c(-1, 1, -1, 0, 0, 1, 3, -1, 1, -1) # prior mean corresponds to mean for each parameter
+prior.sigma <- diag(3, 10, 10) # covariance matrix structure
 
 post_bergm <- bergmM(model.post.3,
                  prior.mean  = prior.mean,
