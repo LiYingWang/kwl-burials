@@ -49,7 +49,7 @@ burial_three_period_age_tidy <-
          `Indo-Pacific_bead_low` = ifelse(`Indo-Pacific_bead` < 100, 1, NA),
          `Indo-Pacific_bead_med` = ifelse(`Indo-Pacific_bead` > 100 & `Indo-Pacific_bead` < 900, 1, NA),
          `Indo-Pacific_bead_high` = ifelse(`Indo-Pacific_bead` > 900, 1, NA)) %>% #based on the result of histogram
-  left_join(burial_with_type_value) %>%
+  left_join(burial_with_type_value_class) %>%
   select(burial_label,
          Phase,
          Age_scale,
@@ -70,7 +70,8 @@ burial_three_period_age_tidy <-
          #Bell, #children's burials
          quantity,
          total,
-         burial_value) # select specific variable to drop columns (uninformative variables)
+         burial_value,
+         value_class) # select specific variable to drop columns (uninformative variables)
 
 # number of each phase
 burial_three_period_age_number <-

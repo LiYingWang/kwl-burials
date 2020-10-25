@@ -117,6 +117,7 @@ set.vertex.attribute(burial_network_pre, "quantity", burial_pre$quantity)
 set.vertex.attribute(burial_network_pre, "age", burial_pre$Age_scale)
 set.vertex.attribute(burial_network_pre, "gender", burial_pre$gender)
 set.vertex.attribute(burial_network_pre, "ritual", burial_pre$ritual)
+set.vertex.attribute(burial_network_pre, "value_class", burial_pre$value_class)
 set.vertex.attribute(burial_network_pre, "burial_value", burial_pre$burial_value)
 
 #get distance matrix, need to run 002 code first
@@ -181,7 +182,8 @@ model_pre_3 <- burial_network_pre ~ edges +  # the overall density of the networ
   nodematch('age') +
   nodematch('gender') +
   nodematch('ritual') +
-  absdiff('burial_value') +
+  nodematch('value_class') +
+  #absdiff('burial_value') +
   gwesp(0.8, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
   gwnsp(0.8, fixed = TRUE) + #0.75, #prior = -1
   gwdegree(0.8, fixed = TRUE) +

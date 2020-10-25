@@ -76,3 +76,23 @@ burial_with_type_value <-
   mutate(burial_value = rowSums(across(where(is.numeric)))) %>%
   select(burial_label, burial_value)
 
+# distribution plot of burial value
+mean(burial_with_type_value$burial_value)
+quantile(burial_with_type_value$burial_value)
+quantile(burial_with_type_value$burial_value, probs = 0.9)
+
+ggplot(burial_with_type_value,
+       aes(burial_value)) +
+  geom_histogram() +
+  geom_vline(xintercept = c(12, 30), # refers to quantile values
+             color = "red")
+
+# divide burial value into classes
+burial_with_type_value_class <-
+  burial_with_type_value %>%
+  mutate(value_class = case_when(
+    burial_value == 0 ~ "none",
+    burial_value < 12 ~ "low",
+    burial_value >= 12 & burial_value < 30 ~ "medium",
+    burial_value >= 30 ~ "high",
+    TRUE ~ ""))

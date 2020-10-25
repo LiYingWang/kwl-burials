@@ -113,16 +113,12 @@ set.vertex.attribute(burial_network_post, "quantity", burial_post$quantity)
 set.vertex.attribute(burial_network_post, "age", burial_post$Age_scale)
 set.vertex.attribute(burial_network_post, "gender", burial_post$gender)
 set.vertex.attribute(burial_network_post, "ritual", burial_post$ritual)
+set.vertex.attribute(burial_network_post, "value_class", burial_post$value_class)
 set.vertex.attribute(burial_network_post, "burial_value", burial_post$burial_value)
 
 #get distance matrix, need to run 002 code first
 post_distance_n <- network(post_distance, directed = F)
 set.edge.attribute(post_distance_n, "dist", post_distance_n)
-
-test_2 <- burial_network_post ~
-  edges +
-  edgecov(post_distance_n, "dist")
-summary(test_2)
 
 # plot
 set.seed(30)
@@ -145,7 +141,6 @@ legend("topleft",
 
 #------------------creating ERGM model-------------------------------------
 # every term in an ERGM must have an associated algorithm for computing its value for network
-
 model.ergm <- burial_network_post ~
   edges + # ties, a measure of density, equal to kstar(1) for undirected networks
   density +
@@ -164,7 +159,8 @@ model.post.3 <- burial_network_post ~ edges +  # the overall density of the netw
   nodematch('age') +
   nodematch('gender') +
   nodematch('ritual') +
-  absdiff('burial_value') +
+  nodematch('value_class') +
+  #absdiff('burial_value') +
   gwesp(1.7, fixed = TRUE) + # start close to zero and move up, how well we do in matching the count of triangles
   gwnsp(1.7, fixed = TRUE) + # original 1.8
   gwdegree(0.8, fixed = TRUE) +
