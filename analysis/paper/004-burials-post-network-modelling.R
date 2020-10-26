@@ -155,12 +155,12 @@ summary(model.2)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 model.post.3 <- burial_network_post ~ edges +  # the overall density of the network
-  nodematch('quantity') +    # quantity-based homophily, the similarity of connected nodes
+  nodematch('quantity') +  # quantity-based homophily, the similarity of connected nodes
   nodematch('age') +
   nodematch('gender') +
   nodematch('ritual') +
   nodematch('value_class') +
-  #absdiff('burial_value') +
+  absdiff('burial_value') +
   gwesp(1.7, fixed = TRUE) + # start close to zero and move up, how well we do in matching the count of triangles
   gwnsp(1.7, fixed = TRUE) + # original 1.8
   gwdegree(0.8, fixed = TRUE) +
@@ -168,8 +168,8 @@ model.post.3 <- burial_network_post ~ edges +  # the overall density of the netw
 summary(model.post.3)
 
 # Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(-1, 1, -1, 0, 0, 1, 3, -1, 1, -1) # prior mean corresponds to mean for each parameter
-prior.sigma <- diag(3, 10, 10) # covariance matrix structure
+prior.mean <- c(-3, 1, -1, 0, 0, 1, 1, 1, -1, 1, -1) # prior mean corresponds to mean for each parameter
+prior.sigma <- diag(3, 11, 11) # covariance matrix structure
 
 post_bergm <- bergmM(model.post.3,
                  prior.mean  = prior.mean,
