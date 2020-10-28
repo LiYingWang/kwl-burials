@@ -58,3 +58,12 @@ burial_three_period_tidy_explore %>%
   ggplot(aes(`Indo-Pacific_bead`)) +
   geom_histogram() +
   scale_x_log10()
+
+# orientation
+burial %>%
+  mutate(Phase = ifelse(Phase == 'euro', 'post', Phase)) %>%
+  filter(!is.na(Phase)) %>%
+  ggplot(aes(x = Degree_axis, fill = Phase)) +
+  geom_histogram()+
+  coord_polar() +
+  scale_x_continuous(limits = c(0,360))

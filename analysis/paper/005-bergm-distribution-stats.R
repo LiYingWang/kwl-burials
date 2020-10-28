@@ -64,6 +64,6 @@ distribution_two_phases_longer <-
   separate(parameter, c("value", "parameter"))
 
 ggplot(distribution_two_phases_longer,
-       aes(number, parameter)) +
+       aes(parameter, number)) +
   geom_point(aes(color = Phase, shape = value), size = 3) +
   facet_wrap(~moments, scales = "free")

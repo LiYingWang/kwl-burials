@@ -117,8 +117,9 @@ set.vertex.attribute(burial_network_pre, "quantity", burial_pre$quantity)
 set.vertex.attribute(burial_network_pre, "age", burial_pre$Age_scale)
 set.vertex.attribute(burial_network_pre, "gender", burial_pre$gender)
 set.vertex.attribute(burial_network_pre, "ritual", burial_pre$ritual)
-set.vertex.attribute(burial_network_pre, "value_class", burial_pre$value_class)
-set.vertex.attribute(burial_network_pre, "burial_value", burial_pre$burial_value)
+set.vertex.attribute(burial_network_pre, "value_class", burial_pre$value_class) #categorical
+set.vertex.attribute(burial_network_pre, "burial_value", burial_pre$burial_value) #numeric
+set.vertex.attribute(burial_network_pre, "orientation", burial_pre$orientation)
 
 #get distance matrix, need to run 002 code first
 pre_distance_n <- network(pre_distance, directed = F)
@@ -183,6 +184,7 @@ model_pre_3 <- burial_network_pre ~ edges +  # the overall density of the networ
   nodematch('gender') +
   nodematch('ritual') +
   nodematch('value_class') +
+  nodematch('orientation') +
   absdiff('burial_value') +
   gwesp(0.8, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
   gwnsp(0.8, fixed = TRUE) + #0.75, #prior = -1
@@ -192,9 +194,9 @@ summary(model_pre_3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(-3, 1, -1, 0, 0, 1, 1, 1, -1, 1, -1) # positive prior number for edge means high density
+prior.mean <- c(-3, 1, -1, 0, 0, 1, 0, 1, 1, -1, 3, -1) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(3, 11, 11) # covariance matrix structure
+prior.sigma <- diag(3, 12, 12) # covariance matrix structure
 
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
@@ -208,7 +210,7 @@ pre_bergm <- bergmM(model_pre_3,
                   main.iters  = 2000, # iterations for every chain of the population
                   aux.iters   = 10000, # MCMC steps used for network simulation
                   nchains     = 6, # number of chains of the population MCMC
-                  gamma       = 0.1) # scalar; parallel adaptive direction sampling move factor, acceptance rate
+                  gamma       = 0.2) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
 summary(pre_bergm)
 

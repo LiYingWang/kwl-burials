@@ -168,7 +168,7 @@ model.post.3 <- burial_network_post ~ edges +  # the overall density of the netw
 summary(model.post.3)
 
 # Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(-3, 1, -1, 0, 0, 1, 1, 1, -1, 1, -1) # prior mean corresponds to mean for each parameter
+prior.mean <- c(-3, 1, -1, 0, 0, 1, 1, 1, -1, 3, -1) # prior mean corresponds to mean for each parameter
 prior.sigma <- diag(3, 11, 11) # covariance matrix structure
 
 post_bergm <- bergmM(model.post.3,
@@ -178,7 +178,7 @@ post_bergm <- bergmM(model.post.3,
                  main.iters  = 2000, # iterations for every chain of the population
                  aux.iters   = 10000, # MCMC steps used for network simulation
                  nchains     = 6, # number of chains of the population MCMC
-                 gamma       = 0.1) # scalar; parallel adaptive direction sampling move factor, acceptance rate
+                 gamma       = 0.05) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
 summary(post_bergm)
 

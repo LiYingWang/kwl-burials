@@ -44,7 +44,7 @@ df_pre_distance <-
   arrange(Id)
 
 pre_distance <-
-  st_distance(df_pre_distance$burial_cent)
+  st_distance(df_pre_distance$burial_cent) # will be ran in 003
 
 # get distance between post-E burials
 df_post_distance <-
@@ -55,7 +55,7 @@ df_post_distance <-
   arrange(Id)
 
 post_distance <-
-  st_distance(df_post_distance$burial_cent)
+  st_distance(df_post_distance$burial_cent) # will be ran in 004
 
 # mapping burials over the AD section
 KWL_burial_map <-

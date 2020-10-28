@@ -1,9 +1,3 @@
-library(readxl)
-library(tidyverse)
-library(here)
-
-burial <- read_excel(here("analysis", "data", "raw_data", "Kiwulan_Burials.xlsx"))
-
 # run 000-value-burial first before the following code
 # burial data with combined age and three phases
 burial_three_period_age_tidy <-
@@ -40,6 +34,10 @@ burial_three_period_age_tidy <-
     `Stamped_ceramic` == "2" ~ "two pots",
     `Stamped_ceramic` == "1" ~ "one pot",
     TRUE ~ "NA")) %>%
+  mutate(orientation = case_when(
+    `Degree_axis` %in% c(275:330) ~ "northwest",
+    `Degree_axis` %in% c(0:90) ~ "northeast",
+    TRUE ~ "NA")) %>%
   mutate(Gold_bead_low = ifelse(Golden_bead == 1, 1, NA),
          Gold_bead_med = ifelse(Golden_bead > 1 & Golden_bead <10, 1, NA),
          Gold_bead_high = ifelse(Golden_bead > 10, 1, NA),
@@ -71,7 +69,8 @@ burial_three_period_age_tidy <-
          quantity,
          total,
          burial_value,
-         value_class) # select specific variable to drop columns (uninformative variables)
+         value_class,
+         orientation) # select specific variable to drop columns (uninformative variables)
 
 # number of each phase
 burial_three_period_age_number <-
