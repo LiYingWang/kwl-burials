@@ -33,7 +33,7 @@ burial_three_period_age_tidy <-
   mutate(ritual = case_when(
     `Stamped_ceramic` == "2" ~ "two pots",
     `Stamped_ceramic` == "1" ~ "one pot",
-    TRUE ~ "NA")) %>%
+    TRUE ~ "none")) %>%
   mutate(orientation = case_when(
     `Degree_axis` %in% c(275:330) ~ "northwest",
     `Degree_axis` %in% c(0:90) ~ "northeast",
@@ -76,3 +76,4 @@ burial_three_period_age_tidy <-
 burial_three_period_age_number <-
   burial_three_period_age_tidy %>%
   count(Phase)
+
