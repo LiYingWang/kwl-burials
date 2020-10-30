@@ -107,6 +107,8 @@ burial_network_pre <-
           matrix.type = "edgelist") # the type of input
 
 plot(burial_network_pre, vertex.cex = 1)
+network.density(burial_network_pre)
+network.dyadcount(burial_network_pre, na.omit = TRUE)
 
 #-----------------------attach attributes and make graphs------------------------------
 library(statnet)
@@ -184,7 +186,7 @@ model_pre_3 <- burial_network_pre ~ edges +  # the overall density of the networ
   nodematch('gender') +
   nodematch('ritual') +
   nodematch('value_class') +
-  nodematch('orientation') +
+  #nodematch('orientation') +
   #absdiff('burial_value') +
   gwesp(0.8, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
   #gwnsp(0.8, fixed = TRUE) + #0.75, #prior = -1
@@ -194,9 +196,9 @@ summary(model_pre_3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(-3, -1, 0, 0, 1, 0, 1, 3, -1) # positive prior number for edge means high density
+prior.mean <- c(-3, -1, 0, 0, 1, 1, 3, -1) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(3, 9, 9) # covariance matrix structure
+prior.sigma <- diag(3, 8, 8) # covariance matrix structure
 
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
@@ -209,7 +211,7 @@ pre_bergm <- bergmM(model_pre_3,
                   burn.in     = 200, # burn-in iterations for every chain of the population, drops the first 200
                   main.iters  = 2000, # iterations for every chain of the population
                   aux.iters   = 10000, # MCMC steps used for network simulation
-                  nchains     = 6, # number of chains of the population MCMC
+                  nchains     = 16, # number of chains of the population MCMC
                   gamma       = 0) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
 summary(pre_bergm)

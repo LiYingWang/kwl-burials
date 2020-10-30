@@ -4,8 +4,8 @@ colnames(pre_bergm_stats) <- pre_bergm$specs
 
 pre_bergm_stats <-
   cbind(pre_bergm_stats, phase = "pre") %>%
-  rename("gwesp" = "gwesp.fixed.0.8",
-         "gwnsp" = "gwnsp.fixed.0.8")
+  rename("gwesp" = "gwesp.fixed.0.8") %>%  #gwnsp" = "gwnsp.fixed.0.8
+  rename("dyadcov.dist" = "dyadcov.pre_distance_n.dist")
 
 # get data from post-European model
 post_bergm_stats <- as.data.frame(post_bergm$Theta)
@@ -13,8 +13,8 @@ colnames(post_bergm_stats) <- post_bergm$specs
 
 post_bergm_stats <-
   cbind(post_bergm_stats, phase = "post") %>%
-  rename("gwesp" = "gwesp.fixed.1.7",
-         "gwnsp" = "gwnsp.fixed.1.7")
+  rename("gwesp" = "gwesp.fixed.1.7") %>%  #gwnsp" = "gwnsp.fixed.1.7
+  rename("dyadcov.dist" = "dyadcov.post_distance_n.dist")
 
 bergm_two_phases <-
   rbind(pre_bergm_stats, post_bergm_stats)
@@ -40,7 +40,7 @@ degree_value <-
 
 dist_value <-
   ggplot(bergm_two_phases,
-         aes(x = edgecov.dist , fill = phase)) +
+         aes(x = dyadcov.dist , fill = phase)) +
   geom_histogram(alpha = 0.8, position = "identity") +
   theme_minimal()
 

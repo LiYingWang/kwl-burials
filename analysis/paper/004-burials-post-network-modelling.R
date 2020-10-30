@@ -103,7 +103,7 @@ burial_network_post <-
 
 # plot
 plot(burial_network_post, vertex.cex = 1)
-
+network.density(burial_network_post)
 #-----------------------Bayesian ERGMs------------------------------
 library(statnet)
 library(Bergm)
@@ -115,9 +115,10 @@ set.vertex.attribute(burial_network_post, "gender", burial_post$gender)
 set.vertex.attribute(burial_network_post, "ritual", burial_post$ritual)
 set.vertex.attribute(burial_network_post, "value_class", burial_post$value_class)
 set.vertex.attribute(burial_network_post, "burial_value", burial_post$burial_value)
+set.vertex.attribute(burial_network_post, "orientation", burial_post$orientation)
 
 #get distance matrix, need to run 002 code first
-post_distance_n <- network(post_distance, directed = F)
+post_distance_n <- network(post_distance, matrix.type = "adjacency", directed = F)
 set.edge.attribute(post_distance_n, "dist", post_distance_n)
 
 # plot
@@ -155,21 +156,22 @@ summary(model.2)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 model.post.3 <- burial_network_post ~ edges +  # the overall density of the network
-  nodematch('quantity') +  # quantity-based homophily, the similarity of connected nodes
+  #nodematch('quantity') +  # quantity-based homophily, the similarity of connected nodes
   nodematch('age') +
   nodematch('gender') +
   nodematch('ritual') +
   nodematch('value_class') +
-  absdiff('burial_value') +
+  #nodematch('orientation') +
+  #absdiff('burial_value') +
   gwesp(1.7, fixed = TRUE) + # start close to zero and move up, how well we do in matching the count of triangles
-  gwnsp(1.7, fixed = TRUE) + # original 1.8
+  #gwnsp(1.7, fixed = TRUE) + # original 1.8
   gwdegree(0.8, fixed = TRUE) +
-  edgecov(post_distance_n, "dist")
+  dyadcov(post_distance_n, "dist")
 summary(model.post.3)
 
 # Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(-3, 1, -1, 0, 0, 1, 1, 1, -1, 3, -1) # prior mean corresponds to mean for each parameter
-prior.sigma <- diag(3, 11, 11) # covariance matrix structure
+prior.mean <- c(-3, -1, 0, 0, 1, 1, 3, -1) # prior mean corresponds to mean for each parameter
+prior.sigma <- diag(3, 8, 8) # covariance matrix structure
 
 post_bergm <- bergmM(model.post.3,
                  prior.mean  = prior.mean,
@@ -177,8 +179,8 @@ post_bergm <- bergmM(model.post.3,
                  burn.in     = 200, # burn-in iterations for every chain of the population, drops the first 200
                  main.iters  = 2000, # iterations for every chain of the population
                  aux.iters   = 10000, # MCMC steps used for network simulation
-                 nchains     = 6, # number of chains of the population MCMC
-                 gamma       = 0.05) # scalar; parallel adaptive direction sampling move factor, acceptance rate
+                 nchains     = 16, # number of chains of the population MCMC
+                 gamma       = 0) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
 summary(post_bergm)
 
