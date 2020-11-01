@@ -19,8 +19,8 @@ igraph_david <- igraph_to_network(graph_david)
 CIpatchwork <- lsmi_cv(igraph_david, n.seeds = c(3:5), n.wave = 1, B = B)
 CIpatchwork$bci/(igraph_david$n - 1)
 
-#-------burial example--------
-# make igraph object
+#----------------------pre-E burials example----------------------------
+# make igraph object for pre-E
 pre_E_igraph <- graph_from_data_frame(d = edges_for_network_pre,
                                       vertices = nodes_pre,
                                       directed = FALSE)
@@ -32,22 +32,56 @@ pre_matrix <- as.matrix(as_adjacency_matrix(pre_E_igraph))
 library(snowboot)
 number <- 50
 set.seed(1)
-Astar <- vertboot(pre_matrix, number)
+pre_Astar <- vertboot(pre_matrix, number)
 
 # calculate 95% bootstrap confidence intervals for the density and bootstrap standard error
-boot_density <- sapply(1:number, function(x)
- graph.density(graph_from_adjacency_matrix(Astar[[x]])))
-CIvertboot <- quantile(boot_density, c(0.025, 0.975))
-CIvertboot
-bootstrap_standard_error <- sd(boot_density)
-bootstrap_standard_error
+pre_boot_density <- sapply(1:number, function(x)
+  graph.density(graph_from_adjacency_matrix(pre_Astar[[x]])))
+pre_CIvertboot <- quantile(pre_boot_density, c(0.025, 0.975))
+pre_CIvertboot
+pre_bootstrap_standard_error <- sd(boot_density)
+pre_bootstrap_standard_error
 
 # patchwork bootstrap
 set.seed(5)
 pre_E_igraph_to_network <- igraph_to_network(pre_E_igraph)
-CIpatchwork <- lsmi_cv(pre_E_igraph_to_network,
-                       n.seeds = c(3:5),
-                       n.wave = 1, B = number)
+
+pre_CIpatchwork <- lsmi_cv(pre_E_igraph_to_network,
+                           n.seeds = c(3:5),
+                           n.wave = 1, B = number)
 
 # calculate 95% bootstrap confidence intervals for the density
-CIpatchwork$bci/(pre_E_igraph_to_network$n - 1)
+pre_CIpatchwork$bci/(pre_E_igraph_to_network$n - 1)
+
+#----------------------post-E burials example----------------------------
+# make igraph object for post-E
+post_E_igraph <- graph_from_data_frame(d = edges_for_network_post,
+                                       vertices = nodes_post,
+                                       directed = FALSE)
+post_density_obs <- graph.density(post_E_igraph )
+post_matrix <- as.matrix(as_adjacency_matrix(post_E_igraph))
+
+# vertex bootstrap, useful for small network
+post_number <- 25
+set.seed(1)
+post_Astar <- vertboot(post_matrix, post_number)
+
+# calculate 95% bootstrap confidence intervals for the density and bootstrap standard error
+post_boot_density <- sapply(1:post_number, function(x)
+    graph.density(graph_from_adjacency_matrix(post_Astar[[x]])))
+post_CIvertboot <- quantile(post_boot_density, c(0.025, 0.975))
+post_CIvertboot
+post_bootstrap_standard_error <- sd(boot_density)
+post_bootstrap_standard_error
+
+# patchwork bootstrap
+set.seed(5)
+post_E_igraph_to_network <- igraph_to_network(post_E_igraph)
+
+post_CIpatchwork <- lsmi_cv(post_E_igraph_to_network,
+                           n.seeds = c(3:5),
+                           n.wave = 1, B = number)
+
+# calculate 95% bootstrap confidence intervals for the density
+post_CIpatchwork$bci/(post_E_igraph_to_network$n - 1)
+
