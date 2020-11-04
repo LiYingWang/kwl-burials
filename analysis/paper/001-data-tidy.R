@@ -30,10 +30,9 @@ burial_three_period_age_tidy <-
     `Gender` %in% c("1","2") ~ "male",
     `Gender` %in% c("3","4") ~ "female",
     TRUE ~ "NA")) %>%
-  mutate(ritual = case_when(
-    `Stamped_ceramic` == "2" ~ "two pots",
-    `Stamped_ceramic` == "1" ~ "one pot",
-    TRUE ~ "none")) %>%
+  mutate(ritual_pottery = case_when(
+    `Stamped_ceramic` %in% c("1", "2") ~ "presence",
+    TRUE ~ "absense")) %>%
   mutate(orientation = case_when(
     `Degree_axis` %in% c(275:330) ~ "northwest",
     `Degree_axis` %in% c(0:90) ~ "northeast",
@@ -52,7 +51,7 @@ burial_three_period_age_tidy <-
          Phase,
          Age_scale,
          gender,
-         ritual, # consider to remove if not very informative
+         ritual_pottery, # consider to remove if not very informative
          Gold_bead_low,
          Gold_bead_med,
          Gold_bead_high,
@@ -65,7 +64,7 @@ burial_three_period_age_tidy <-
          Stonewares, #prestige good
          Gold_leaf, #prestige good
          fish_shape_knit, #prestige good
-         #Bell, #children's burials
+         #Bell, #children burials
          quantity,
          total,
          burial_value,

@@ -97,3 +97,4 @@ burial_with_type_value_class <-
     burial_value >= 12 & burial_value < 30 ~ "medium",
     burial_value >= 30 ~ "high",
     TRUE ~ ""))
+

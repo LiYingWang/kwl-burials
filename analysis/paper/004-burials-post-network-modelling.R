@@ -112,7 +112,7 @@ library(Bergm)
 set.vertex.attribute(burial_network_post, "quantity", burial_post$quantity)
 set.vertex.attribute(burial_network_post, "age", burial_post$Age_scale)
 set.vertex.attribute(burial_network_post, "gender", burial_post$gender)
-set.vertex.attribute(burial_network_post, "ritual", burial_post$ritual)
+set.vertex.attribute(burial_network_post, "ritual_pottery", burial_post$ritual_pottery)
 set.vertex.attribute(burial_network_post, "value_class", burial_post$value_class)
 set.vertex.attribute(burial_network_post, "burial_value", burial_post$burial_value)
 set.vertex.attribute(burial_network_post, "orientation", burial_post$orientation)
@@ -159,7 +159,7 @@ model.post.3 <- burial_network_post ~ edges +  # the overall density of the netw
   #nodematch('quantity') +  # quantity-based homophily, the similarity of connected nodes
   nodematch('age') +
   nodematch('gender') +
-  nodematch('ritual') +
+  nodematch('ritual_pottery') +
   nodematch('value_class') +
   #nodematch('orientation') +
   #absdiff('burial_value') +
@@ -170,7 +170,7 @@ model.post.3 <- burial_network_post ~ edges +  # the overall density of the netw
 summary(model.post.3)
 
 # Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(-3, -1, 0, 0, 1, 1, 3, -1) # prior mean corresponds to mean for each parameter
+prior.mean <- c(-3, -1, 0, 1, 1, 1, 3, -1) # prior mean corresponds to mean for each parameter
 prior.sigma <- diag(3, 8, 8) # covariance matrix structure
 
 post_bergm <- bergmM(model.post.3,
@@ -197,6 +197,7 @@ bgof_post <-
 summary(bgof_post)
 
 # calculate moments for observed and simulated GOF distribution
+library(psych)
 obs_degree_post <- describe(bgof_post$obs.degree * 0:(length(bgof_post$obs.degree)-1))
 obs_dist_post <- describe(bgof_post$obs.dist * 1:length(bgof_post$obs.dist))
 obs_esp_post <- describe(bgof_post$obs.esp * 0:(length(bgof_post$obs.esp)-1))
