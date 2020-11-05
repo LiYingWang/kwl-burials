@@ -157,8 +157,8 @@ summary(model.2)
 #--------------------Bayesian inference for ERGMs-------------------------
 model.post.3 <- burial_network_post ~ edges +  # the overall density of the network
   #nodematch('quantity') +  # quantity-based homophily, the similarity of connected nodes
-  nodematch('age') +
-  nodematch('gender') +
+  #nodematch('age') +
+  #nodematch('gender') +
   nodematch('ritual_pottery') +
   nodematch('value_class') +
   #nodematch('orientation') +
@@ -170,8 +170,8 @@ model.post.3 <- burial_network_post ~ edges +  # the overall density of the netw
 summary(model.post.3)
 
 # Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(-3, -1, 0, 1, 1, 1, 3, -1) # prior mean corresponds to mean for each parameter
-prior.sigma <- diag(3, 8, 8) # covariance matrix structure
+prior.mean <- c(-3, 1, 1, 1, 3, -1) # prior mean corresponds to mean for each parameter
+prior.sigma <- diag(3, 6, 6) # covariance matrix structure
 
 post_bergm <- bergmM(model.post.3,
                  prior.mean  = prior.mean,
@@ -179,7 +179,7 @@ post_bergm <- bergmM(model.post.3,
                  burn.in     = 200, # burn-in iterations for every chain of the population, drops the first 200
                  main.iters  = 2000, # iterations for every chain of the population
                  aux.iters   = 10000, # MCMC steps used for network simulation
-                 nchains     = 16, # number of chains of the population MCMC
+                 nchains     = 12, # number of chains of the population MCMC
                  gamma       = 0) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
 summary(post_bergm)
