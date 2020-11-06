@@ -63,7 +63,21 @@ distribution_two_phases_longer <-
                values_to = "number") %>%
   separate(parameter, c("value", "parameter"))
 
+distribution_two_phases_diff <-
+  distribution_two_phases %>%
+  mutate(degree = abs(Observed.degree-Model.degree),
+         distance = abs(Observed.distance-Model.distance),
+         esp = abs(Observed.esp-Model.esp)) %>%
+  pivot_longer(cols = c("degree", "distance", "esp"),
+               names_to = "parameter",
+               values_to = "difference")
+
 ggplot(distribution_two_phases_longer,
        aes(parameter, number)) +
   geom_point(aes(color = Phase, shape = value), size = 3) +
+  facet_wrap(~moments, scales = "free")
+
+ggplot(distribution_two_phases_diff,
+       aes(parameter, difference)) +
+  geom_point(aes(color = Phase), size = 3) +
   facet_wrap(~moments, scales = "free")
