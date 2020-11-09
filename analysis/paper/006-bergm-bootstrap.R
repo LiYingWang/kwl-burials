@@ -3,12 +3,13 @@
 
 #----------------------pre-E burials example----------------------------
 # make igraph object for pre-E
+library(igraph)
 pre_E_igraph <- graph_from_data_frame(d = edges_for_network_pre,
                                       vertices = nodes_pre,
                                       directed = FALSE)
 pre_density_obs <- graph.density(pre_E_igraph)
 pre_mean_star_obs <- mean(degree(pre_E_igraph))
-pre_trans_obs <- transitivity(pre_E_igraph)
+pre_trans_obs <- transitivity(pre_E_igraph) # clustering coefficient
 pre_all_obs <- rbind(pre_density_obs,
                      pre_mean_star_obs,
                      pre_trans_obs)

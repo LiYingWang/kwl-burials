@@ -176,9 +176,9 @@ prior.sigma <- diag(c(10, 3, 5, 3, 3, 3, 10, 3), 8, 8) # covariance matrix struc
 post_bergm <- bergmM(model.post.3,
                  prior.mean  = prior.mean,
                  prior.sigma = prior.sigma,
-                 burn.in     = 200, # burn-in iterations for every chain of the population, drops the first 200
-                 main.iters  = 2000, # iterations for every chain of the population
-                 aux.iters   = 10000, # MCMC steps used for network simulation
+                 burn.in     = 100, # burn-in iterations for every chain of the population, drops the first 200
+                 main.iters  = 1000, # iterations for every chain of the population
+                 aux.iters   = 3000, # MCMC steps used for network simulation
                  nchains     = 16, # number of chains of the population MCMC
                  gamma       = 0) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
