@@ -167,11 +167,12 @@ model.post.3 <- burial_network_post ~ edges +  # the overall density of the netw
   #gwnsp(1.7, fixed = TRUE) + # original 1.8
   gwdegree(0.8, fixed = TRUE) +
   dyadcov(post_distance_n, "dist")
+
 summary(model.post.3)
 
 # Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(-3, -1, 0, 1, 1, 1, 3, -1) # prior mean corresponds to mean for each parameter
-prior.sigma <- diag(c(10, 3, 5, 3, 3, 3, 10, 3), 8, 8) # covariance matrix structure
+prior.mean <- c(-20, 0, 0, 0, 0, 4, 8, -1) # prior mean corresponds to mean for each parameter
+prior.sigma <- diag(c(6, 8, 8, 8, 8, 8, 8, 5), 8, 8) # covariance matrix structure
 
 post_bergm <- bergmM(model.post.3,
                  prior.mean  = prior.mean,
