@@ -198,7 +198,7 @@ summary(model_pre_3)
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
 prior.mean <- c(-17, 0, 0, 2, 0, 5, 4, -1) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(c(7, 10, 10, 5, 10, 8, 5, 5), 8, 8) # covariance matrix structure
+prior.sigma <- diag(c(8, 9, 9, 5, 7, 8, 5, 5), 8, 8) # covariance matrix structure
 
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.

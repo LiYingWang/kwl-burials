@@ -74,7 +74,7 @@ distribution_two_phases_diff <-
 
 ggplot(distribution_two_phases_longer,
        aes(parameter, number)) +
-  geom_point(aes(color = Phase, shape = value), size = 3) +
+  ggpointgrid::geom_pointgrid(aes(color = Phase, shape = value), size = 3) +
   facet_wrap(~moments, scales = "free")
 
 ggplot(distribution_two_phases_diff,
