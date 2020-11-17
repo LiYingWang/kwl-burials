@@ -40,9 +40,9 @@ burial_three_period_age_tidy <-
   mutate(Gold_bead_low = ifelse(Golden_bead == 1, 1, NA),
          Gold_bead_med = ifelse(Golden_bead > 1 & Golden_bead <10, 1, NA),
          Gold_bead_high = ifelse(Golden_bead > 10, 1, NA),
-         Agate_bead_low = ifelse(Agate_bead == 1, 1, NA),
-         Agate_bead_med = ifelse(Agate_bead > 1 & Agate_bead <10, 1, NA),
-         Agate_bead_high = ifelse(Agate_bead > 10, 1, NA),
+         Agate_bead_low = ifelse(Agate_bead < 3, 1, NA), # set low level to 2
+         Agate_bead_med = ifelse(Agate_bead > 2 & Agate_bead <10, 1, NA),
+         Agate_bead_high = ifelse(Agate_bead > 9, 1, NA), # set high level to 10
          `Indo-Pacific_bead_low` = ifelse(`Indo-Pacific_bead` < 100, 1, NA),
          `Indo-Pacific_bead_med` = ifelse(`Indo-Pacific_bead` > 100 & `Indo-Pacific_bead` < 900, 1, NA),
          `Indo-Pacific_bead_high` = ifelse(`Indo-Pacific_bead` > 900, 1, NA)) %>% #based on the result of histogram

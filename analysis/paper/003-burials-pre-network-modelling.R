@@ -166,7 +166,7 @@ summary(burial_network_pre ~ gwdegree(0:10))
 # model 2 considers cluster and degree, Morris et al. (2008)
 # check out the terms: http://mailman13.u.washington.edu/pipermail/statnet_help/2010/000575.html
 model_pre_2 <- burial_network_pre ~ edges + # density
-  gwesp(0.8, fixed = TRUE) +
+  gwesp(0.7, fixed = TRUE) +
   # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
   # number means weight parameter alpha, which controls the rate of declining marginal returns
   # fixed = TRUE means the scale parameter lambda is fit as a curved exponential-family model
@@ -176,7 +176,7 @@ model_pre_2 <- burial_network_pre ~ edges + # density
   # tendency of being in contact with multiple partners, measures of centralisation
   # distribution of node-based edge counts, each node counts only once
   # number means weight parameter decay
-  # The closer decay is to zero, the more gwdegree considers low degree nodes relative to high degree nodes
+  # The decay is close to zero, the more gwdegree considers low degree nodes relative to high degree nodes
 summary(model_pre_2)
 
 # model 3 considers cluster, degree, and node attributes
@@ -188,7 +188,7 @@ model_pre_3 <- burial_network_pre ~ edges +  # the overall density of the networ
   nodematch('value_class') +
   #nodematch('orientation') +
   #absdiff('burial_value') +
-  gwesp(0.8, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
+  gwesp(0.7, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
   #gwnsp(0.8, fixed = TRUE) + #0.75, #prior = -1
   gwdegree(0.8, fixed = TRUE) + # prior = 3
   dyadcov(pre_distance_n, "dist")
@@ -196,11 +196,11 @@ summary(model_pre_3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(-17, 0, 0, 2, 0, 5, 4, -1) # positive prior number for edge means high density
+prior.mean <- c(-3, 0, 0, 1, 0, 5, 2, -1) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(c(7, 7, 7, 5, 7, 7, 7, 5), 8, 8) # covariance matrix structure
+prior.sigma <- diag(c(1, 5, 5, 3, 5, 3, 3, 3), 8, 8) # covariance matrix structure, uncertainty
 
-# normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) as a suitable prior model for the model parameters of interests
+# normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) a common prior model
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
 
 # Estimated posterior means, medians and 95% credible intervals for Models.3

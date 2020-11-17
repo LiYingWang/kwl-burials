@@ -110,11 +110,10 @@ kableExtra::kable(ergm_terms,
 <!-- Network construction and specification -->
 We used Bayesian inference on exponential random graph models (ERGMs) to quantify the relations among burials and test our hypothesis of social change using the R programming language [@Rlanguage2019] with the bergm package [@Caimo2014], which is built upon the statnet package for model specification and simulation procedures [@Hunter2008; @Morris2008; @Handcock2008]. Table \@ref(tab:ergm-terms-table) lists the configurations we used for the model specification for burials with the corresponding archaeological evidence. Every parameter in an ERGM has an associated algorithm for computing the probability of observing relations in terms of grave goods between two burials. Based on our hypothesis, we model a network with increased social inequality that is represented by endogenous network effects, low transitivity and high popularity. We include burial-specific attributes as covariate effects for homophily, such as age, gender, ritual activity, and the degree of wealth, to test whether burials with similar attributes tend to form relationships. For example, age-homophily means people of the same age to have the same burial goods. We also take into account the physical distance between burials as an indicator of a kinship-based relation since the deceased from the same family tend to be buried nearby [@LiandWu2006]. Our model could reveal the emergence of social inequality via the presence of a few individuals as network centers, having more relations with others. This would be indicated by high popularity or degree values in the network statistics, with covariates to control the preferential tendency of formation of relationship. According to our hypothesis, the burial evidence from after the European arrival will show higher popularity compared with the burial evidence from before European contact. 
 
-```{r}
+```{r bergm-iteration}
 burn_in <- 200
 main_iter <- 1000
 aux_iter <- 10000
-...
 ```
 
 <!--Model fitting--> 
@@ -134,32 +133,24 @@ The entire R code [@Rlanguage2019] used for all the analysis and visualizations 
 
 # Results
 
-We compared estimated statistics from the posterior distributions, networks before and after the European presence, to examine their differences in network structure (a table here). For the former network, the nodal covariates, age-homophily and ritual-homophily, have significant effects on the relations between burials. The age homophiligy shows a negative effect that indicates burials of the same age tend to not share similar prestige goods, while the ritual-homophily demonstrates the positive effect that means burials with ritual pottery tend to form relations. Despite other covariates are positive, such as sex-homophily and burial value-homophily, they do not show a significant tendency to forming relations duo to value of zero in a confidence interval. Similarly, the dyadic covariate, physical distance, shows positive effects but not significantly. For the endogenous network effects, both gwesp and gwdegree present significant positive effects. The positive value of gwesp suggests a tendency of burials to be clustered in closed transitive structures, while positive gwdegree indicates a tendency toward centralization that means the presence of a limited number of burials with more relations. 
-
-For the network after the arrival of Europeans, there are no significant effects of nodal and dyadic covariates, but we still have a clue of possible tendency. The nodal covariates of age-homophily, sex-homophily, ritual-homophily, and dyadic covariate of physical distance all show positive effects, while the burial value-homophily has a negative effect. The interesting thing is that the burials in the same wealth level may tend not to form relations. Similar to the network before the European arrival, the endogenous network variables, gwesp and gwdegree, all demonstrate positive effects significantly. However, there are differences in values of positive effects between two networks. The later network has a smaller gwesp effect and a larger gwedegree effect that may suggest a less tendency toward clustering but more tendency toward centralization after the European presence.  
-
-## ERGM parameter estimation
-<!--interpretation of network plots across phases--> 
-
-```{r network-ERGMs}
+```{r BERGMs}
 ```
 
-<!--interpretation of Bayesian modeling--> 
+<!--posterior stats for pre-E-->
+We compared estimated statistics from the posterior distributions, networks before and after the European presence, to examine their differences in network structure (Table XX). For the former network, the nodal covariates, age-homophily and ritual-homophily, have significant effects on the relations between burials. The age homophiligy shows a negative effect that indicates burials of the same age tend to not share similar prestige goods, while the ritual-homophily demonstrates the positive effect that means burials with ritual pottery tend to form relations. Despite other covariates are positive, such as sex-homophily and burial value-homophily, they do not show a significant tendency to forming relations duo to value of zero in a confidence interval. Similarly, the dyadic covariate, physical distance, shows positive effects but not significantly. For the endogenous network effects, both gwesp and gwdegree present significant positive effects. The positive value of gwesp suggests a tendency of burials to be clustered in closed transitive structures, while positive gwdegree indicates a tendency toward centralization that means the presence of a limited number of burials with more relations. 
+
+<!--posterior stats for post-E and comparison-->
+For the network after the arrival of Europeans, there are no significant effects of nodal and dyadic covariates, but we still have a clue of possible tendency. The nodal covariates of age-homophily, sex-homophily, ritual-homophily, and dyadic covariate of physical distance all show positive effects, while the burial value-homophily has a negative effect. The interesting thing is that the burials in the same wealth level may tend not to form relations. Similar to the network before the European arrival, the endogenous network variables, gwesp and gwdegree, all demonstrate positive effects significantly. However, there are differences in values of positive effects between two networks. The later network has a smaller gwesp effect and a larger gwedegree effect that may suggest a less tendency toward clustering but more tendency toward centralization after the European presence. Both posterior estimates presents symmetric distributions because of the posterior means are close to posterior medians (Table XX). 
 
 
-```{r Bayesian-ERGMs}
+```{r vertex-bootstrap}
+boostrap <- 1000
 ```
+<!--comparison between two networks using bootstrap--> 
+To understand whether the differences in posterior distributions is affected by different network size, we conducted sensitivity test using vertex bootstrap inference on networks that allows comparison for different small networks [@Chen2019]. Vertex bootstrap is a non-parametric method that conducts resampling of all vertices (i.e. node) of a network to quantify standard errors in network statistics estimation of interest. This enables the evaluation of uncertainty for networks and the comparison between two networks by examining the confidence interval for network population. We set the resampling size to 1,000 for network statistics, including density, clustering, and degree, for two network. The 95% confidence interval of each network statistic contains the observed network for both period, which indicate less sample size effects on our models.
 
-## Structure Effects
+<!--assessment of MCMC analysis and BGOF--> 
 
-The network statistics presents each θ that corresponds to the parameter specified in ERGM previously. In general, positive mean indicates positive correlation, while negative mean indicates negative correlation. 
-
-θ1 = number of ties
-θ2 = individuals with the same abundance of burial goods
-θ3 = gwesp, a positive sign suggests a tendency of burials in our sample to group together in closed transitive structures. In mortuary context, clustering implies a tendency of burials with the same status indicated by prestige goods to be organized in closed structures. Burials with multiple prestige goods in common are more likely to be directed connected.
-θ4 = gwdegree, negative estimates reflect an increased likelihood on ties to higher-degree nodes, or the strong edges are not necessarily centralised or dispersed in the degree distribution.
-
-The plots from left to right show estimated marginal posterior densities, trace plots, and auto correlation plots.
 
 
 ```{r Bayesian-gof}
