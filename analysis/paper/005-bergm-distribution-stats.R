@@ -4,7 +4,7 @@ colnames(pre_bergm_stats) <- pre_bergm$specs
 
 pre_bergm_stats <-
   cbind(pre_bergm_stats, phase = "pre") %>%
-  rename("gwesp" = "gwesp.fixed.0.8") %>%  #gwnsp" = "gwnsp.fixed.0.8
+  rename("gwesp" = "gwesp.fixed.0.7") %>%  #gwnsp" = "gwnsp.fixed.0.7
   rename("dyadcov.dist" = "dyadcov.pre_distance_n.dist")
 
 # get data from post-European model
@@ -58,26 +58,21 @@ distribution_two_phases <-
 
 distribution_two_phases_longer <-
   distribution_two_phases %>%
-  pivot_longer(cols = starts_with(c("Observed", "Model")),
+  pivot_longer(cols = starts_with(c("Observed", "Modelled")),
                names_to = "parameter",
-               values_to = "number") %>%
-  separate(parameter, c("value", "parameter"))
+               values_to = "value") %>%
+  separate(parameter, c("data", "parameter"))
 
 distribution_two_phases_diff <-
   distribution_two_phases %>%
-  mutate(degree = abs(Observed.degree-Model.degree),
-         distance = abs(Observed.distance-Model.distance),
-         esp = abs(Observed.esp-Model.esp)) %>%
+  mutate(degree = abs(Observed.degree-Modelled.degree),
+         distance = abs(Observed.distance-Modelled.distance),
+         esp = abs(Observed.esp-Modelled.esp)) %>%
   pivot_longer(cols = c("degree", "distance", "esp"),
                names_to = "parameter",
                values_to = "difference")
 
 ggplot(distribution_two_phases_longer,
-       aes(parameter, number)) +
-  ggpointgrid::geom_pointgrid(aes(color = Phase, shape = value), size = 3) +
-  facet_wrap(~moments, scales = "free")
-
-ggplot(distribution_two_phases_diff,
-       aes(parameter, difference)) +
-  geom_point(aes(color = Phase), size = 3) +
+       aes(parameter, value)) +
+  ggpointgrid::geom_pointgrid(aes(color = Phase, shape = data), size = 3) +
   facet_wrap(~moments, scales = "free")

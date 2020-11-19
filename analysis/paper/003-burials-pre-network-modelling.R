@@ -196,9 +196,9 @@ summary(model_pre_3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(-3, 0, 0, 1, 0, 5, 2, -1) # positive prior number for edge means high density
+prior.mean <- c(0, 0, 0, 2, 0, 3, 2, -1) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(c(1, 5, 5, 3, 5, 3, 3, 3), 8, 8) # covariance matrix structure, uncertainty
+prior.sigma <- diag(c(3, 3, 3, 3, 3, 5, 5, 3), 8, 8) # covariance matrix structure, uncertainty
 
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) a common prior model
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
@@ -256,19 +256,19 @@ posterior_distribution_pre <-
              "Observed.degree" = round(c(obs_degree_pre$mean,
                                   obs_degree_pre$sd,
                                   obs_degree_pre$skew), 2),
-             "Model.degree" = round(c(mean(sim_degree_pre$mean),
+             "Modelled.degree" = round(c(mean(sim_degree_pre$mean),
                                mean(sim_degree_pre$sd),
                                mean(sim_degree_pre$skew)),2),
              "Observed.distance" = round(c(obs_dist_pre$mean,
                                            obs_dist_pre$sd,
                                            obs_dist_pre$skew), 2),
-             "Model.distance" = round(c(mean(sim_dist_pre$mean),
+             "Modelled.distance" = round(c(mean(sim_dist_pre$mean),
                                         mean(sim_dist_pre$sd),
                                         mean(sim_dist_pre$skew)),2),
              "Observed.esp" = round(c(obs_esp_pre$mean,
                                       obs_esp_pre$sd,
                                       obs_esp_pre$skew), 2),
-             "Model.esp" = round(c(mean(sim_esp_pre$mean),
+             "Modelled.esp" = round(c(mean(sim_esp_pre$mean),
                                    mean(sim_esp_pre$sd),
                                    mean(sim_esp_pre$skew)),2),
              "Phase" = "pre-European")
