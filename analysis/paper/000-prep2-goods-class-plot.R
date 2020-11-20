@@ -59,6 +59,24 @@ burial_three_period_tidy_explore %>%
   geom_histogram() +
   scale_x_log10()
 
+# long format for bead
+burial_beads <-
+  burial_three_period_tidy_explore %>%
+  select(burial_label, Agate_bead, Golden_bead, Glass_bead, `Indo-Pacific_bead`) %>%
+  rowwise() %>%
+  mutate(combined_glass_bead = sum(Glass_bead, `Indo-Pacific_bead`, na.rm = TRUE)) %>%
+  select(Agate_bead, Golden_bead, combined_glass_bead) %>%
+  pivot_longer(col = ends_with("_bead"),
+               names_to = "type",
+               values_to = "value")
+
+# boxplot for all beads
+burial_beads %>%
+  ggplot(aes(type, value)) +
+  geom_boxplot() +
+  coord_flip() +
+  scale_y_log10()
+
 # orientation
 burial %>%
   mutate(Phase = ifelse(Phase == 'euro', 'post', Phase)) %>%

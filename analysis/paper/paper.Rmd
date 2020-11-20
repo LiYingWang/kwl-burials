@@ -154,7 +154,7 @@ To understand whether the differences in posterior distributions are affected by
 ```
 
 <!--assessment of MCMC analysis and BGOF--> 
-The Bayesian goodness of fit diagnostics plots allows an evaluation of our model fit by comparing our observed data with the simulated distributions. We compared two models based on diagnostic plots that a good fit to estimated ERGM is indicated by observed data falls inside the 95% intervals. 
+Bayesian goodness of fit (GOF) diagnostics plots show that both models fit the observed networks very well for the minimum geodesic distance distribution (i.e. the number of edges between node pairs in a shortest path) and the degree distribution. For edgewise shared partner (gwesp) distribution, despite some observations falls outside the 95% interval, the fitting is generally good with most observations within it. This also suggests that our observed network statistic does not follow a normal distribution, especially for the network after the arrival of the Europeans that demonstrate a bimodal pattern. We also compared the first three distribution moments of each observed distributions and their corresponding simulated distributions represented by mean. The figure shows that modeled values from pre-Euroepan network are closer to the observed values overall, compared to the values from the post-European network. For the variance of degree, the values from modeled post-European distribution are closer to the observed distribution. In general, this demonstrates a better fit for the pre-European network. However, we should note that the differences between the statistics of the two models are relatively small, which allows direct comparison of two networks.  
 
 # Discussion
 

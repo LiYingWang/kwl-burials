@@ -191,9 +191,9 @@ plot(post_bergm)
 bgof_post <-
   bgof(post_bergm,
        aux.iters = 10000,
-       n.deg     = 40,
+       n.deg     = 30,
        n.dist    = 15,
-       n.esp     = 35)
+       n.esp     = 30)
 
 summary(bgof_post)
 
