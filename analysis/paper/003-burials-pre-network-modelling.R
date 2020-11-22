@@ -27,7 +27,7 @@ burial_comb_pre = as_tibble(burial_comb_pre)
 # create list for each burial that contains the burial good types and their counts
 edge_list_pre <-
   burial_three_period_age_tidy %>%
-  select(burial_label, 6:15) %>% # need to change for each exploration
+  select(burial_label, 6:14) %>% # need to change for each exploration
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   #mutate(burial_connection = rep(unique(burial_label), length.out = length(burial_label)))
   group_by(burial_label) %>%
@@ -147,6 +147,7 @@ legend("topleft",
        legend = unique(quantity),# quantity
        title  = 'Burial good counts')
 
+
 # ? can't get the items in legend in order, have tried as.factor for level
 # can't match color with categories, need to adjust manually every time
 
@@ -166,13 +167,13 @@ summary(burial_network_pre ~ gwdegree(0:10))
 # model 2 considers cluster and degree, Morris et al. (2008)
 # check out the terms: http://mailman13.u.washington.edu/pipermail/statnet_help/2010/000575.html
 model_pre_2 <- burial_network_pre ~ edges + # density
-  gwesp(0.7, fixed = TRUE) +
+  gwesp(0.5, fixed = TRUE) +
   # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
   # number means weight parameter alpha, which controls the rate of declining marginal returns
   # fixed = TRUE means the scale parameter lambda is fit as a curved exponential-family model
   # not much difference in a range of 0-1.5, the lower the value of the scaling parameter, the less likely the model is to be degenerate
   # ergm can estimate the parameter from the data by using fixed=FALSE
-  gwdegree(0.8, fixed = TRUE)  # popularity(degree; star), the frequency distribution for nodal degrees
+  gwdegree(0.6, fixed = TRUE)  # popularity(degree; star), the frequency distribution for nodal degrees
   # tendency of being in contact with multiple partners, measures of centralisation
   # distribution of node-based edge counts, each node counts only once
   # number means weight parameter decay
@@ -188,7 +189,7 @@ model_pre_3 <- burial_network_pre ~ edges +  # the overall density of the networ
   nodematch('value_class') +
   #nodematch('orientation') +
   #absdiff('burial_value') +
-  gwesp(0.7, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
+  gwesp(0.5, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
   #gwnsp(0.8, fixed = TRUE) + #0.75, #prior = -1
   gwdegree(0.8, fixed = TRUE) + # prior = 3
   dyadcov(pre_distance_n, "dist")
@@ -196,9 +197,9 @@ summary(model_pre_3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(-2, 0, 0, 2, 0, 3, 2, -1) # positive prior number for edge means high density
+prior.mean <- c(-3, 0, 0, 0, 1, 3, 1, -1) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(c(7, 3, 3, 3, 3, 5, 5, 3), 8, 8) # covariance matrix structure, uncertainty
+prior.sigma <- diag(c(5, 3, 3, 3, 3, 5, 5, 3), 8, 8) # covariance matrix structure, uncertainty
 
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) a common prior model
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
@@ -210,9 +211,9 @@ pre_bergm <- bergmM(model_pre_3,
                   prior.sigma = prior.sigma,
                   burn.in     = 100, # drop first 100 for every chain of the population
                   main.iters  = 1000, # iterations for every chain of the population
-                  aux.iters   = 3000, # MCMC steps used for network simulation
+                  aux.iters   = 5000, # MCMC steps used for network simulation
                   nchains     = 16, # number of chains of the population MCMC
-                  gamma       = 0) # scalar; parallel adaptive direction sampling move factor, acceptance rate
+                  gamma       = 0.1) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
 summary(pre_bergm)
 

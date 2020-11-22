@@ -68,7 +68,8 @@ burial_beads <-
   select(Agate_bead, Golden_bead, combined_glass_bead) %>%
   pivot_longer(col = ends_with("_bead"),
                names_to = "type",
-               values_to = "value")
+               values_to = "value") %>%
+  mutate(value = ifelse(is.na(value), 0, value))
 
 # boxplot for all beads
 burial_beads %>%
@@ -76,6 +77,48 @@ burial_beads %>%
   geom_boxplot() +
   coord_flip() +
   scale_y_log10()
+
+# density ridgeline plot 1
+library(ggridges)
+burial_beads %>%
+  ggplot(aes(x = value, y = type, fill = factor(stat(quantile)))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient", calc_ecdf = TRUE,
+    quantiles = 4, quantile_lines = TRUE) +
+  scale_x_continuous(limits = c(1, 15), expand = c(0.1, 0)) +
+  scale_fill_viridis_d(name = "Quartiles")
+  #stat_density_ridges(quantile_lines = TRUE, quantiles = 3)
+
+# density ridgeline plot 2
+burial_beads %>%
+  ggplot(aes(x = value, y = type, fill = factor(stat(quantile)))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient", calc_ecdf = TRUE,
+    quantiles = c(0.3, 0.7)) +
+  scale_x_continuous(limits = c(1, 15), expand = c(0.1, 0)) +
+  scale_fill_manual(
+    name = "Probability", values = c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
+    labels = c("(0, 0.3)", "(0.3, 0.7)", "(0.7, 1)")
+  )
+
+# density ridgeline plot 3
+burial_beads %>%
+  ggplot(aes(x = value, y = type, fill = 0.5 - abs(0.5 - stat(ecdf)))) +
+  stat_density_ridges(geom = "density_ridges_gradient",
+                      calc_ecdf = TRUE) +
+  scale_fill_viridis_c(name = "Tail probability",
+                       direction = -1) +
+  scale_x_continuous(limits = c(1, 15), expand = c(0.1, 0))
+
+# density ridgeline plot 4
+burial_beads %>%
+  ggplot(aes(x = value, y = type)) +
+  geom_density_ridges(
+    jittered_points = TRUE, quantile_lines = TRUE, scale = 0.9, alpha = 0.7,
+    vline_size = 1, vline_color = "red",
+    point_size = 0.4, point_alpha = 1,
+    position = position_raincloud(adjust_vlines = TRUE)) +
+  scale_x_continuous(limits = c(1, 15), expand = c(0.1, 0))
 
 # orientation
 burial %>%
