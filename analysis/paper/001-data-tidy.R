@@ -43,8 +43,8 @@ burial_three_period_age_tidy <-
          Agate_bead_low = ifelse(Agate_bead <= 2, 1, NA), # set low level to 2
          Agate_bead_med = ifelse(Agate_bead > 2 & Agate_bead <= 6, 1, NA),
          Agate_bead_high = ifelse(Agate_bead > 6, 1, NA), # set high level to 10
-         `Indo-Pacific_bead_low` = ifelse(`Indo-Pacific_bead` == 1, 1, NA),
-         `Indo-Pacific_bead_med` = ifelse(`Indo-Pacific_bead` > 1 & `Indo-Pacific_bead` <= 6, 1, NA),
+         `Indo-Pacific_bead_low` = ifelse(`Indo-Pacific_bead` <= 2, 1, NA),
+         `Indo-Pacific_bead_med` = ifelse(`Indo-Pacific_bead` > 2 & `Indo-Pacific_bead` <= 6, 1, NA),
          `Indo-Pacific_bead_high` = ifelse(`Indo-Pacific_bead` > 6, 1, NA)) %>% #based on the result of histogram
   left_join(burial_with_type_value_class) %>%
   select(burial_label,
@@ -58,6 +58,9 @@ burial_three_period_age_tidy <-
          Agate_bead_low,
          Agate_bead_med,
          Agate_bead_high,
+         `Indo-Pacific_bead_low`,
+         `Indo-Pacific_bead_med`,
+         `Indo-Pacific_bead_high`,
          #Agate_bead, #female burials
          #Golden_bead,
          Porcelain, #prestige good
