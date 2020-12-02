@@ -16,6 +16,8 @@ burial_three_period_tidy_explore <-
     total > 7 & total < 100 ~ "medium",
     total >= 100 ~ "high",
     TRUE ~ "other")) %>% # the classification is based on the result of histogram
+  rowwise() %>%
+  mutate(all_glass_bead = sum(Glass_bead, `Indo-Pacific_bead`, na.rm = TRUE)) %>%
   mutate(Gold_bead_low = ifelse(Golden_bead == 1, 1, NA),
          Gold_bead_med = ifelse(Golden_bead > 1 & Golden_bead <10, 1, NA),
          Gold_bead_high = ifelse(Golden_bead > 10, 1, NA),
@@ -62,10 +64,8 @@ burial_three_period_tidy_explore %>%
 # long format for bead
 burial_beads <-
   burial_three_period_tidy_explore %>%
-  select(burial_label, Agate_bead, Golden_bead, Glass_bead, `Indo-Pacific_bead`) %>%
-  rowwise() %>%
-  mutate(combined_glass_bead = sum(Glass_bead, `Indo-Pacific_bead`, na.rm = TRUE)) %>%
-  select(Agate_bead, Golden_bead, combined_glass_bead) %>%
+  select(burial_label, Agate_bead, Golden_bead, Glass_bead, all_glass_bead) %>%
+  select(Agate_bead, Golden_bead, all_glass_bead) %>%
   pivot_longer(col = ends_with("_bead"),
                names_to = "type",
                values_to = "value") %>%
@@ -80,6 +80,7 @@ burial_beads %>%
 
 # density ridgeline plot 1
 library(ggridges)
+ridge_1 <-
 burial_beads %>%
   ggplot(aes(x = value, y = type, fill = factor(stat(quantile)))) +
   stat_density_ridges(
@@ -90,6 +91,7 @@ burial_beads %>%
   #stat_density_ridges(quantile_lines = TRUE, quantiles = 3)
 
 # density ridgeline plot 2
+ridge_2 <-
 burial_beads %>%
   ggplot(aes(x = value, y = type, fill = factor(stat(quantile)))) +
   stat_density_ridges(
@@ -102,6 +104,7 @@ burial_beads %>%
   )
 
 # density ridgeline plot 3
+ridge_3 <-
 burial_beads %>%
   ggplot(aes(x = value, y = type, fill = 0.5 - abs(0.5 - stat(ecdf)))) +
   stat_density_ridges(geom = "density_ridges_gradient",
@@ -111,6 +114,7 @@ burial_beads %>%
   scale_x_continuous(limits = c(1, 15), expand = c(0.1, 0))
 
 # density ridgeline plot 4
+ridge_4 <-
 burial_beads %>%
   ggplot(aes(x = value, y = type)) +
   geom_density_ridges(
@@ -119,6 +123,11 @@ burial_beads %>%
     point_size = 0.4, point_alpha = 1,
     position = position_raincloud(adjust_vlines = TRUE)) +
   scale_x_continuous(limits = c(1, 15), expand = c(0.1, 0))
+
+# plot them together for comparison
+library(cowplot)
+plot_grid(ridge_1, ridge_2, ridge_3, ridge_4,
+          ncol = 2)
 
 # orientation
 burial %>%
