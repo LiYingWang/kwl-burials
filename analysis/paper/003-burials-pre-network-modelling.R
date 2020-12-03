@@ -156,7 +156,7 @@ legend("topleft",
 model_pre_1 <- burial_network_pre ~
   edges + # ties, a measure of density, equal to kstar(1) for undirected networks
   density +
-  gwdegree(0.5, fixed = TRUE)  +
+  gwesp(0.5, fixed = TRUE)  +
   triangle # triad relation, a measure of clustering or cohesion, also called transitive triple in undirected network
 summary(model_pre_1)
 
@@ -173,8 +173,8 @@ model_pre_2 <- burial_network_pre ~ edges + # density
   # fixed = TRUE means the scale parameter lambda is fit as a curved exponential-family model
   # not much difference in a range of 0-1.5, the lower the value of the scaling parameter, the less likely the model is to be degenerate
   # ergm can estimate the parameter from the data by using fixed=FALSE
-  gwdegree(0.1, fixed = TRUE)  # popularity(degree; star), the frequency distribution for nodal degrees
-  # tendency of being in contact with multiple partners, measures of centralisation
+  gwdegree(0.3, fixed = TRUE)  # popularity(degree; star), the frequency distribution for nodal degrees
+  # tendency of being in contact with multiple partners, measures of centralization
   # distribution of node-based edge counts, each node counts only once
   # number means weight parameter decay
   # The decay is close to zero, the more gwdegree considers low degree nodes relative to high degree nodes
@@ -191,15 +191,15 @@ model_pre_3 <- burial_network_pre ~ edges +  # the overall density of the networ
   #absdiff('burial_value') +
   gwesp(0.5, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
   #gwnsp(0.8, fixed = TRUE) + #0.75, #prior = -1
-  gwdegree(0.5, fixed = TRUE) + # prior = 3
+  gwdegree(0.3, fixed = TRUE) + # prior = 3
   dyadcov(pre_distance_n, "dist")
 summary(model_pre_3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(-3, 0, 0, 1, 0, 3, -3, 0) # positive prior number for edge means high density
+prior.mean <- c(-3, 0, 0, 1, 0, 3, -2, 0) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(c(3, 3, 3, 1, 3, 3, 3, 3), 8, 8) # covariance matrix structure, uncertainty
+prior.sigma <- diag(c(5, 3, 3, 3, 3, 5, 3, 3), 8, 8) # covariance matrix structure, uncertainty
 
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) a common prior model
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
@@ -211,7 +211,7 @@ pre_bergm <- bergmM(model_pre_3,
                   prior.sigma = prior.sigma,
                   burn.in     = 100, # drop first 100 for every chain of the population
                   main.iters  = 1000, # iterations for every chain of the population
-                  aux.iters   = 4000, # MCMC steps used for network simulation
+                  aux.iters   = 3000, # MCMC steps used for network simulation
                   nchains     = 16, # number of chains of the population MCMC
                   gamma       = 0) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
