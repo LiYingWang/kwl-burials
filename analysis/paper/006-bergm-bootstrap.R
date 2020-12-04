@@ -18,7 +18,7 @@ pre_matrix <- as.matrix(as_adjacency_matrix(pre_E_igraph))
 # vertex bootstrap, useful for small network
 library(snowboot)
 set.seed(1)
-number <- 500
+number <- 1000
 pre_Astar <- vertboot(pre_matrix, number)
 
 # calculate 95% bootstrap confidence intervals for the density and bootstrap standard error
@@ -88,7 +88,7 @@ post_all_obs <- rbind(post_density_obs,
 post_matrix <- as.matrix(as_adjacency_matrix(post_E_igraph))
 
 # vertex bootstrap, useful for small network
-post_number <- 500
+post_number <- 1000
 set.seed(1)
 post_Astar <- vertboot(post_matrix, post_number)
 
@@ -97,7 +97,7 @@ post_boot_density <- sapply(1:post_number, function(x)
     graph.density(graph_from_adjacency_matrix(post_Astar[[x]])))
 post_CIvertboot_den <- quantile(post_boot_density, c(0.025, 0.975))
 post_CIvertboot_den
-post_bootstrap_se <- sd(boot_density)
+post_bootstrap_se <- sd(post_boot_density)
 post_bootstrap_se
 
 # confedence interval for mean degree and transitivity
@@ -146,3 +146,52 @@ post_CIpatchwork <- lsmi_cv(post_E_igraph_to_network,
 
 # calculate 95% bootstrap confidence intervals for the density
 post_CIpatchwork$bci/(post_E_igraph_to_network$n - 1)
+
+#----------------------T test for pre and post network statistics---------------------
+# T test for network density, clustering, and degree
+t.test(pre_boot_density, post_boot_density)
+t.test(pre_boot_trans, post_boot_trans)
+t.test(pre_boot_star, post_boot_star)
+
+t.test(post_rm_boot_density, post_boot_density)
+t.test(post_rm_boot_trans, post_boot_trans)
+t.test(post_rm_boot_star, post_boot_star)
+#-----------------------vertex removal for post-E-------------------------------------
+post_E_node_removal <-
+  delete_vertices(post_E_igraph, sample(1:49, 20, replace=F)) # remove 20 nodes
+
+post_rm_density_obs <- graph.density(post_E_node_removal)
+post_rm_mean_star_obs <- mean(degree(post_E_node_removal))
+post_rm_trans_obs <- transitivity(post_E_node_removal)
+post_rm_all_obs <- rbind(post_rm_density_obs,
+                         post_rm_mean_star_obs,
+                         post_rm_trans_obs)
+post_rm_matrix <- as.matrix(as_adjacency_matrix(post_E_node_removal))
+
+# vertex bootstrap, useful for small network
+post_number <- 1000
+set.seed(1)
+post_rm_Astar <- vertboot(post_rm_matrix, post_number)
+
+# calculate 95% bootstrap confidence intervals for the density and bootstrap standard error
+post_rm_boot_density <- sapply(1:post_number, function(x)
+  graph.density(graph_from_adjacency_matrix(post_rm_Astar[[x]])))
+post_rm_CIvertboot_den <- quantile(post_rm_boot_density, c(0.025, 0.975))
+post_rm_CIvertboot_den
+post_rm_bootstrap_se <- sd(post_rm_boot_density)
+post_rm_bootstrap_se
+
+# confedence interval for mean degree and transitivity
+post_rm_boot_star <- sapply(1:number, function(x)
+  mean(degree(graph_from_adjacency_matrix(post_rm_Astar[[x]]), mode = "in")))
+post_rm_CIvertboot_star <- quantile(post_rm_boot_star , c(0.025, 0.975))
+
+post_rm_boot_trans <- sapply(1:number, function(x)
+  transitivity(graph_from_adjacency_matrix(post_rm_Astar[[x]]), type = "undirected"))
+post_rm_CIvertboot_trans <- quantile(post_rm_boot_trans , c(0.025, 0.975))
+
+post_rm_boot_all_stats <-
+  as.data.frame(rbind(post_rm_CIvertboot_den,
+                      post_rm_CIvertboot_star,
+                      post_rm_CIvertboot_trans)) %>%
+  cbind(obs = post_rm_all_obs)
