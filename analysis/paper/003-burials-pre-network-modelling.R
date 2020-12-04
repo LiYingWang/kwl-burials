@@ -191,7 +191,7 @@ model_pre_3 <- burial_network_pre ~ edges +  # the overall density of the networ
   #absdiff('burial_value') +
   gwesp(0.5, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
   #gwnsp(0.8, fixed = TRUE) + #0.75, #prior = -1
-  gwdegree(0.3, fixed = TRUE) + # prior = 3
+  gwdegree(0.5, fixed = TRUE) + # prior = 3
   dyadcov(pre_distance_n, "dist")
 summary(model_pre_3)
 
