@@ -197,9 +197,9 @@ summary(model_pre_3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(-3, 0, 0, 1, 0, 3, -2, 0) # positive prior number for edge means high density
+prior.mean <- c(-5, 0, 0, 1, 0, 2, -1, -1) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(c(5, 3, 3, 3, 3, 5, 3, 3), 8, 8) # covariance matrix structure, uncertainty
+prior.sigma <- diag(c(5, 3, 3, 5, 3, 5, 3, 3), 8, 8) # covariance matrix structure, uncertainty
 
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) a common prior model
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
@@ -211,7 +211,7 @@ pre_bergm <- bergmM(model_pre_3,
                   prior.sigma = prior.sigma,
                   burn.in     = 100, # drop first 100 for every chain of the population
                   main.iters  = 1000, # iterations for every chain of the population
-                  aux.iters   = 3000, # MCMC steps used for network simulation
+                  aux.iters   = 4000, # MCMC steps used for network simulation
                   nchains     = 16, # number of chains of the population MCMC
                   gamma       = 0) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
