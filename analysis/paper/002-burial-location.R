@@ -44,7 +44,7 @@ df_pre_distance <-
   arrange(Id)
 
 pre_distance <-
-  st_distance(df_pre_distance$burial_cent) # will be ran in 003
+  st_distance(df_pre_distance$burial_cent) # run it in 003
 
 # get distance between post-E burials
 df_post_distance <-
@@ -55,7 +55,7 @@ df_post_distance <-
   arrange(Id)
 
 post_distance <-
-  st_distance(df_post_distance$burial_cent) # will be ran in 004
+  st_distance(df_post_distance$burial_cent) # run it in 004
 
 # mapping burials over the AD section
 KWL_burial_map <-
@@ -64,11 +64,11 @@ KWL_burial_map <-
   filter(Phase.y != "disturbed") %>%
   ggplot() +
   geom_sf(aes(fill = Period)) +
-  geom_sf(data = post, color = 'darkgray', size = 0.2, alpha = 0.4) +
+  geom_sf(data = post, color = 'darkgray', size = 0.1, alpha = 0.4) +
   geom_sf(data = AD_data, fill = NA) +
-  #geom_sf_text(data = AD_data, aes(label = `坑號`), size = 2.5,
-               #alpha = 0.3, fontface = "bold") +
   scale_fill_viridis_d() +
   theme_minimal() +
   blank() +
   north(AD_data, scale = 0.2, symbol = 3)
+
+ggsave(here::here("analysis", "figures", "burial-map.png"))
