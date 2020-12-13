@@ -76,7 +76,6 @@ burial_with_type_value <-
   mutate(burial_value = rowSums(across(where(is.numeric)))) %>%
   select(burial_label, burial_value)
 
-
 # distribution plot of burial value
 mean(burial_with_type_value$burial_value)
 quantile(burial_with_type_value$burial_value)
