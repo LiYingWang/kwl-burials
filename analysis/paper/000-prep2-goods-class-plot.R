@@ -1,4 +1,8 @@
 # tidy up
+
+# BM: I don't know what code to run before this file. The number is
+# 000 so I guess this should be the first
+
 burial_three_period_tidy_explore <-
   burial %>%
   rename(burial_label = ID) %>%
@@ -88,7 +92,7 @@ burial_beads %>%
     quantiles = 4, quantile_lines = TRUE) +
   scale_x_continuous(limits = c(1, 15), expand = c(0.1, 0)) +
   scale_fill_viridis_d(name = "Quartiles")
-  #stat_density_ridges(quantile_lines = TRUE, quantiles = 3)
+  # stat_density_ridges(quantile_lines = TRUE, quantiles = 3)
 
 # density ridgeline plot 2
 ridge_2 <-
@@ -118,9 +122,14 @@ ridge_4 <-
 burial_beads %>%
   ggplot(aes(x = value, y = type)) +
   geom_density_ridges(
-    jittered_points = TRUE, quantile_lines = TRUE, scale = 0.9, alpha = 0.7,
-    vline_size = 1, vline_color = "red",
-    point_size = 0.4, point_alpha = 1,
+    jittered_points = TRUE,
+    quantile_lines = TRUE,
+    scale = 0.9,
+    alpha = 0.7,
+    vline_size = 1,
+    vline_color = "red",
+    point_size = 0.4,
+    point_alpha = 1,
     position = position_raincloud(adjust_vlines = TRUE)) +
   scale_x_continuous(limits = c(1, 15), expand = c(0.1, 0))
 
@@ -142,6 +151,31 @@ ridge_1_4 <-
 library(cowplot)
 plot_grid(ridge_1, ridge_2, ridge_3, ridge_4,
           ncol = 2)
+
+ridge_1_and_4  <-
+  burial_beads %>%
+  ggplot(aes(x = value,
+             y = type,
+             fill = factor(stat(quantile)))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    jittered_points = TRUE,
+    quantile_lines = TRUE,
+    alpha = 0.7,
+    vline_size = 0.5,
+    vline_color = "grey10",
+    point_size = 3,
+    point_alpha = 0.4,
+    position = position_raincloud(adjust_vlines = TRUE),
+    calc_ecdf = TRUE,
+    quantiles = 4,
+    rel_min_height = 0.01,
+    scale = 0.5, # so the filled regions don't overlap on the points
+    size = 0.2) +
+  scale_x_continuous(limits = c(1, 15),
+                     expand = c(0.1, 0)) +
+  scale_fill_viridis_d(name = "Quartiles") +
+  theme_minimal()
 
 # orientation
 burial %>%
