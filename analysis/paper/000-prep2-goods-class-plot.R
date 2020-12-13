@@ -124,6 +124,20 @@ burial_beads %>%
     position = position_raincloud(adjust_vlines = TRUE)) +
   scale_x_continuous(limits = c(1, 15), expand = c(0.1, 0))
 
+# combine ridge plots 1 & 4
+ridge_1_4 <-
+  burial_beads %>%
+  ggplot(aes(x = value, y = type, fill = factor(stat(quantile)))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient", calc_ecdf = TRUE,
+    quantiles = 4, quantile_lines = TRUE,
+    jittered_points = TRUE,  scale = 0.9, alpha = 0.7,
+    vline_size = 1, vline_color = "red",
+    point_size = 0.4, point_alpha = 1,
+    position = position_raincloud(adjust_vlines = TRUE)) +
+  scale_x_continuous(limits = c(1, 15), expand = c(0.1, 0)) +
+  scale_fill_viridis_d(name = "Quartiles")
+
 # plot them together for comparison
 library(cowplot)
 plot_grid(ridge_1, ridge_2, ridge_3, ridge_4,
