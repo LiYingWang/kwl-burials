@@ -290,9 +290,24 @@ CIs_two_nets_tidy <-
     variable == "2" ~ "transitivity",
     variable == "3" ~ "popularity",
     TRUE ~ "")) %>%
-  mutate(removal = as.factor(removal)) %>%
-  pivot_longer(cols = c(`2.5%`, `97.5%`),
-               names_to = "network",
-               values_to = "value")
+  mutate(removal = as.factor(removal))
 
+CIs_two_nets_tidy$removal <-
+  factor(CIs_two_nets_tidy$removal,
+         levels = c("40", "35", "30", "25", "20", "15", "10", "5"))
 
+CIs_two_nets_tidy %>%
+  ggplot(aes(obs,
+             removal,
+             color = phase,
+             group = interaction(phase, removal))) +
+  geom_pointrange(aes(xmin = `2.5%`, xmax = `97.5%`),
+                  position = position_dodge(0.3)) +
+  geom_errorbar(aes(xmin = `2.5%`, xmax = `97.5%`),
+                width = 0.3,
+                position = position_dodge(0.3)) +
+  theme_minimal() +
+  labs(x = "confidensce intervals (95%)",
+       y = "node removal (%)") +
+  facet_wrap(~variable,
+             scales = "free_x")
