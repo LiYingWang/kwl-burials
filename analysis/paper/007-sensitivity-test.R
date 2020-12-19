@@ -301,11 +301,12 @@ CIs_two_nets_tidy %>%
              removal,
              color = phase,
              group = interaction(phase, removal))) +
-  geom_pointrange(aes(xmin = `2.5%`, xmax = `97.5%`),
-                  position = position_dodge(0.3)) +
   geom_errorbar(aes(xmin = `2.5%`, xmax = `97.5%`),
                 width = 0.3,
                 position = position_dodge(0.3)) +
+  geom_pointrange(aes(xmin = `2.5%`, xmax = `97.5%`),
+                  position = position_dodge(0.3)) +
+  scale_color_viridis(discrete= T) +
   theme_minimal() +
   labs(x = "confidensce intervals (95%)",
        y = "node removal (%)") +

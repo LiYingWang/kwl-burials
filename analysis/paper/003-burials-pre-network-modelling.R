@@ -8,7 +8,6 @@ burial_pre <-
   #filter(quantity != "none") # remove burial without burial goods
 
 # create node list using burial index by phase
-#--------------------pre--------------------------------
 nodes_pre <-
   burial_three_period_age_tidy %>%
   filter(Phase == "pre") %>%
@@ -147,7 +146,6 @@ legend("topleft",
        legend = unique(quantity),# quantity
        title  = 'Burial good counts')
 
-
 # ? can't get the items in legend in order, have tried as.factor for level
 # can't match color with categories, need to adjust manually every time
 
@@ -199,7 +197,7 @@ summary(model_pre_3)
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
 prior.mean <- c(-3, 0, 0, 1, 0, 2, -1, -1) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
-prior.sigma <- diag(c(4, 5, 3, 5, 5, 5, 2, 3), 8, 8) # covariance matrix structure, uncertainty
+prior.sigma <- diag(c(3, 3, 3, 5, 5, 4, 1, 1), 8, 8) # covariance matrix structure, uncertainty
 
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) a common prior model
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
