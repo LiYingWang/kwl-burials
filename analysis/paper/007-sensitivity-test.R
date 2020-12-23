@@ -262,7 +262,8 @@ post_5_rm_cov_stats <-
 #---------------------------network stats visualization-----------------------------------
 # combines all network stats in one dataframe
 CIs_two_nets <-
-  as.data.frame(rbind(pre_5 = pre_5_rm_boot_all_stats,
+  as.data.frame(rbind(pre_0 = three_CI_and_obs(pre_E_igraph),
+                      pre_5 = pre_5_rm_boot_all_stats,
                       pre_10 = pre_10_rm_boot_all_stats,
                       pre_15 = pre_15_rm_boot_all_stats,
                       pre_20 = pre_20_rm_boot_all_stats,
@@ -270,6 +271,7 @@ CIs_two_nets <-
                       pre_30 = pre_30_rm_boot_all_stats,
                       pre_35 = pre_35_rm_boot_all_stats,
                       pre_40 = pre_40_rm_boot_all_stats,
+                      post_0 = three_CI_and_obs(post_E_igraph),
                       post_5 = post_5_rm_boot_all_stats,
                       post_10 = post_10_rm_boot_all_stats,
                       post_15 = post_15_rm_boot_all_stats,
@@ -294,7 +296,7 @@ CIs_two_nets_tidy <-
 
 CIs_two_nets_tidy$removal <-
   factor(CIs_two_nets_tidy$removal,
-         levels = c("40", "35", "30", "25", "20", "15", "10", "5"))
+         levels = c("40", "35", "30", "25", "20", "15", "10", "5", "0"))
 
 CIs_two_nets_tidy %>%
   ggplot(aes(obs,
@@ -306,7 +308,7 @@ CIs_two_nets_tidy %>%
                 position = position_dodge(0.3)) +
   geom_pointrange(aes(xmin = `2.5%`, xmax = `97.5%`),
                   position = position_dodge(0.3)) +
-  scale_color_viridis(discrete= T) +
+  #scale_color_viridis(discrete= T) +
   theme_minimal() +
   labs(x = "confidensce intervals (95%)",
        y = "node removal (%)") +
