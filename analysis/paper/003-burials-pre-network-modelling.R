@@ -1,5 +1,5 @@
 #-----------------------pre-European----------------------------
-# run preparation code in 001-data-tidy.R
+# before running this code, run file 000-prep1, 000-prep2, 001, and 002 subsequently
 # filter pre burials
 burial_pre <-
   burial_three_period_age_tidy %>%
@@ -17,7 +17,7 @@ nodes_pre <-
 
 # pair wise combinations for burials as index for later map function
 library(gtools)
-burial_comb_pre = combinations(length(nodes_pre$burial_label), #t(combn(nodes_pre$burial_label, 2))
+burial_comb_pre = combinations(length(nodes_pre$burial_label),
                                2, nodes_pre$burial_label,
                                repeats = TRUE)
 colnames(burial_comb_pre) = c("burial_1", "burial_2")
@@ -26,7 +26,7 @@ burial_comb_pre = as_tibble(burial_comb_pre)
 # create list for each burial that contains the burial good types and their counts
 edge_list_pre <-
   burial_three_period_age_tidy %>%
-  select(burial_label, 6:17) %>% # need to change for each exploration
+  select(burial_label, 6:18) %>% # need to adjust if ties change
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   #mutate(burial_connection = rep(unique(burial_label), length.out = length(burial_label)))
   group_by(burial_label) %>%
@@ -52,7 +52,7 @@ common_counts_vct_pre <- map_int(common_counts_lst_pre, ~sum(!is.na(.x$common_co
 burial_comb_with_common_counts_pre <-
   burial_comb_pre %>%
   mutate(common_counts = common_counts_vct_pre) %>%
-  mutate(common_counts = ifelse(burial_1 == burial_2, 0, common_counts)) # use 0 for self loop
+  mutate(common_counts = ifelse(burial_1 == burial_2, 0, common_counts)) # 0 means no self loop
 
 # change label to ids for node linking
 edges_pre <-
@@ -100,9 +100,9 @@ attr(edges_for_network_pre, "n") = 29
 burial_network_pre <-
   network(edges_for_network_pre, # the network object
           vertex.attr = nodes_pre, # node list
-          directed = FALSE, # specify whether the network is directed
-          ignore.eval = FALSE, # FALSE = weighted
-          loops = FALSE, # do we allow self ties (should not allow them)
+          directed = FALSE, # whether the network is directed
+          ignore.eval = FALSE, # FALSE means weighted
+          loops = FALSE, # FALSE means not allow self ties
           matrix.type = "edgelist") # the type of input
 
 plot(burial_network_pre, vertex.cex = 1)
@@ -113,7 +113,7 @@ network.dyadcount(burial_network_pre, na.omit = TRUE)
 library(statnet)
 library(Bergm)
 
-# Add attributes to the network object burial_network_pre
+# add attributes to the network object burial_network_pre
 set.vertex.attribute(burial_network_pre, "quantity", burial_pre$quantity)
 set.vertex.attribute(burial_network_pre, "age", burial_pre$Age_scale)
 set.vertex.attribute(burial_network_pre, "gender", burial_pre$gender)
@@ -122,7 +122,7 @@ set.vertex.attribute(burial_network_pre, "value_class", burial_pre$value_class) 
 set.vertex.attribute(burial_network_pre, "burial_value", burial_pre$burial_value) #numeric
 set.vertex.attribute(burial_network_pre, "orientation", burial_pre$orientation)
 
-#get distance matrix, need to run 002 code first
+# get distance matrix, need to run 002 code first
 pre_distance_n <- network(pre_distance, matrix.type = "adjacency", directed = F)
 set.edge.attribute(pre_distance_n, "dist", pre_distance_n)
 
@@ -136,75 +136,67 @@ plot(burial_network_pre,
      displaylabels = TRUE,
      vertex.col = "quantity",
      vertex.cex = 2,
-     #vertex.cex = degree(burial_network_pre, cmode = 'indegree') / 5, #size nodes to their in-degre
+     #vertex.cex = degree(burial_network_pre, cmode = 'indegree') / 5, #size nodes to their in-degree
      #vertex.sides = ifelse(burial_network_pre %v% "", 4, 50),
-     pad = 1) #protects the labels from getting clipped
+     pad = 1) # protects the labels from getting clipped
 
 legend("topleft",
-       col = c(2, 3, 1, 4), # need to adjust each time
+       col = c(2, 3, 1, 4), # adjust manually each time
        pch    = 20,
        legend = unique(quantity),# quantity
        title  = 'Burial good counts')
 
-# ? can't get the items in legend in order, have tried as.factor for level
-# can't match color with categories, need to adjust manually every time
-
 #------------------creating ERGM model-------------------------------------
-# model 1 considers density and triad relations (for cluster)
+# model 1, checking triad relations (for clusters) to decide gwesp, Morris et al. (2008)
+# check out the terms: http://mailman13.u.washington.edu/pipermail/statnet_help/2010/000575.html
 model_pre_1 <- burial_network_pre ~
-  edges + # ties, a measure of density, equal to kstar(1) for undirected networks
+  edges + # ties, measure density, equal to kstar(1) for undirected networks
   density +
-  gwesp(0.5, fixed = TRUE)  +
-  triangle # triad relation, a measure of clustering or cohesion, also called transitive triple in undirected network
+  triangle # transitive triple in undirected network, measure clustering or cohesion
+  gwesp(0.5, fixed = TRUE)+
+    # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
+    # number = weight parameter alpha, scaling parameter, controls the rate of declining marginal returns
+    # less difference in a range of 0-1.5. The lower the value of the number, the less likely the model is to be degenerate
+    # fixed = TRUE means the scale parameter lambda is fit as a curved exponential-family model
+    # ergm can estimate the parameter from the data by using fixed=FALSE
+  gwdegree(0.3, fixed = TRUE) +
+    # popularity(degree; star), the frequency distribution for nodal degrees
+    # tendency of being in contact with multiple partners, measures of centralization
+    # distribution of node-based edge counts, each node counts only once
+    # number = weight parameter decay
+    # The number is close to zero, the more gwdegree considers low degree nodes relative to high degree nodes
+
 summary(model_pre_1)
 
-# Edgewise Shared Partners
+# check edgewise Shared Partners
 summary(burial_network_pre ~ esp(0:10))
 summary(burial_network_pre ~ gwdegree(0:10))
 
-# model 2 considers cluster and degree, Morris et al. (2008)
-# check out the terms: http://mailman13.u.washington.edu/pipermail/statnet_help/2010/000575.html
-model_pre_2 <- burial_network_pre ~ edges + # density
-  gwesp(0.5, fixed = TRUE) +
-  # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
-  # number means weight parameter alpha, which controls the rate of declining marginal returns
-  # fixed = TRUE means the scale parameter lambda is fit as a curved exponential-family model
-  # not much difference in a range of 0-1.5, the lower the value of the scaling parameter, the less likely the model is to be degenerate
-  # ergm can estimate the parameter from the data by using fixed=FALSE
-  gwdegree(0.3, fixed = TRUE)  # popularity(degree; star), the frequency distribution for nodal degrees
-  # tendency of being in contact with multiple partners, measures of centralization
-  # distribution of node-based edge counts, each node counts only once
-  # number means weight parameter decay
-  # The decay is close to zero, the more gwdegree considers low degree nodes relative to high degree nodes
-summary(model_pre_2)
-
 # model 3 considers cluster, degree, and node attributes
 model_pre_3 <- burial_network_pre ~ edges +  # the overall density of the network
-  #nodematch('quantity') + # quantity-based homophily, categorical nodal attribute, the similarity of connected nodes
-  nodematch('age') + # prior = -1
-  nodematch('gender') + #prior = 0
+  #nodematch('quantity') + # quantity-based homophily, the similarity of connected nodes
+  nodematch('age') +
+  nodematch('gender') +
   nodematch('ritual_pottery') +
   nodematch('value_class') +
   #nodematch('orientation') +
-  #absdiff('burial_value') +
-  gwesp(0.5, fixed = TRUE) + #start close to zero and move up, how well we do in matching the count of triangles
-  #gwnsp(0.8, fixed = TRUE) + #0.75, #prior = -1
-  gwdegree(0.5, fixed = TRUE) + # prior = 3
+  #absdiff('burial_value') + for numeric variable
+  gwesp(0.5, fixed = TRUE) + #start close to zero and move up to see how well it matches the count of triangles
+  #gwnsp(0.8, fixed = TRUE) + #0.75,
+  gwdegree(0.5, fixed = TRUE) +
   dyadcov(pre_distance_n, "dist")
 summary(model_pre_3)
 
 #--------------------Bayesian inference for ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
-prior.mean <- c(-3, 0, 0, 1, 0, 2, -1, -1) # positive prior number for edge means high density
 # follow Alberto Caimo et al. (2015) hospital example
+prior.mean <- c(-3, 0, 0, 1, 0, 2, -1, -1) # positive prior number for edge means high density
 prior.sigma <- diag(c(3, 3, 3, 5, 5, 4, 1, 1), 8, 8) # covariance matrix structure, uncertainty
-
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) a common prior model
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
+# it returns estimated posterior means, medians and 95% credible intervals
 
-# Estimated posterior means, medians and 95% credible intervals for Models.3
-# bergmM: Bayesian exponential random graphs models under missing data using the approximate exchange algorithm
-pre_bergm <- bergmM(model_pre_3,
+pre_bergm <- bergmM(model_pre_3, # bergmM for data with missing values using the approximate exchange algorithm
                   prior.mean  = prior.mean,
                   prior.sigma = prior.sigma,
                   burn.in     = 100, # drop first 100 for every chain of the population
