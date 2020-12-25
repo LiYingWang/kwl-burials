@@ -67,11 +67,45 @@ edges_for_network_pre <-
   filter (!common_counts == 0) # remove rows with no goods in common
   #mutate(common_counts = ifelse(common_counts > 1, 1, common_counts)) # for unweighted network
 
-#1--------------------network analysis using ggraph pkg------------------------------
+#1--------------------network diagrams using ggraph pkg------------------------------
 library(tidygraph)
 library(ggraph)
 
-relation_tidy_pre <- tbl_graph(nodes = nodes_pre,
+# number of connection based on starting nodes
+connection_from <-
+  edges_for_network_pre %>%
+  mutate(value = ifelse(common_counts > 1, 1, common_counts)) %>%
+  mutate(from = as.character(from),
+         to = as.character(to)) %>%
+  select(-common_counts) %>%
+  group_by(from) %>%
+  tally()
+
+# number of connection based on ending nodes
+connection_to <-
+  edges_for_network_pre %>%
+  mutate(value = ifelse(common_counts > 1, 1, common_counts)) %>%
+  mutate(from = as.character(from),
+         to = as.character(to)) %>%
+  select(-common_counts) %>%
+  group_by(to) %>%
+  tally()
+
+# get the total number of connections per burial
+connection_per_burial <-
+  connection_from %>%
+  left_join(connection_to, by= c("from" = "to")) %>%
+  rowwise() %>%
+  mutate(sum = sum(n.x, n.y, na.rm = TRUE)) %>%
+  mutate(from = as.numeric(from))
+
+# join total number with original network object
+nodes_pre_joined <-
+  nodes_pre %>%
+  left_join(connection_per_burial, by= c("id" = "from")) %>%
+  select(-n.x, -n.y)
+
+relation_tidy_pre <- tbl_graph(nodes = nodes_pre_joined,
                                edges = edges_for_network_pre,
                                directed = FALSE)
 
@@ -79,18 +113,15 @@ relation_tidy_pre %>%
   activate(edges) %>%
   arrange(desc(common_counts))
 
-ggraph(relation_tidy_pre) +
-  geom_edge_link() +
-  geom_node_point() +
-  theme_graph()
-
-ggraph(relation_tidy_pre, layout = "graphopt") +
-  geom_node_point() +
+ggraph(relation_tidy_pre, layout = "fr") + #graphopt
   geom_edge_link(aes(width = common_counts), alpha = 0.8) +
-  scale_edge_width(range = c(0.2, 2)) +
+  geom_node_point(aes(size = sum, alpha = sum)) +
+  scale_edge_width(range = c(0.2, 1)) +
   geom_node_text(aes(label = burial_label), repel = TRUE) +
   labs(edge_width = "common item") +
-  theme_graph()
+  theme_void() +
+  theme(legend.position="none",
+        plot.margin=unit(rep(1,4), "cm"))
 
 #2-------------------network analysis using network pkg-------------------------------
 library(network)
