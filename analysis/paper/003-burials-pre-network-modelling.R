@@ -94,9 +94,9 @@ connection_to <-
 # get the total number of connections per burial
 connection_per_burial <-
   connection_from %>%
-  left_join(connection_to, by= c("from" = "to")) %>%
+  full_join(connection_to, by= c("from" = "to")) %>%
   rowwise() %>%
-  mutate(sum = sum(n.x, n.y, na.rm = TRUE)) %>%
+  mutate(connections = sum(n.x, n.y, na.rm = TRUE)) %>%
   mutate(from = as.numeric(from))
 
 # join total number with original network object
@@ -115,13 +115,15 @@ relation_tidy_pre %>%
 
 ggraph(relation_tidy_pre, layout = "fr") + #graphopt
   geom_edge_link(aes(width = common_counts), alpha = 0.8) +
-  geom_node_point(aes(size = sum, alpha = sum)) +
+  geom_node_point(aes(size = connections, color = connections)) +
   scale_edge_width(range = c(0.2, 1)) +
   geom_node_text(aes(label = burial_label), repel = TRUE) +
   labs(edge_width = "common item") +
+  scale_color_viridis(direction = -1) +
   theme_void() +
-  theme(legend.position="none",
-        plot.margin=unit(rep(1,4), "cm"))
+  theme(plot.margin = unit(rep(1,4), "cm"))
+  #theme(legend.position="none",
+        #plot.margin=unit(rep(1,4), "cm"))
 
 #2-------------------network analysis using network pkg-------------------------------
 library(network)
