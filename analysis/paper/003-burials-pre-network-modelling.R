@@ -1,4 +1,4 @@
-#-----------------------pre-European----------------------------
+#-----------------------pre-European-----------------------------
 # before running this code, run file 000-prep1, 000-prep2, 001, and 002 subsequently
 # filter pre burials
 burial_pre <-
@@ -26,7 +26,7 @@ burial_comb_pre = as_tibble(burial_comb_pre)
 # create list for each burial that contains the burial good types and their counts
 edge_list_pre <-
   burial_three_period_age_tidy %>%
-  select(burial_label, 6:18) %>% # need to adjust if ties change
+  select(burial_label, 6:21) %>% # need to adjust if ties change
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   #mutate(burial_connection = rep(unique(burial_label), length.out = length(burial_label)))
   group_by(burial_label) %>%
@@ -67,65 +67,7 @@ edges_for_network_pre <-
   filter (!common_counts == 0) # remove rows with no goods in common
   #mutate(common_counts = ifelse(common_counts > 1, 1, common_counts)) # for unweighted network
 
-#1--------------------network diagrams using ggraph pkg------------------------------
-library(tidygraph)
-library(ggraph)
-
-# number of connection based on starting nodes
-connection_from <-
-  edges_for_network_pre %>%
-  mutate(value = ifelse(common_counts > 1, 1, common_counts)) %>%
-  mutate(from = as.character(from),
-         to = as.character(to)) %>%
-  select(-common_counts) %>%
-  group_by(from) %>%
-  tally()
-
-# number of connection based on ending nodes
-connection_to <-
-  edges_for_network_pre %>%
-  mutate(value = ifelse(common_counts > 1, 1, common_counts)) %>%
-  mutate(from = as.character(from),
-         to = as.character(to)) %>%
-  select(-common_counts) %>%
-  group_by(to) %>%
-  tally()
-
-# get the total number of connections per burial
-connection_per_burial <-
-  connection_from %>%
-  full_join(connection_to, by= c("from" = "to")) %>%
-  rowwise() %>%
-  mutate(connections = sum(n.x, n.y, na.rm = TRUE)) %>%
-  mutate(from = as.numeric(from))
-
-# join total number with original network object
-nodes_pre_joined <-
-  nodes_pre %>%
-  left_join(connection_per_burial, by= c("id" = "from")) %>%
-  select(-n.x, -n.y)
-
-relation_tidy_pre <- tbl_graph(nodes = nodes_pre_joined,
-                               edges = edges_for_network_pre,
-                               directed = FALSE)
-
-relation_tidy_pre %>%
-  activate(edges) %>%
-  arrange(desc(common_counts))
-
-ggraph(relation_tidy_pre, layout = "fr") + #graphopt
-  geom_edge_link(aes(width = common_counts), alpha = 0.8) +
-  geom_node_point(aes(size = connections, color = connections)) +
-  scale_edge_width(range = c(0.2, 1)) +
-  geom_node_text(aes(label = burial_label), repel = TRUE) +
-  labs(edge_width = "common item") +
-  scale_color_viridis(direction = -1) +
-  theme_void() +
-  theme(plot.margin = unit(rep(1,4), "cm"))
-  #theme(legend.position="none",
-        #plot.margin=unit(rep(1,4), "cm"))
-
-#2-------------------network analysis using network pkg-------------------------------
+#-------------------------create network using network pkg-------------------------------
 library(network)
 
 # create network object
@@ -179,20 +121,20 @@ legend("topleft",
        legend = unique(quantity),# quantity
        title  = 'Burial good counts')
 
-#------------------creating ERGM model-------------------------------------
+#---------------------------create ERGMs-------------------------------------
 # model 1, checking triad relations (for clusters) to decide gwesp, Morris et al. (2008)
 # check out the terms: http://mailman13.u.washington.edu/pipermail/statnet_help/2010/000575.html
 model_pre_1 <- burial_network_pre ~
   edges + # ties, measure density, equal to kstar(1) for undirected networks
   density +
-  triangle # transitive triple in undirected network, measure clustering or cohesion
-  gwesp(0.5, fixed = TRUE)+
+  triangle + # transitive triple in undirected network, measure clustering or cohesion
+  gwesp(0.4, fixed = TRUE)+
     # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
     # number = weight parameter alpha, scaling parameter, controls the rate of declining marginal returns
     # less difference in a range of 0-1.5. The lower the value of the number, the less likely the model is to be degenerate
     # fixed = TRUE means the scale parameter lambda is fit as a curved exponential-family model
     # ergm can estimate the parameter from the data by using fixed=FALSE
-  gwdegree(0.3, fixed = TRUE) +
+  gwdegree(0.3, fixed = TRUE)
     # popularity(degree; star), the frequency distribution for nodal degrees
     # tendency of being in contact with multiple partners, measures of centralization
     # distribution of node-based edge counts, each node counts only once
@@ -214,22 +156,22 @@ model_pre_3 <- burial_network_pre ~ edges +  # the overall density of the networ
   nodematch('value_class') +
   #nodematch('orientation') +
   #absdiff('burial_value') + for numeric variable
-  gwesp(0.5, fixed = TRUE) + #start close to zero and move up to see how well it matches the count of triangles
+  gwesp(0.4, fixed = TRUE) + #start close to zero and move up to see how well it matches the count of triangles
   #gwnsp(0.8, fixed = TRUE) + #0.75,
   gwdegree(0.5, fixed = TRUE) +
   dyadcov(pre_distance_n, "dist")
 summary(model_pre_3)
 
-#--------------------Bayesian inference for ERGMs-------------------------
+#--------------------------Bayesian inference on ERGMs-------------------------
 # prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
 # follow Alberto Caimo et al. (2015) hospital example
 prior.mean <- c(-3, 0, 0, 1, 0, 2, -1, -1) # positive prior number for edge means high density
-prior.sigma <- diag(c(3, 3, 3, 5, 5, 4, 1, 1), 8, 8) # covariance matrix structure, uncertainty
+prior.sigma <- diag(c(3, 3, 3, 5, 5, 4, 2, 1), 8, 8) # covariance matrix structure, uncertainty
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) a common prior model
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
 # it returns estimated posterior means, medians and 95% credible intervals
 
-pre_bergm <- bergmM(model_pre_3, # bergmM for data with missing values using the approximate exchange algorithm
+pre_bergm <- bergm(model_pre_3, # bergmM for data with missing values using the approximate exchange algorithm
                   prior.mean  = prior.mean,
                   prior.sigma = prior.sigma,
                   burn.in     = 100, # drop first 100 for every chain of the population

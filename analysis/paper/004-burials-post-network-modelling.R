@@ -25,7 +25,7 @@ burial_comb_post = as_tibble(burial_comb_post)
 # create list for each burial that contains the burial good types and their counts
 edge_list_post <-
   burial_three_period_age_tidy %>%
-  select(burial_label, 6:15) %>% # need to change for each exploration
+  select(burial_label, 6:21) %>% # need to change for each exploration
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   group_by(burial_label) %>%
   nest()
@@ -64,32 +64,7 @@ edges_for_network_post <-
   select(edges_post, from, to, common_counts) %>%
   filter (!common_counts == 0) # remove rows with no goods in common
 
-#1--------------------network analysis using ggraph pkg------------------------------
-library(tidygraph)
-library(ggraph)
-
-relation_tidy_post <- tbl_graph(nodes = nodes_post,
-                               edges = edges_for_network_post,
-                               directed = FALSE)
-
-relation_tidy_post %>%
-  activate(edges) %>%
-  arrange(desc(common_counts))
-
-ggraph(relation_tidy_post) +
-  geom_edge_link() +
-  geom_node_point() +
-  theme_graph()
-
-ggraph(relation_tidy_post, layout = "graphopt") +
-  geom_node_point() +
-  geom_edge_link(aes(width = common_counts), alpha = 0.8) +
-  scale_edge_width(range = c(0.2, 2)) +
-  geom_node_text(aes(label = burial_label), repel = TRUE) +
-  labs(edge_width = "common item") +
-  theme_graph()
-
-#2-------------------network analysis using network pkg-------------------------------
+#-------------------------create network using network pkg-------------------------------
 library(network)
 
 burial_network_post <-
@@ -170,10 +145,10 @@ model.post.3 <- burial_network_post ~ edges +  # the overall density of the netw
 summary(model.post.3)
 
 # Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(-3, 0, 0, 0, 0, 1, 2, 0) # prior mean corresponds to mean for each parameter
-prior.sigma <- diag(c(5, 3, 3, 3, 3, 3, 3, 3), 8, 8) # covariance matrix structure
+prior.mean <- c(-3, 0, 0, 0, 0, 1, 1, 0) # prior mean corresponds to mean for each parameter
+prior.sigma <- diag(c(3, 3, 3, 3, 3, 3, 3, 5), 8, 8) # covariance matrix structure
 
-post_bergm <- bergmM(model.post.3,
+post_bergm <- bergm(model.post.3,
                  prior.mean  = prior.mean,
                  prior.sigma = prior.sigma,
                  burn.in     = 100, # burn-in iterations for every chain of the population, drops the first 200
