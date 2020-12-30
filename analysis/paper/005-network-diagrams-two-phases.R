@@ -48,21 +48,22 @@ relation_tidy_pre %>%
 
 pre_diagram <-
   ggraph(relation_tidy_pre, layout = "stress") + #graphopt
-  geom_edge_link(aes(width = common_counts),
+  geom_edge_link(aes(width = as.factor(common_counts)),
                  alpha = 0.5) +
-  geom_node_point(aes(filter= !is.na(connections),
+  geom_node_point(aes(filter = !is.na(connections),
                       size = connections,
                       color = connections,
                       alpha = connections)) +
-  scale_edge_width(range = c(0.2, 1)) +
-  geom_node_text(aes(filter= !is.na(connections) & connections > 10,
-                     label = burial_label_rm),
-                 repel = TRUE) +
-  labs(edge_width = "common item") +
+  scale_edge_width_manual(values = c(0.2, 0.5, 1)) +
+  #scale_size_continuous(breaks = c(2, 5, 8, 10, 13)) +
   scale_color_viridis(direction = -1) +
   guides(size = guide_legend(), color=guide_legend()) +
+  geom_node_text(aes(filter= !is.na(connections) & connections > 11,
+                     label = burial_label_rm),
+                 repel = TRUE) +
+  labs(edge_width = "common items") +
   theme_graph() +
-  theme(plot.margin = unit(rep(1,4), "cm")) #legend.position="none"
+  theme(plot.margin = unit(rep(0.8,4), "cm")) #legend.position="none"
 
 #---------------------post-E network diagram using ggraph pkg----------------------------
 # number of connection based on starting nodes
@@ -87,7 +88,7 @@ post_connection_to <-
 
 # get the total number of connections per burial
 post_connection_per_burial <-
-  connection_from %>%
+  post_connection_from %>%
   full_join(post_connection_to, by= c("from" = "to")) %>%
   rowwise() %>%
   mutate(connections = sum(n.x, n.y, na.rm = TRUE)) %>%
@@ -111,21 +112,21 @@ relation_tidy_post %>%
 
 post_diagram <-
   ggraph(relation_tidy_post, layout = "stress") + #graphopt
-  geom_edge_link(aes(width = common_counts),
+  geom_edge_link(aes(width = as.factor(common_counts)),
                  alpha = 0.5) +
   geom_node_point(aes(filter= !is.na(connections),
                       size = connections,
                       color = connections,
                       alpha = connections)) +
-  scale_edge_width(range = c(0.2, 1)) +
+  scale_edge_width_manual(values=c(0.2, 0.5, 1)) +
+  scale_color_viridis_c(direction = -1) +
+  guides(size = guide_legend(), color=guide_legend()) +
   geom_node_text(aes(filter= !is.na(connections) & connections > 22,
                      label = burial_label_rm),
                  repel = TRUE) +
   labs(edge_width = "common item") +
-  scale_color_viridis(direction = -1) +
-  guides(size = guide_legend(), color=guide_legend()) +
   theme_graph() +
-  theme(plot.margin = unit(rep(1,4), "cm"))
+  theme(plot.margin = unit(rep(0.8,4), "cm"))
 
 library(cowplot)
 plot_grid(pre_diagram,
@@ -133,4 +134,5 @@ plot_grid(pre_diagram,
           labels = c('A', 'B'),
           label_size = 12)
 
-ggsave(here::here("analysis", "figures", "pre-network.png"))
+ggsave(here::here("analysis", "figures", "two_networks.png"),
+       w = 10, h = 4)
