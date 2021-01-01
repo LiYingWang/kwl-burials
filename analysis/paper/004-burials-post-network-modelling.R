@@ -1,5 +1,4 @@
 #-----------------------post-European----------------------------
-# run preparation code in 001-data-tidy.R
 # filter post burials
 burial_post <-
   burial_three_period_age_tidy %>%
@@ -50,7 +49,7 @@ common_counts_vct_post <- map_int(common_counts_lst_post, ~sum(!is.na(.x$common_
 burial_comb_with_common_counts_post <-
   burial_comb_post %>%
   mutate(common_counts = common_counts_vct_post) %>%
-  mutate(common_counts = ifelse(burial_1 == burial_2, 0, common_counts)) # use 0 for self loop
+  mutate(common_counts = ifelse(burial_1 == burial_2, 0, common_counts)) # 0 for self loop
 
 # change label to ids for node linking
 edges_post <-
@@ -62,7 +61,7 @@ edges_post <-
 
 edges_for_network_post <-
   select(edges_post, from, to, common_counts) %>%
-  filter (!common_counts == 0) # remove rows with no goods in common
+  filter (!common_counts == 0) # remove rows without goods in common
 
 #-------------------------create network using network pkg-------------------------------
 library(network)
@@ -70,10 +69,10 @@ library(network)
 burial_network_post <-
   network(edges_for_network_post, # the network object
           vertex.attr = nodes_post, # node list
-          directed = FALSE, # specify whether the network is directed
+          directed = FALSE, # directed or undirected
           ignore.eval = FALSE, # FALSE = weighted
-          loops = FALSE, # do we allow self ties (should not allow them)
-          matrix.type = "edgelist") # the type of input
+          loops = FALSE, # not allow self ties
+          matrix.type = "edgelist") # input type
 
 # plot
 plot(burial_network_post, vertex.cex = 1)
@@ -82,7 +81,7 @@ network.density(burial_network_post)
 library(statnet)
 library(Bergm)
 
-# Add attributes to the network object burial_network_post
+# add attributes to the network object burial_network_post
 set.vertex.attribute(burial_network_post, "quantity", burial_post$quantity)
 set.vertex.attribute(burial_network_post, "age", burial_post$Age_scale)
 set.vertex.attribute(burial_network_post, "gender", burial_post$gender)
@@ -91,7 +90,7 @@ set.vertex.attribute(burial_network_post, "value_class", burial_post$value_class
 set.vertex.attribute(burial_network_post, "burial_value", burial_post$burial_value)
 set.vertex.attribute(burial_network_post, "orientation", burial_post$orientation)
 
-#get distance matrix, need to run 002 code first
+# get distance matrix, need to run 002 code first
 post_distance_n <- network(post_distance, matrix.type = "adjacency", directed = F)
 set.edge.attribute(post_distance_n, "dist", post_distance_n)
 
@@ -99,7 +98,7 @@ set.edge.attribute(post_distance_n, "dist", post_distance_n)
 set.seed(30)
 quantity <- get.vertex.attribute(burial_network_post, "quantity")
 age <- get.vertex.attribute(burial_network_post, "age")
-ID <- get.vertex.attribute(burial_network_post, "burial_label") # not sure how to get id on the network plot
+ID <- get.vertex.attribute(burial_network_post, "burial_label")
 
 plot(burial_network_post,
      displaylabels = TRUE,
@@ -109,27 +108,25 @@ plot(burial_network_post,
      pad = 1)
 
 legend("topleft",
-       col = c(3, 2, 1), # need to adjust each time
+       col = c(3, 2, 1, 4), # adjust each time
        pch    = 20,
        legend = unique(quantity),
        title  = 'Burial goods quantity')
 
 #------------------creating ERGM model-------------------------------------
 # every term in an ERGM must have an associated algorithm for computing its value for network
-model.ergm <- burial_network_post ~
+model_post_1 <- burial_network_post ~
   edges + # ties, a measure of density, equal to kstar(1) for undirected networks
   density +
-  gwdegree(0.5, fixed = TRUE)  +
-  triangle # triad relation, a measure of clustering or cohesion, also called transitive triple in undirected network
-summary(model.ergm)
+  triangle + # triad relation, a measure of clustering or cohesion
+  gwesp(1.2, fixed = TRUE) + # transitivity(cohesion; triangle), a tendency for nodes with shared partners to cluster together
+  gwdegree(0.5, fixed = TRUE)  # popularity(degree; star), nodal degrees
 
-model.2 <- burial_network_post ~ edges + # density
-  gwesp(1.4, fixed = TRUE) +  # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
-  gwdegree(0.8, fixed = TRUE)  # popularity(degree; star), the frequency distribution for nodal degrees
-summary(model.2)
+summary(model_post_1)
 
 #--------------------Bayesian inference for ERGMs-------------------------
-model.post.3 <- burial_network_post ~ edges +  # the overall density of the network
+model_post_3 <- burial_network_post ~
+  edges +  # the overall density of the network
   #nodematch('quantity') +  # quantity-based homophily, the similarity of connected nodes
   nodematch('age') +
   nodematch('gender') +
@@ -137,18 +134,19 @@ model.post.3 <- burial_network_post ~ edges +  # the overall density of the netw
   nodematch('value_class') +
   #nodematch('orientation') +
   #absdiff('burial_value') +
-  gwesp(1.4, fixed = TRUE) + # start close to zero and move up, how well we do in matching the count of triangles
-  #gwnsp(1.7, fixed = TRUE) + # original 1.8
+  gwesp(1.2, fixed = TRUE) + # start from zero and move up to match the count of triangles
+  #gwnsp(1.2, fixed = TRUE) +
   gwdegree(0.5, fixed = TRUE) +
   dyadcov(post_distance_n, "dist")
 
-summary(model.post.3)
+summary(model_post_3)
 
-# Specify a prior distribution: normal distribution (low density and high transitivity)
-prior.mean <- c(-3, 0, 0, 0, 0, 1, 1, 0) # prior mean corresponds to mean for each parameter
-prior.sigma <- diag(c(3, 3, 3, 3, 3, 3, 3, 5), 8, 8) # covariance matrix structure
+# Specify a prior distribution
+# normal distribution (low density, low transitivity, high popularity)
+prior.mean <- c(-3, 0, 0, 0, 1, 1, 1, -1) # prior mean corresponds to mean for each parameter
+prior.sigma <- diag(c(3, 3, 4, 4, 3, 3, 2, 1), 8, 8) # covariance matrix structure
 
-post_bergm <- bergm(model.post.3,
+post_bergm <- bergm(model_post_3,
                  prior.mean  = prior.mean,
                  prior.sigma = prior.sigma,
                  burn.in     = 100, # burn-in iterations for every chain of the population, drops the first 200
@@ -161,7 +159,7 @@ summary(post_bergm)
 
 plot(post_bergm)
 
-# Model assessment, Bayesian goodness of fit diagnostics:
+# Model assessment, Bayesian goodness of fit diagnostics
 bgof_post <-
   bgof(post_bergm,
        aux.iters = 10000,

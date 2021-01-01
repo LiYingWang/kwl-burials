@@ -52,7 +52,7 @@ common_counts_vct_pre <- map_int(common_counts_lst_pre, ~sum(!is.na(.x$common_co
 burial_comb_with_common_counts_pre <-
   burial_comb_pre %>%
   mutate(common_counts = common_counts_vct_pre) %>%
-  mutate(common_counts = ifelse(burial_1 == burial_2, 0, common_counts)) # 0 means no self loop
+  mutate(common_counts = ifelse(burial_1 == burial_2, 0, common_counts)) # 0 for no self loop
 
 # change label to ids for node linking
 edges_pre <-
@@ -64,8 +64,8 @@ edges_pre <-
 
 edges_for_network_pre <-
   select(edges_pre, from, to, common_counts) %>%
-  filter (!common_counts == 0) # remove rows with no goods in common
-  #mutate(common_counts = ifelse(common_counts > 1, 1, common_counts)) # for unweighted network
+  filter (!common_counts == 0) # remove rows without goods in common
+  # mutate(common_counts = ifelse(common_counts > 1, 1, common_counts)) for unweighted network
 
 #-------------------------create network using network pkg-------------------------------
 library(network)
@@ -77,8 +77,8 @@ burial_network_pre <-
           vertex.attr = nodes_pre, # node list
           directed = FALSE, # whether the network is directed
           ignore.eval = FALSE, # FALSE means weighted
-          loops = FALSE, # FALSE means not allow self ties
-          matrix.type = "edgelist") # the type of input
+          loops = FALSE, # allow self ties or not
+          matrix.type = "edgelist") # input type
 
 plot(burial_network_pre, vertex.cex = 1)
 network.density(burial_network_pre)
@@ -93,8 +93,8 @@ set.vertex.attribute(burial_network_pre, "quantity", burial_pre$quantity)
 set.vertex.attribute(burial_network_pre, "age", burial_pre$Age_scale)
 set.vertex.attribute(burial_network_pre, "gender", burial_pre$gender)
 set.vertex.attribute(burial_network_pre, "ritual_pottery", burial_pre$ritual_pottery)
-set.vertex.attribute(burial_network_pre, "value_class", burial_pre$value_class) #categorical
-set.vertex.attribute(burial_network_pre, "burial_value", burial_pre$burial_value) #numeric
+set.vertex.attribute(burial_network_pre, "value_class", burial_pre$value_class) # categorical
+set.vertex.attribute(burial_network_pre, "burial_value", burial_pre$burial_value) # numeric
 set.vertex.attribute(burial_network_pre, "orientation", burial_pre$orientation)
 
 # get distance matrix, need to run 002 code first
@@ -118,7 +118,7 @@ plot(burial_network_pre,
 legend("topleft",
        col = c(2, 3, 1, 4), # adjust manually each time
        pch    = 20,
-       legend = unique(quantity),# quantity
+       legend = unique(quantity), # quantity
        title  = 'Burial good counts')
 
 #---------------------------create ERGMs-------------------------------------
@@ -129,7 +129,7 @@ model_pre_1 <- burial_network_pre ~
   density +
   triangle + # transitive triple in undirected network, measure clustering or cohesion
   gwesp(0.4, fixed = TRUE)+
-    # transitivity(cohesion; triangle), a tendency for those with shared partners to become tied, or tendency of ties to cluster together
+    # transitivity(cohesion; triangle), a tendency for nodes with shared partners to be tied or clustered
     # number = weight parameter alpha, scaling parameter, controls the rate of declining marginal returns
     # less difference in a range of 0-1.5. The lower the value of the number, the less likely the model is to be degenerate
     # fixed = TRUE means the scale parameter lambda is fit as a curved exponential-family model
@@ -139,11 +139,11 @@ model_pre_1 <- burial_network_pre ~
     # tendency of being in contact with multiple partners, measures of centralization
     # distribution of node-based edge counts, each node counts only once
     # number = weight parameter decay
-    # The number is close to zero, the more gwdegree considers low degree nodes relative to high degree nodes
+    # closer to zero, the more gwdegree considers low degree nodes relative to high degree nodes
 
 summary(model_pre_1)
 
-# check edgewise Shared Partners
+# check edgewise shared partners
 summary(burial_network_pre ~ esp(0:10))
 summary(burial_network_pre ~ gwdegree(0:10))
 
@@ -156,29 +156,30 @@ model_pre_3 <- burial_network_pre ~ edges +  # the overall density of the networ
   nodematch('value_class') +
   #nodematch('orientation') +
   #absdiff('burial_value') + for numeric variable
-  gwesp(0.4, fixed = TRUE) + #start close to zero and move up to see how well it matches the count of triangles
-  #gwnsp(0.8, fixed = TRUE) + #0.75,
+  gwesp(0.4, fixed = TRUE) + # close to zero and move up to see how well it matches triangles
+  #gwnsp(0.4, fixed = TRUE) + # opposite to gwesp
   gwdegree(0.5, fixed = TRUE) +
   dyadcov(pre_distance_n, "dist")
 summary(model_pre_3)
 
 #--------------------------Bayesian inference on ERGMs-------------------------
-# prior suggestion: normal distribution (low density and high transitivity), but it also depends on the ERGM netowrk we observed
 # follow Alberto Caimo et al. (2015) hospital example
+# prior uses normal distribution (low density, high transitivity, low popularity)
+# need to adjust according to the observed ERGM network
 prior.mean <- c(-3, 0, 0, 1, 0, 2, -1, -1) # positive prior number for edge means high density
 prior.sigma <- diag(c(3, 3, 3, 5, 5, 4, 2, 1), 8, 8) # covariance matrix structure, uncertainty
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) a common prior model
-# where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix.
-# it returns estimated posterior means, medians and 95% credible intervals
+# where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix
+# output includes estimated posterior means, medians and 95% credible intervals
 
-pre_bergm <- bergm(model_pre_3, # bergmM for data with missing values using the approximate exchange algorithm
+pre_bergm <- bergm(model_pre_3, # using the approximate exchange algorithm
                   prior.mean  = prior.mean,
                   prior.sigma = prior.sigma,
                   burn.in     = 100, # drop first 100 for every chain of the population
                   main.iters  = 1000, # iterations for every chain of the population
                   aux.iters   = 4000, # MCMC steps used for network simulation
                   nchains     = 16, # number of chains of the population MCMC
-                  gamma       = 0) # scalar; parallel adaptive direction sampling move factor, acceptance rate
+                  gamma       = 0) # scalar; parallel adaptive direction sampling move factor, acceptance rate, 0.2
 
 summary(pre_bergm)
 
