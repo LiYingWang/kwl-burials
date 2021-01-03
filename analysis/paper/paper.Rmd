@@ -1,8 +1,8 @@
 ---
 title: "A Bayesian approach to burial networks to infer social changes in 17th northeastern Taiwan during the European colonization period"
 author:
-  - Author One
-  - Author Two
+  - Li-Ying Wang
+  - Ben Marwick
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
     bookdown::word_document2:
@@ -11,7 +11,7 @@ output:
 bibliography: references.bib
 csl: "../templates/journal-of-archaeological-science.csl" # Insert path for the bib-style
 abstract: |
-  Text of abstract
+  Burials provide valuable information to study social structures based on the assumption that burials and associated grave goods can represent social roles and relations in a society. To study social relationships, network analysis has been increasingly applied to archaeological data to explore network structures and patterns that can infer interactions and relationship between entities. Different from traditional static networks, statistical approaches to network analysis, such as exponential random graph models (ERGMs), provides a way to test hypotheses on dynamic process of network formation. However, the computational difficulty and sensitivity to uncertainties limits the application of ERGMs. In this paper, we introduced a Bayesian framework on ERGMs that enables an efficient computational process, effective quantification for uncertainty, and robust model evaluation of network properties. We tested the hypothesis of social changes relative to the arrival of Europeans by studying burial data from Kiwulan, an Iron Age site in northeastern Taiwan. The results indicate a more centralized structure with an emphasis of social differentiation after the European presence in the 17th century. Our case study demonstrates the effectiveness of Bayesian network analysis for archaeological data, and expand the use of burials in understanding the impacts of colonial presence on Indigenous groups in a pericolonial context.
 keywords: |
   Bayesian modeling; network analysis; Monte-carlo simulation; Burials; European colonialism; social differentiation; Taiwan
 highlights: |
