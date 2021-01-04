@@ -46,7 +46,7 @@ burial_three_period_age_tidy <-
          Gold_bead_high = ifelse(Golden_bead > 3, 1, NA),
          Agate_bead_low = ifelse(Agate_bead <= 2, 1, NA), # set low level to 2
          #Agate_bead_med = ifelse(Agate_bead > 2 & Agate_bead <= 6, 1, NA),
-         Agate_bead_med_2 = ifelse(Agate_bead = 3, 1, NA),
+         Agate_bead_med_2 = ifelse(Agate_bead == 3, 1, NA),
          Agate_bead_med_3 = ifelse(Agate_bead > 3 & Agate_bead <= 6, 1, NA),
          Agate_bead_high = ifelse(Agate_bead > 6, 1, NA), # set high level to 10
          all_glass_bead_low = ifelse(all_glass_bead == 1 , 1, NA),
@@ -54,7 +54,7 @@ burial_three_period_age_tidy <-
          all_glass_bead_med_2 = ifelse(all_glass_bead == 2 , 1, NA),
          all_glass_bead_med_3 = ifelse(all_glass_bead > 2 & all_glass_bead <= 6, 1, NA),
          all_glass_bead_high = ifelse(all_glass_bead > 6, 1, NA)) %>% #based on the result of histogram
-  left_join(burial_with_type_value_class) %>%
+  left_join(burial_with_type_value_class) %>% #000-prep1
   select(burial_label,
          Phase,
          Age_scale,

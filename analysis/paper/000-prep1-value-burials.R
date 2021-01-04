@@ -4,7 +4,7 @@ library(here)
 
 burial <- read_excel(here("analysis", "data", "raw_data", "Kiwulan_Burials.xlsx"))
 
-# burial data with combined age and three phases
+# tidy up data, select and combine parameters
 burial_values <-
   burial %>%
   rename(burial_label = ID) %>%
@@ -16,12 +16,12 @@ burial_values <-
          Stamped_ceramic = ifelse(Stamped_ceramic == "cluster", "1", Stamped_ceramic)) %>%
   mutate_at(21:ncol(.), as.numeric) %>%
   janitor::remove_empty(which = "cols") %>%
-  mutate(total = rowSums(.[c(21:48, 50, 55, 56)], na.rm = TRUE)) %>% #prestige goods
-  mutate(Porcelain = rowSums(.[c(40:48, 56)], na.rm = TRUE)) %>% #B&W, porcelain, kendi
+  mutate(total = rowSums(.[c(21:48, 50, 55, 56)], na.rm = TRUE)) %>% # prestige goods
+  mutate(Porcelain = rowSums(.[c(40:48, 56)], na.rm = TRUE)) %>% # B&W, porcelain, kendi
   mutate(Porcelain = ifelse(Porcelain == 0, NA, Porcelain)) %>%
-  mutate(Stonewares = rowSums(.[c(50, 55)], na.rm = TRUE)) %>% #stoneware, Anping jars
+  mutate(Stonewares = rowSums(.[c(50, 55)], na.rm = TRUE)) %>% # stoneware, Anping jars
   mutate(Stonewares = ifelse(Stonewares == 0, NA, Stonewares)) %>%
-  mutate(Metal_bangles = rowSums(.[c(26, 28, 29)], na.rm = TRUE)) %>% #different bangles
+  mutate(Metal_bangles = rowSums(.[c(26, 28, 29)], na.rm = TRUE)) %>% # different bangles
   mutate(Metal_bangles = ifelse(Metal_bangles == 0, NA, Porcelain)) %>%
   mutate(quantity = case_when(
     total == 0 ~ "none",
@@ -68,7 +68,7 @@ burial_with_type_value <-
   mutate(Golden_bead =
            ifelse(is.na(Golden_bead), 0, type_value(Golden_bead)))
 
-# replace counts with type value and sum up for each burial
+# replace counts with type value and sum them up for each burial
 burial_with_type_value <-
   burial_values %>%
   mutate(across(where(is.numeric),
@@ -77,23 +77,26 @@ burial_with_type_value <-
   select(burial_label, burial_value)
 
 # distribution plot of burial value
-mean(burial_with_type_value$burial_value)
-quantile(burial_with_type_value$burial_value)
-quantile(burial_with_type_value$burial_value, probs = 0.9)
+mean_burial_value <-
+  mean(burial_with_type_value$burial_value)
 
 ggplot(burial_with_type_value,
        aes(burial_value)) +
   geom_histogram() +
-  geom_vline(xintercept = c(12, 30), # refers to quantile values
+  geom_vline(xintercept = quantile(burial_with_type_value$burial_value,
+                                   probs = c(0.5, 0.7, 0.9)),
              color = "red")
+
+high_burial_value <-
+  quantile(burial_with_type_value$burial_value,
+           probs = c(0.9))
 
 # divide burial value into classes
 burial_with_type_value_class <-
   burial_with_type_value %>%
   mutate(value_class = case_when(
     burial_value == 0 ~ "none",
-    burial_value < 12 ~ "low",
-    burial_value >= 12 & burial_value < 30 ~ "medium",
-    burial_value >= 30 ~ "high",
+    burial_value < mean_burial_value ~ "below-average",
+    burial_value >= mean_burial_value & burial_value < high_burial_value ~ "above-average",
+    burial_value >= high_burial_value ~ "high",
     TRUE ~ ""))
-

@@ -128,6 +128,7 @@ post_diagram <-
   theme_graph() +
   theme(plot.margin = unit(rep(0.8,4), "cm"))
 
+# plot together
 library(cowplot)
 plot_grid(pre_diagram,
           post_diagram,
