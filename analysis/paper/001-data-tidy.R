@@ -89,4 +89,3 @@ burial_three_period_age_tidy <-
 burial_three_period_age_number <-
   burial_three_period_age_tidy %>%
   count(Phase)
-

@@ -1,5 +1,5 @@
-# this file is a preparation for later analysis and can be ran individually
-# it explores the distribution of beads to guide the assignment of groups for making ties
+# the purpose of this file is to explore data and can be ran individually and separately
+# it explores distribution of beads to guide the assignment of groups for making ties in 001 file
 
 # tidy up
 burial_three_period_tidy_explore <-

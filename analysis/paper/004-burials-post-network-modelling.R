@@ -144,7 +144,7 @@ summary(model_post_3)
 # Specify a prior distribution
 # normal distribution (low density, low transitivity, high popularity)
 prior.mean <- c(-3, 0, 0, 0, 1, 1, 1, 0) # prior mean corresponds to mean for each parameter
-prior.sigma <- diag(c(2, 3, 3, 2, 3, 3, 4, 2), 8, 8) # covariance matrix structure
+prior.sigma <- diag(c(3, 3, 3, 2, 3, 3, 5, 2), 8, 8) # covariance matrix structure
 
 post_bergm <- bergm(model_post_3,
                  prior.mean  = prior.mean,
