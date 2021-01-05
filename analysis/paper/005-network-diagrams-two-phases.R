@@ -130,10 +130,12 @@ post_diagram <-
 
 # plot together
 library(cowplot)
-plot_grid(pre_diagram,
-          post_diagram,
-          labels = c('A', 'B'),
-          label_size = 12)
+diagrams_two_phases <-
+  plot_grid(pre_diagram,
+            post_diagram,
+            labels = c('A', 'B'),
+            label_size = 12,
+            w = 10, h = 4)
 
-ggsave(here::here("analysis", "figures", "two_networks.png"),
+ggsave(here::here("analysis", "figures", "networks_two_phases.png"),
        w = 10, h = 4)
