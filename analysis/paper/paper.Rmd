@@ -34,6 +34,7 @@ knitr::opts_chunk$set(
 image_width_1_col_inch = 90/25.4 # image Single column	w = 90 mm 
 image_width_2_col_inch = 190/25.4 # image Double column w = 190 mm 
 image_width_3_col_inch = 190/19
+
 ```
 
 # Introduction
@@ -87,8 +88,8 @@ We analyzed burial data collected from the published excavation reports, and the
 suppressWarnings(source(here::here("analysis", "paper", "002-burial-location.R")))
 ```
 
-```{r burial-map, fig.cap = "Map illustrating the location of burials by periods at the central excavation area of Kiwulan (each square is 4 X 4 meters). The gray dots are post holes.", fig.width = image_width_2_col_inch}
-KWL_burial_map
+```{r figure-burial-map, fig.cap = "Map illustrating the location of burials by periods at the central excavation area of Kiwulan (each square is 4 X 4 meters). The gray dots are post holes."}
+knitr::include_graphics(here::here("analysis", "figures", "002-burial-map.png"))
 ```
 
 ```{r sample-size}
@@ -123,7 +124,7 @@ We used burial goods in common to construct ties for representing a flow of good
 
 ## Model specification in a Bayesian framework
 
-```{r ergm-terms-table}
+```{r table-ergm-terms}
 ergm_terms <- readxl::read_excel(here::here("analysis", "data", "raw_data", "ergm_term.xlsx")) 
 knitr::kable(ergm_terms,
              caption = "The parameters of exponential random graph models for a undirected network to corresponding with archaeological evidence.")
@@ -153,15 +154,15 @@ The entire R code [@Rlanguage2019] used for all the analysis and visualizations 
 
 # Results
 
-```{r make-network-diagrams, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("005-network-diagrams-two-phases.R"))}
-suppressWarnings(source(here::here("analysis", "paper", "005-network-diagrams-two-phases.R")))
-```
-
 <!--posterior stats for pre-E-->
 The networks constructed from observed burial data show that the network after the European presence has higher node degrees in general (Figure \@ref(fig:network-diagrams)). We compared estimated statistics from the posterior distributions to examine their differences in structure of the simulated networks (Table XX). For the pre-European network simulations, two nodal covariates, age-homophily and ritual-homophily, have significant effects on the formation of relations between burials. The age homophily shows a negative effect that indicates burials of the same age tend to not share similar prestige goods, while the ritual-homophily demonstrates the positive effect that means burials with ritual pottery tend to form relations. Despite positive values for some covariates, such as sex-homophily and burial value-homophily, they do not show a significant tendency to form relations duo to value of zero in the confidence intervals. Similarly, the dyadic covariate, physical distance, shows positive effects but not significantly, indicating that physical proximity does not affect relations. For the endogenous network effects, transitivity (gwesp) present significant positive effect, while popularity (gwdegree) demonstrates negative effect. The positive value for transitivity suggests a tendency of burials to be clustered in closed transitive structures, indicative of the presence of multiple corporate groups sharing burial goods in common. The negative popularity shows there is a tendency toward decentralization that reflects most burials have similar number of ties without any prominent ones. This might imply that individuals have equal access to trade goods in terms of the flow of goods. 
 
-```{r network-diagrams, fig.cap = "A: Burial network before the European arrival, B: Burial network after the European arrival. The size of the nodes is proportional to the node degrees that means the number of connections to a node. The thickness of tie represents the number of goods in common between nodes.", fig.width = image_width_3_col_inch}
-diagrams_two_phases
+```{r network-diagrams, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("005-network-diagrams-two-phases.R"))}
+suppressWarnings(source(here::here("analysis", "paper", "005-network-diagrams-two-phases.R")))
+```
+
+```{r figure-network-diagrams, fig.cap = "Map illustrating the location of burials by periods at the central excavation area of Kiwulan (each square is 4 X 4 meters). The gray dots are post holes."}
+knitr::include_graphics(here::here("analysis", "figures", "005-network-diagrams.png"))
 ```
 
 <!--posterior stats for for post-E and their comparison-->

@@ -134,8 +134,7 @@ diagrams_two_phases <-
   plot_grid(pre_diagram,
             post_diagram,
             labels = c('A', 'B'),
-            label_size = 12,
-            w = 10, h = 4)
+            label_size = 12)
 
-ggsave(here::here("analysis", "figures", "networks_two_phases.png"),
-       w = 10, h = 4)
+ggsave(here::here("analysis", "figures", "005-network-diagrams.png"),
+       w = 8, h = 3)
