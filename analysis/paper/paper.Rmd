@@ -33,7 +33,7 @@ knitr::opts_chunk$set(
 
 image_width_1_col_inch = 90/25.4 # image Single column	w = 90 mm 
 image_width_2_col_inch = 190/25.4 # image Double column w = 190 mm 
-image_width_3_col_inch = 190/20
+image_width_3_col_inch = 190/19
 ```
 
 # Introduction
@@ -83,7 +83,7 @@ suppressWarnings(source(here::here("analysis", "paper", "001-data-tidy.R")))
 <!--archaeological setting-->
 We analyzed burial data collected from the published excavation reports, and the original fieldwork notes for the upper component of Kiwulan, an Iron Age settlement (1350-1850 AD). The settlement experienced European colonial impacts in the early 17th century and a large wave of Chinese immigrants in the 19th century [@Chen2007]. Excavations revealed abundant pottery sherds, imported ceramics and stonewares, wooden artifacts, stone tools, metal artifacts, imported glass beads and agates beads, and pipes [@Chen2007]. In addition to these artifacts, 90 burials, hundreds of middens, storage pits, and postholes with _in-situ_ posts were also excavated. The burials are mostly located in the middle section of the excavation area, which is the largest open area at Kiwulan that provides continuous stratigraphic sections suitable for temporal comparison (Figure \@ref(fig:burial-map)). Burials are oriented in an east-west direction on the north side of the residential area, indicated by post-holes and `in-situ` wooden posts, indicating a well organized spatial arrangement. Previous studies report an uneven distribution of prestige goods across burials without agreement about whether this uneven distribution hints at vertical social differences. For example, @Cheng2008 interpreted the unequal distribution of glass beads, especially the gold-foil beads between burials, as evidence for hierarchy, indicating a stratified society. However, @Hsieh2012 suggested a relatively egalitarian structure based on comparative analysis of the frequencies of all burial goods. She found that the burials with high value burial goods were usually associated with elders, which might indicate achieved, rather than inherited, status. One important limitation of these previous studies is that they did not use analytical units suitable for comparing pre-European social organization with post-European social organization. Here, we adopt a new chronological framework for the burials to test if network configurations differ from the pre-European period to the post-European period. The discord over the discussion of Kiwulan social organization could be associated with chronological differences that has not yet been well studied. 
 
-```{r burial-location, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("001-data-tidy.R"))}
+```{r burial-location, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("002-burial-location.R"))}
 suppressWarnings(source(here::here("analysis", "paper", "002-burial-location.R")))
 ```
 
