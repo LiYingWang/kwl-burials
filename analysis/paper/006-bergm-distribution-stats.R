@@ -56,8 +56,7 @@ histogram <-
             degree_value,
             dist_value)
 
-# density plots of posterior distribution
-
+# density plots for posterior distribution
 bergm_two_phases_longer <-
   bergm_two_phases %>%
   select(edges, gwesp, gwdeg.fixed.0.5, dyadcov.dist, phase) %>%
@@ -105,3 +104,6 @@ ggplot(distribution_two_phases_longer,
                               size = 3) +
   facet_wrap(~moments, scales = "free") +
   theme_minimal()
+
+ggsave(here::here("analysis", "figures", "006-distribution-moments.png"),
+       w = 8, h = 5)
