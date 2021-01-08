@@ -76,15 +76,20 @@ burial_with_type_value <-
   mutate(burial_value = rowSums(across(where(is.numeric)))) %>%
   select(burial_label, burial_value)
 
-# distribution plot of burial value
-mean_burial_value <-
-  mean(burial_with_type_value$burial_value)
+# take the mean of burial value for the burials with goods
+mean_burial_value_zero_rm <-
+  burial_with_type_value %>%
+  filter(!burial_value == 0)
 
+mean_burial_value <-
+  mean(mean_burial_value_zero_rm$burial_value)
+
+# distribution plot of burial value
 ggplot(burial_with_type_value,
        aes(burial_value)) +
   geom_histogram() +
   geom_vline(xintercept = quantile(burial_with_type_value$burial_value,
-                                   probs = c(0.5, 0.7, 0.9)),
+                                   probs = c(0.3, 0.6, 0.9)),
              color = "red")
 
 high_burial_value <-
