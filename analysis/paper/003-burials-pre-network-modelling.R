@@ -80,7 +80,6 @@ burial_network_pre <-
           loops = FALSE, # allow self ties or not
           matrix.type = "edgelist") # input type
 
-plot(burial_network_pre, vertex.cex = 1)
 network.density(burial_network_pre)
 network.dyadcount(burial_network_pre, na.omit = TRUE)
 
@@ -166,8 +165,8 @@ summary(model_pre_3)
 # follow Alberto Caimo et al. (2015) hospital example
 # prior uses normal distribution (low density, high transitivity, low popularity)
 # need to adjust according to the observed ERGM network
-prior.mean <- c(-3, 0, 0, 1, 0, 2, -1, -1) # positive prior number for edge means high density
-prior.sigma <- diag(c(3, 3, 3, 5, 5, 4, 2, 1), 8, 8) # covariance matrix structure, uncertainty
+prior.mean <- c(-3, 0, 0, 1, 0, 2, -2, 0) # positive prior number for edge means high density
+prior.sigma <- diag(c(3, 5, 5, 5, 3, 2, 3, 1), 8, 8) # covariance matrix structure, uncertainty
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) a common prior model
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix
 # output includes estimated posterior means, medians and 95% credible intervals
