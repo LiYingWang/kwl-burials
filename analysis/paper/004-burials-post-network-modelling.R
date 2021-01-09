@@ -74,8 +74,6 @@ burial_network_post <-
           loops = FALSE, # not allow self ties
           matrix.type = "edgelist") # input type
 
-# plot
-plot(burial_network_post, vertex.cex = 1)
 network.density(burial_network_post)
 #-----------------------Bayesian ERGMs------------------------------
 library(statnet)
@@ -143,8 +141,8 @@ summary(model_post_3)
 
 # Specify a prior distribution
 # normal distribution (low density, low transitivity, high popularity)
-prior.mean <- c(-3, 0, 0, 0, 1, 1, 1, 0) # prior mean corresponds to mean for each parameter
-prior.sigma <- diag(c(3, 3, 3, 2, 3, 3, 5, 2), 8, 8) # covariance matrix structure
+prior.mean <- c(-3, 0, 0, 0, 2, 1, 2, 0) # prior mean corresponds to mean for each parameter
+prior.sigma <- diag(c(3, 5, 5, 5, 3, 3, 3, 1), 8, 8) # covariance matrix structure
 
 post_bergm <- bergm(model_post_3,
                  prior.mean  = prior.mean,
