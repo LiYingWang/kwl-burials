@@ -167,24 +167,25 @@ suppressWarnings(source(here::here("analysis", "paper", "006-bergm-distribution-
 ```
 
 <!--posterior stats for pre-E-->
-We examine the estimates from the posterior distributions to compare their differences in structure of the simulated networks (Table XX; Figure \@ref(fig:figure-posterior-distribution)). For the pre-European network simulations, two nodal covariates, age-homophily and ritual-homophily, have significant effects on the formation of relations between burials. The age homophily shows a negative effect that indicates burials of the same age tend to not share similar prestige goods, while the ritual-homophily demonstrates the positive effect that means burials with ritual pottery tend to form relations. Despite positive values for some covariates, such as sex-homophily and burial value-homophily, they do not show a significant tendency to form relations duo to value of zero in the confidence intervals. Similarly, the dyadic covariate, physical distance, shows positive effects but not significantly, indicating that physical proximity does not affect relations. For the endogenous network effects, transitivity (gwesp) present significant positive effect, while popularity (gwdegree) demonstrates negative effect. The positive value for transitivity suggests a tendency of burials to be clustered in closed transitive structures, indicative of the presence of multiple corporate groups sharing burial goods in common. The negative popularity shows there is a tendency toward decentralization that reflects most burials have similar number of ties without any prominent ones. This might imply that individuals have equal access to trade goods in terms of the flow of goods. 
+We examine the estimates from the posterior distributions to compare their differences in structure of the simulated networks (Table \@ref(tab:table-posterior-stats); Figure \@ref(fig:figure-posterior-distribution)). For the pre-European network simulations, two nodal covariates, age-homophily and ritual-homophily, have significant effects on the formation of relations between burials. The age homophily shows a negative effect that indicates burials of the same age tend to not share similar prestige goods, while the ritual-homophily demonstrates the positive effect that means burials with ritual pottery tend to form relations. Despite positive values for some covariates, such as sex-homophily and burial value-homophily, they do not show a significant tendency to form relations duo to value of zero in the confidence intervals. Similarly, the dyadic covariate, physical distance, shows positive effects but not significantly, indicating that physical proximity does not affect relations. For the endogenous network effects, transitivity (gwesp) present significant positive effect, while popularity (gwdegree) demonstrates negative effect. The positive value for transitivity suggests a tendency of burials to be clustered in closed transitive structures, indicative of the presence of multiple corporate groups sharing burial goods in common. The negative popularity shows there is a tendency toward decentralization that reflects most burials have similar number of ties without any prominent ones. This might imply that individuals have equal access to trade goods in terms of the flow of goods. 
 
 ```{r table-posterior-stats}
-pre_posterior_esti <-
-  data.frame("Parameter" = pre_bergm$specs,
-             round(summary(pre_bergm$Theta)$statistics[,1:2], 2),
-             round(summary(pre_bergm$Theta)$quantiles[,c(1,3,5)], 2),
-             row.names = NULL) %>% 
-  rename("0.025" = X2.5., "Median" = X50., "0.975" = X97.5.)
+# make summary table
+posterior_esti_two_phases<-
+  bergm_two_phases %>%
+  pivot_longer(!phase, names_to = "parameter", values_to = "posterior") %>%
+  mutate(parameter = factor(parameter,
+                            levels=c("edges", "nodematch.age", 
+                                     "nodematch.sex", "nodematch.ritual",
+                                     "nodematch.value", "gwesp",	
+                                     "gwdeg", "dyadcov.distance"))) %>% 
+  group_by(parameter, phase) %>% 
+  summarize(mean = round(mean(posterior), 2),
+            median = round(quantile(posterior, 0.5), 2),
+            `2.5%` = round(quantile(posterior, 0.025), 2),
+            `97.5%` = round(quantile(posterior, 0.075), 2))
 
-post_posterior_esti <-
-  data.frame("Parameter" = post_bergm$specs,
-             round(summary(post_bergm$Theta)$statistics[,1:2], 2),
-             round(summary(post_bergm$Theta)$quantiles[,c(1,3,5)], 2),
-             row.names = NULL) %>% 
-  rename("0.025" = X2.5., "Median" = X50., "0.975" = X97.5.)
-
-knitr::kable(pre_posterior_esti,
+knitr::kable(posterior_esti_two_phases,
              caption = "Estimated posterior means, standard deviation, medians, and 95% credible intervals for the pre-Euroepan model ")
 ```
 
