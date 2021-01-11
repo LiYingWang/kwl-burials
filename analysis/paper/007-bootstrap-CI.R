@@ -1,7 +1,8 @@
-# run 006-bergm-bootstrap
-#------------------------functions for network stats---------------------------
+#-----------------functions of bootstrap sampling for three network stats---------------------------
+# bootstrap example: https://journal.r-project.org/archive/2018/RJ-2018-056/RJ-2018-056.pdf
 # function to calculate density using vertex bootstrap
-boot_density <- function(pre_rm_matrix) {
+library(snowboot)
+boot_density <- function(igraph_net) {
   rm_matrix <- as.matrix(as_adjacency_matrix(igraph_net))
   boot <- 1000
   set.seed(1)
@@ -50,6 +51,12 @@ three_CI_and_obs <- function(net_after_node_removal) {
 }
 
 #-----------------------vertex removal for pre-E-------------------------------------
+library(igraph)
+# observed pre-E network
+pre_E_igraph <- graph_from_data_frame(d = edges_for_network_pre,
+                                      vertices = nodes_pre,
+                                      directed = FALSE)
+
 # remove 5% node (1 node)
 pre_5_node_removal <-
   delete_vertices(pre_E_igraph, sample(1:nrow(nodes_pre),
@@ -129,32 +136,12 @@ pre_40_node_removal <-
 # get 95% CI for three stats and observations
 pre_40_rm_boot_all_stats <- three_CI_and_obs(pre_40_node_removal)
 
-#-----------------------coverage probabilities-------------------------------------
-# coverage probabilities
-pre_cov_5_mean_all <- rbind(mean(boot_density(pre_5_node_removal)),
-                        mean(boot_trans(pre_5_node_removal)),
-                        mean(boot_degree(pre_5_node_removal)))
-
-pre_cov_5_se_all <- rbind(sd(boot_density(pre_5_node_removal)),
-                      sd(boot_trans(pre_5_node_removal)),
-                      sd(boot_degree(pre_5_node_removal)))
-
-pre_cov_5_den <- sum(boot_density(pre_5_node_removal) <= pre_CIvertboot_den[[2]] &
-                   boot_density(pre_5_node_removal) >= pre_CIvertboot_den[[1]])/1000
-pre_cov_5_trans <- sum(boot_trans(pre_5_node_removal) <= pre_CIvertboot_trans[[2]] &
-                    boot_trans(pre_5_node_removal) >= pre_CIvertboot_trans[[1]])/1000
-pre_cov_5_star <-sum(boot_degree(pre_5_node_removal) <= pre_CIvertboot_star[[2]] &
-                    boot_degree(pre_5_node_removal) >= pre_CIvertboot_star[[1]])/1000
-
-pre_5_rm_cov_stats <-
-  as.data.frame(rbind(pre_cov_5_den,
-                      pre_cov_5_trans,
-                      pre_cov_5_star)) %>%
-  cbind(mean = pre_cov_5_mean_all,
-        se = pre_cov_5_se_all) %>%
-  rename(coverage = V1)
-
 #-----------------------vertex removal for post-E-------------------------------------
+# observed post-E network
+post_E_igraph <- graph_from_data_frame(d = edges_for_network_post,
+                                       vertices = nodes_post,
+                                       directed = FALSE)
+
 # remove 5% node (2 node)
 post_5_node_removal <-
   delete_vertices(post_E_igraph, sample(1:nrow(nodes_post),
@@ -234,31 +221,6 @@ post_40_node_removal <-
 # get 95% CI for three stats and observations
 post_40_rm_boot_all_stats <- three_CI_and_obs(post_40_node_removal)
 
-#-----------------------coverage probabilities-------------------------------------
-# coverage probabilities
-post_cov_5_mean_all <- rbind(mean(boot_density(post_5_node_removal)),
-                        mean(boot_trans(post_5_node_removal)),
-                        mean(boot_degree(post_5_node_removal)))
-
-post_cov_5_se_all <- rbind(sd(boot_density(post_5_node_removal)),
-                      sd(boot_trans(post_5_node_removal)),
-                      sd(boot_degree(post_5_node_removal)))
-
-post_cov_5_den <- sum(boot_density(post_5_node_removal) <= post_CIvertboot_den[[2]] &
-                   boot_density(post_5_node_removal) >= post_CIvertboot_den[[1]])/1000
-post_cov_5_trans <- sum(boot_trans(post_5_node_removal) <= post_CIvertboot_trans[[2]] &
-                     boot_trans(post_5_node_removal) >= post_CIvertboot_trans[[1]])/1000
-post_cov_5_star <-sum(boot_degree(post_5_node_removal) <= post_CIvertboot_star[[2]] &
-                   boot_degree(post_5_node_removal) >= post_CIvertboot_star[[1]])/1000
-
-post_5_rm_cov_stats <-
-  as.data.frame(rbind(post_cov_5_den,
-                      post_cov_5_trans,
-                      post_cov_5_star)) %>%
-  cbind(mean = post_cov_5_mean_all,
-        se = post_cov_5_se_all) %>%
-  rename(coverage = V1)
-
 #---------------------------network stats visualization-----------------------------------
 # combines all network stats in one dataframe
 CIs_two_nets <-
@@ -314,3 +276,6 @@ CIs_two_nets_tidy %>%
        y = "node removal (%)") +
   facet_wrap(~variable,
              scales = "free_x")
+
+ggsave(here::here("analysis", "figures", "007-bootstrap-CI.png"),
+       w = 8, h = 5)
