@@ -185,12 +185,18 @@ summary(pre_bergm)
 plot(pre_bergm)
 
 # Bayesian Model assessment
+png(filename = here::here("analysis", "figures", "003-pre-bgof.png"),
+    width = 5, height = 4, units = "in", res = 360)
+
 bgof_pre <-
   bgof(pre_bergm,
+       sample.size = 100,
        aux.iters = 10000,
        n.deg     = 15,
        n.dist    = 15,
        n.esp     = 10)
+
+dev.off()
 
 summary(bgof_pre)
 

@@ -158,12 +158,18 @@ summary(post_bergm)
 plot(post_bergm)
 
 # Model assessment, Bayesian goodness of fit diagnostics
+png(filename = here::here("analysis", "figures", "004-post-bgof.png"),
+    width = 5, height = 4, units = "in", res = 360)
+
 bgof_post <-
   bgof(post_bergm,
+       sample.size = 100,
        aux.iters = 10000,
        n.deg     = 30,
        n.dist    = 15,
        n.esp     = 30)
+
+dev.off()
 
 summary(bgof_post)
 
