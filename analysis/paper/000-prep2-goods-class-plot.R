@@ -31,39 +31,6 @@ burial_three_period_tidy_explore <-
          `Indo-Pacific_bead_med` = ifelse(`Indo-Pacific_bead` > 100 & `Indo-Pacific_bead` < 900, 1, NA),
          `Indo-Pacific_bead_high` = ifelse(`Indo-Pacific_bead` > 900, 1, NA)) #based on the result of histogram
 
-# Histogram to represent the count of burial goods
-draw_lines <-
-  burial_three_period_tidy_explore %>%
-  group_by(quantity) %>%
-  summarise(max = min(total)) %>%
-  filter(max != 0)
-
-# total burial goods
-burial_three_period_tidy_explore %>%
-  ggplot(aes(total)) +
-  geom_histogram() +
-  geom_vline(xintercept = draw_lines$max,
-             colour = "red") +
-  scale_x_log10()
-
-# gold bead
-burial_three_period_tidy_explore %>%
-  ggplot(aes(Golden_bead)) +
-  geom_histogram() +
-  scale_x_log10()
-
-# agate bead
-burial_three_period_tidy_explore %>%
-  ggplot(aes(Agate_bead)) +
-  geom_histogram() +
-  scale_x_log10()
-
-# glass bead
-burial_three_period_tidy_explore %>%
-  ggplot(aes(`Indo-Pacific_bead`)) +
-  geom_histogram() +
-  scale_x_log10()
-
 # long format for bead
 burial_beads <-
   burial_three_period_tidy_explore %>%
