@@ -54,7 +54,6 @@ dist_value <-
   theme_minimal()
 
 # plot them together
-library(cowplot)
 histogram <-
   plot_grid(edges_value,
             trans_value,

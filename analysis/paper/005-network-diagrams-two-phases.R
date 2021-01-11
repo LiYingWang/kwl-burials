@@ -124,7 +124,7 @@ post_diagram <-
                 # repel = TRUE) + # no.20, 42, 74
   labs(edge_width = "common item") +
   theme_graph() +
-  theme(plot.margin = unit(rep(0.8,4), "cm"))
+  theme(plot.margin = unit(rep(0.8, 4), "cm"))
 
 # plot together
 library(cowplot)
