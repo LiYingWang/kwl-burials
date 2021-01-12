@@ -99,6 +99,7 @@ distribution_two_phases_diff <-
                names_to = "parameter",
                values_to = "difference")
 
+# https://github.com/nevrome/ggpointgrid
 ggplot(distribution_two_phases_longer,
        aes(parameter, value)) +
   ggpointgrid::geom_pointgrid(aes(color = Phase,

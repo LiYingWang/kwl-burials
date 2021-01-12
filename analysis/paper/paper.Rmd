@@ -79,18 +79,18 @@ Bayesian approaches to ERGMs are efficient computational tools for social networ
 
 # Materials
 
-```{r import-and-inspect-data, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("000-prep1-value-burials.R"))}
+```{r import-and-inspect-data, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/000-prep1-value-burials.R"))}
 suppressWarnings(source(here::here("analysis", "paper", "000-prep1-value-burials.R")))
 ```
 
-```{r tidy-data, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("001-data-tidy.R"))}
+```{r tidy-data, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/001-data-tidy.R"))}
 suppressWarnings(source(here::here("analysis", "paper", "001-data-tidy.R")))
 ```
 
 <!--archaeological setting-->
 We analyzed burial data collected from the published excavation reports, and the original fieldwork notes for the upper component of Kiwulan, an Iron Age settlement (1350-1850 AD). The settlement experienced European colonial impacts in the early 17th century and a large wave of Chinese immigrants in the 19th century [@Chen2007]. Excavations revealed abundant pottery sherds, imported ceramics and stonewares, wooden artifacts, stone tools, metal artifacts, imported glass beads and agates beads, and pipes [@Chen2007]. In addition to these artifacts, 90 burials, hundreds of middens, storage pits, and postholes with _in-situ_ posts were also excavated. The burials are mostly located in the middle section of the excavation area, which is the largest open area at Kiwulan that provides continuous stratigraphic sections suitable for temporal comparison (Figure \@ref(fig:figure-burial-map)). Burials are oriented in an east-west direction on the north side of the residential area, indicated by post-holes and `in-situ` wooden posts, indicating a well organized spatial arrangement. Previous studies report an uneven distribution of prestige goods across burials without agreement about whether this uneven distribution hints at vertical social differences. For example, @Cheng2008 interpreted the unequal distribution of glass beads, especially the gold-foil beads between burials, as evidence for hierarchy, indicating a stratified society. However, @Hsieh2012 suggested a relatively egalitarian structure based on comparative analysis of the frequencies of all burial goods. She found that the burials with high value burial goods were usually associated with elders, which might indicate achieved, rather than inherited, status. One important limitation of these previous studies is that they did not use analytical units suitable for comparing pre-European social organization with post-European social organization. Here, we adopt a new chronological framework for the burials to test if network configurations differ from the pre-European period to the post-European period. The discord over the discussion of Kiwulan social organization could be associated with chronological differences that has not yet been well studied. 
 
-```{r burial-location, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("002-burial-location.R"))}
+```{r burial-location, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/002-burial-location.R"))}
 suppressWarnings(source(here::here("analysis", "paper", "002-burial-location.R")))
 ```
 
@@ -112,11 +112,11 @@ To compare burial networks, we assigned burials to the pre-European period (n = 
 
 # Methods
 
-```{r bergm-pre, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("003-burials-pre-network-modelling.R"))}
+```{r bergm-pre, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/003-burials-pre-network-modelling.R"))}
 suppressWarnings(source(here::here("analysis", "paper", "003-burials-pre-network-modelling.R")))
 ```
 
-```{r bergm-post, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("004-burials-post-network-modelling.R"))}
+```{r bergm-post, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/004-burials-post-network-modelling.R"))}
 suppressWarnings(source(here::here("analysis", "paper", "004-burials-post-network-modelling.R")))
 ```
 
@@ -125,7 +125,7 @@ suppressWarnings(source(here::here("analysis", "paper", "004-burials-post-networ
 <!-- our hypothesis --> 
 Our pericolonial impact hypothesis is that rare, high quality grave goods accumulated in only a few individuals' burials after the European presence in the 17th century, because of increased social inequality at Kiwulan due to differential access to these goods. We can identify these high value trade goods from historical documents written by Europeans and the Han Chinese [@Borao2009; @LiandWu2006]. A related effect of the European presence in northeastern Taiwan may have been manipulation of the European colonial image by ambitious local Indigenous individuals for building their personal status and power. If social inequality gradually increased in Kiwulan as we hypothesize, then we expect to observe a network with higher degree (popularity), less transitivity (cohesion), and strong inequality based on age difference (achieved status). To test this prediction, we use ERGM in a Bayesian framework to examine the formation of network ties and the underlying mechanisms that shape relationships between people at Kiwulan. By comparing networks from the pre-European period and the post-European period we can examine the effects of foreign contact on community relationships at Kiwulan.
 
-```{r network-diagrams, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("005-network-diagrams-two-phases.R"))}
+```{r network-diagrams, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/005-network-diagrams-two-phases.R"))}
 suppressWarnings(source(here::here("analysis", "paper", "005-network-diagrams-two-phases.R")))
 ```
 
@@ -169,12 +169,12 @@ The entire R code [@Rlanguage2019] used for all the analysis and visualizations 
 
 # Results
 
-```{r posterior-distribution, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("006-bergm-distribution-stats.R"))}
+```{r posterior-distribution, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/006-bergm-distribution-stats.R"))}
 suppressWarnings(source(here::here("analysis", "paper", "006-bergm-distribution-stats.R")))
 ```
 
 <!--posterior stats for pre-E-->
-We examine the estimates from the posterior distributions to compare their differences in structure of the simulated networks (Table \@ref(tab:table-posterior-stats); Figure \@ref(fig:figure-posterior-distribution)). For the pre-European network simulations, the nodal covariates, ritual-homophily, have significant effects on the formation of relations between burials. The positive effect demostrates that burials with ritual pottery tend to form relations. Despite positive values for some covariates, such as age-homophily, sex-homophily and burial value-homophily, they do not show a significant tendency to form relations duo to value of zero in the confidence intervals. Similarly, the dyadic covariate, physical distance, shows no significant effect, indicating that physical proximity between burials does not affect the formation of relations. For the endogenous network effects, transitivity (gwesp) present significant positive effect, while popularity (gwdegree) demonstrates negative effect. The high positive value for transitivity suggests a tendency of burials to be clustered in closed transitive structures, indicative of the presence of multiple corporate groups sharing burial goods in common. The negative popularity shows there is a tendency toward decentralization that reflects most burials have similar number of ties without any prominent ones. This might imply that individuals have equal access to trade goods in terms of the flow of goods. 
+We examine the estimates from the posterior distributions to compare their differences in structure of the simulated networks (Table \@ref(tab:table-posterior-stats); Figure \@ref(fig:figure-posterior-distribution)). For the pre-European network simulations, the nodal covariates, ritual-homophily, have significant effects on the formation of relations between burials. The positive effect demonstrates that burials with ritual pottery tend to form relations. Despite positive values for some covariates, such as age-homophily, sex-homophily and burial value-homophily, they do not show a significant tendency to form relations duo to value of zero in the confidence intervals. Similarly, the dyadic covariate, physical distance, shows no significant effect, indicating that physical proximity between burials does not affect the formation of relations. For the endogenous network effects, transitivity (gwesp) present significant positive effect, while popularity (gwdegree) demonstrates negative effect. The high positive value for transitivity suggests a tendency of burials to be clustered in closed transitive structures, indicative of the presence of multiple corporate groups sharing burial goods in common. The negative popularity shows there is a tendency toward decentralization that reflects most burials have similar number of ties without any prominent ones. This might imply that individuals have equal access to trade goods in terms of the flow of goods. 
 
 ```{r table-posterior-stats}
 # make summary table
@@ -203,7 +203,7 @@ knitr::include_graphics(here::here("analysis", "figures", "006-posterior-distrib
 <!--posterior stats for for post-E and their comparison-->
 For the network after the arrival of Europeans, the nodal covariates of burial value-homophily show positive effects, while the ritual-homophily and sex-homophily have a negative effect. Despite the effect is not strong, it could indicate the burials in the same wealth level tend to form relations. On the contrary, the same sex burials and burial with ritual pottery in common tend not to form relations. There are no significant effects for age-homophily and the dyadic covariate, physical distance. Similar to the pre-European network, the endogenous network variable, transitivity (gwesp) demonstrates a significant positive effect but much lower than the effect of pre-European network. In contrast, the popularity (gwdegree) shows a significantly higher positive effect than the effect of pre-European network. This means there is a tendency toward centralization that reflects a limited number of burials have many more ties than others. This implies that a few central individuals may have better access to trade goods and developed personal networks through wealth accumulation. In general, the post-European network has a smaller transitivity effect and a positive popularity effect than the pre-European network. This may suggest a reduced tendency toward clustering but high tendency toward centralization after the European presence. Both posterior estimates present symmetric distributions, with the posterior means close to posterior medians (Table \@ref(tab:table-posterior-stats)). 
 
-```{r bootstrap-CI-test, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("007-bootstrap-CI.R"))}
+```{r bootstrap-CI-test, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/007-bootstrap-CI.R"))}
 suppressWarnings(source(here::here("analysis", "paper", "007-bootstrap-CI.R")))
 ```
 
@@ -214,7 +214,7 @@ One key difference between the pre-European and post-European networks is their 
 knitr::include_graphics(here::here("analysis", "figures", "007-bootstrap-CI.png"))
 ```
 
-```{r bootstrap-t-test, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("008-bootstrap-t-test.R"))}
+```{r bootstrap-t-test, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/008-bootstrap-t-test.R"))}
 suppressWarnings(source(here::here("analysis", "paper", "008-bootstrap-t-test.R")))
 pval_den <- signif(density_b_test$p.value, 4)
 pval_trans <- signif(trans_b_test$p.value, 4)
