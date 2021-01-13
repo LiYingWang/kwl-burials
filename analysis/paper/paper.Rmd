@@ -177,10 +177,12 @@ suppressWarnings(source(here::here("analysis", "paper", "006-bergm-distribution-
 We examine the estimates from the posterior distributions to compare their differences in structure of the simulated networks (Table \@ref(tab:table-posterior-stats); Figure \@ref(fig:figure-posterior-distribution)). For the pre-European network simulations, the nodal covariates, ritual-homophily, have significant effects on the formation of relations between burials. The positive effect demonstrates that burials with ritual pottery tend to form relations. Despite positive values for some covariates, such as age-homophily, sex-homophily and burial value-homophily, they do not show a significant tendency to form relations duo to value of zero in the confidence intervals. Similarly, the dyadic covariate, physical distance, shows no significant effect, indicating that physical proximity between burials does not affect the formation of relations. For the endogenous network effects, transitivity (gwesp) present significant positive effect, while popularity (gwdegree) demonstrates negative effect. The high positive value for transitivity suggests a tendency of burials to be clustered in closed transitive structures, indicative of the presence of multiple corporate groups sharing burial goods in common. The negative popularity shows there is a tendency toward decentralization that reflects most burials have similar number of ties without any prominent ones. This might imply that individuals have equal access to trade goods in terms of the flow of goods. 
 
 ```{r table-posterior-stats}
-# make summary table
+# tidy data for table 
 posterior_esti_two_phases<-
   bergm_two_phases %>%
-  pivot_longer(!phase, names_to = "parameter", values_to = "posterior") %>%
+  pivot_longer(!phase, 
+               names_to = "parameter", 
+               values_to = "posterior") %>%
   mutate(parameter = factor(parameter,
                             levels=c("edges", "nodematch.age", 
                                      "nodematch.sex", "nodematch.ritual",
@@ -190,10 +192,24 @@ posterior_esti_two_phases<-
   summarize(mean = round(mean(posterior), 2),
             median = round(quantile(posterior, 0.5), 2),
             `2.5%` = round(quantile(posterior, 0.025), 2),
-            `97.5%` = round(quantile(posterior, 0.075), 2))
+            `97.5%` = round(quantile(posterior, 0.075), 2)) %>% 
+  pivot_wider(names_from = phase, 
+              values_from = c(mean, median, `2.5%`, `97.5%`)) %>% 
+  select(parameter, ends_with(c("pre", "post")))
 
-knitr::kable(posterior_esti_two_phases,
-             caption = "Estimated posterior means, standard deviation, medians, and 95% credible intervals for the pre-Euroepan model ")
+library(flextable)
+# add column labels
+ft <- flextable(posterior_esti_two_phases) %>% 
+  set_header_labels(mean_pre = "pre-Euorpean", median_pre = "pre-Euorpean", 
+                    `2.5%_pre` = "pre-Euorpean", `97.5%_pre` = "pre-Euorpean",
+                    mean_post = "post-Euorpean", median_post = "post-Euorpean", 
+                    `2.5%_post` = "post-Euorpean", `97.5%_post` = "post-Euorpean") %>%
+  merge_at(i = 1, j = 2:5, part = "header") %>% 
+  merge_at(i = 1, j = 6:9, part = "header") %>% 
+  add_header_row(values = c("", "mean", "median", "2.5%", "97.5%",
+                            "mean", "median", "2.5%", "97.5%"), top = FALSE ) %>% 
+  set_caption("Estimated posterior means, standard deviation, medians, and 95% credible intervals for the pre-Euroepan model.") 
+ft
 ```
 
 ```{r figure-posterior-distribution, fig.cap = "Posterior density estimates for the parameters associated with edges, gwesp, gwdegree, and distance-dyadcov by phases. The pre-European group presents remarkedly larger values for the gwesp, but lower vlaues for the edges and gwdegree parameters comapred to the post-Eruoepan group. The distance parameters overlap between two groups."}
@@ -235,7 +251,7 @@ image_append(c(pre_bgof_img, post_bgof_img))
 Bayesian goodness of fit (GOF) diagnostics plots (Figure \@ref(fig:figure-bgof-two-phases)) show that both models fit the observed networks very well for the minimum geodesic distance distribution (i.e. the number of edges between node pairs in a shortest path [@Hunter2008]) and the degree distribution. For edgewise shared partner (gwesp) distribution, despite some observations falling outside the 95% interval, the fit is generally good with most observations within it. This also suggests that our 
 models can reproduce networks that resemble the structural features of our observed networks. We compared the first three distribution moments of each observed distribution and their corresponding simulated distributions, represented by means. Figure \@ref(fig:figure-distribution-moments) shows that modeled values from the pre-European network are slightly closer to the observed values for the mean and the variance of distributions, compared to the values from the post-European network. In general, this demonstrates a better fit for the pre-European network. However, it should be noted that the differences between the statistics of two models are relatively small, which still allows direct comparison of two networks.
 
-```{r figure-distribution-moments, fig.cap = "Distribution moments (mean, skewness, variance) calculated on the observed data and simulated distributions for pre- and post- European models."}
+```{r figure-distribution-moments, fig.cap = "Distribution moments (mean, skewness, variance) calculated on the observed data and simulated distributions for the pre- and post- European models."}
 knitr::include_graphics(here::here("analysis", "figures", "006-distribution-moments.png"))
 ```
 
