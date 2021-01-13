@@ -208,7 +208,10 @@ ft <- flextable(posterior_esti_two_phases) %>%
   merge_at(i = 1, j = 6:9, part = "header") %>% 
   add_header_row(values = c("", "mean", "median", "2.5%", "97.5%",
                             "mean", "median", "2.5%", "97.5%"), top = FALSE ) %>% 
-  set_caption("Estimated posterior means, medians, and 95% credible intervals for each network parameter of two models.") 
+  align(j = 2:9, align = "right", part = "header") %>% 
+  align(i = 1, align = "center", part = "header") %>% 
+  width(j = ~ parameter, width = 1.3) %>% 
+  set_caption("Estimated posterior means, medians, and 95% credible intervals for each network parameter of two models.")
 ft
 ```
 
