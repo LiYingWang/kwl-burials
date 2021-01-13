@@ -144,7 +144,7 @@ We used Bayesian inference on exponential random graph models (ERGMs) to quantif
 ```{r table-ergm-terms}
 ergm_terms <- readxl::read_excel(here::here("analysis", "data", "raw_data", "ergm_term.xlsx")) 
 knitr::kable(ergm_terms,
-             caption = "The parameters of exponential random graph models for a undirected network to corresponding with archaeological evidence.")
+             caption = "Network variables used for model specifications with assocaited interpeation for burial relations.")
 ```
 
 ```{r bergm-iteration}
@@ -177,7 +177,7 @@ suppressWarnings(source(here::here("analysis", "paper", "006-bergm-distribution-
 We examine the estimates from the posterior distributions to compare their differences in structure of the simulated networks (Table \@ref(tab:table-posterior-stats); Figure \@ref(fig:figure-posterior-distribution)). For the pre-European network simulations, the nodal covariates, ritual-homophily, have significant effects on the formation of relations between burials. The positive effect demonstrates that burials with ritual pottery tend to form relations. Despite positive values for some covariates, such as age-homophily, sex-homophily and burial value-homophily, they do not show a significant tendency to form relations duo to value of zero in the confidence intervals. Similarly, the dyadic covariate, physical distance, shows no significant effect, indicating that physical proximity between burials does not affect the formation of relations. For the endogenous network effects, transitivity (gwesp) present significant positive effect, while popularity (gwdegree) demonstrates negative effect. The high positive value for transitivity suggests a tendency of burials to be clustered in closed transitive structures, indicative of the presence of multiple corporate groups sharing burial goods in common. The negative popularity shows there is a tendency toward decentralization that reflects most burials have similar number of ties without any prominent ones. This might imply that individuals have equal access to trade goods in terms of the flow of goods. 
 
 ```{r table-posterior-stats}
-# tidy data for table 
+# tidy data for the table of posterior stats 
 posterior_esti_two_phases<-
   bergm_two_phases %>%
   pivot_longer(!phase, 
@@ -208,7 +208,7 @@ ft <- flextable(posterior_esti_two_phases) %>%
   merge_at(i = 1, j = 6:9, part = "header") %>% 
   add_header_row(values = c("", "mean", "median", "2.5%", "97.5%",
                             "mean", "median", "2.5%", "97.5%"), top = FALSE ) %>% 
-  set_caption("Estimated posterior means, standard deviation, medians, and 95% credible intervals for the pre-Euroepan model.") 
+  set_caption("Estimated posterior means, medians, and 95% credible intervals for each network parameter of two models.") 
 ft
 ```
 
@@ -226,7 +226,7 @@ suppressWarnings(source(here::here("analysis", "paper", "007-bootstrap-CI.R")))
 <!-- comparison between two networks using bootstrap --> 
 One key difference between the pre-European and post-European networks is their size, with `r pre_E` burials compared to `r post_E` burials. To understand the robustness of comparison between two networks, we used vertex bootstrap to cross-validate the results based on Bayesian network analysis. Vertex bootstrap is a non-parametric method that conducts resampling for all vertices (i.e. node) that is useful for quantifying standard errors and estimating sampling variability in the network statistics of interest [@Chen2019; @Snijders1999; @Rroberts2021]. This enables the evaluation of uncertainty for networks and tests the difference between multiple networks by examining their confidence intervals for the network population. Networks with unoverlapped intervals means there is a significant difference. We computed and compared endogenous network statistics, including density, popularity, and transitivity for our two networks. Figure \@ref(fig:figure-bootstrap-CI) shows a significant difference in observed network popularity between the two networks, which is consistent with our finding of negative popularity in the pre-European period and positive popularity in the post-European period using the Bayesian approach. For density and transitivity, the 95% confidence intervals from two networks overlapped with each other that indicates no significant difference. This is also consistent with our results of Bayesian modeling, where both networks present similar positive or negative effects with smaller degree of difference. 
 
-```{r figure-bootstrap-CI, fig.cap = "The 95% bootstrap confidence intervals for the observed networks, indicated by 0 nodes removal, and networks with different number of node removal. The number of bootstrap samples is 1000."}
+```{r figure-bootstrap-CI, fig.cap = "The 95% bootstrap confidence intervals for the observed networks, the top one with 0 nodes removal, and networks with different number of node removal. The number of bootstrap samples is 1000."}
 knitr::include_graphics(here::here("analysis", "figures", "007-bootstrap-CI.png"))
 ```
 
@@ -251,7 +251,7 @@ image_append(c(pre_bgof_img, post_bgof_img))
 Bayesian goodness of fit (GOF) diagnostics plots (Figure \@ref(fig:figure-bgof-two-phases)) show that both models fit the observed networks very well for the minimum geodesic distance distribution (i.e. the number of edges between node pairs in a shortest path [@Hunter2008]) and the degree distribution. For edgewise shared partner (gwesp) distribution, despite some observations falling outside the 95% interval, the fit is generally good with most observations within it. This also suggests that our 
 models can reproduce networks that resemble the structural features of our observed networks. We compared the first three distribution moments of each observed distribution and their corresponding simulated distributions, represented by means. Figure \@ref(fig:figure-distribution-moments) shows that modeled values from the pre-European network are slightly closer to the observed values for the mean and the variance of distributions, compared to the values from the post-European network. In general, this demonstrates a better fit for the pre-European network. However, it should be noted that the differences between the statistics of two models are relatively small, which still allows direct comparison of two networks.
 
-```{r figure-distribution-moments, fig.cap = "Distribution moments (mean, skewness, variance) calculated on the observed data and simulated distributions for the pre- and post- European models."}
+```{r figure-distribution-moments, fig.cap = "Distribution moments (mean, skewness, and variance) calculated on the observed data and simulated distributions for the pre- and post- European models."}
 knitr::include_graphics(here::here("analysis", "figures", "006-distribution-moments.png"))
 ```
 
