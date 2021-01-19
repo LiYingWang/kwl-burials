@@ -1,5 +1,5 @@
+# run code in file 000-prep1, 001, and 002 before this file
 #-----------------------pre-European-----------------------------
-# before running this code, run file 000-prep1, 000-prep2, 001, and 002 subsequently
 # filter pre burials
 burial_pre <-
   burial_three_period_age_tidy %>%
@@ -165,15 +165,15 @@ summary(model_pre_3)
 # follow Alberto Caimo et al. (2015) hospital example
 # prior uses normal distribution (low density, high transitivity, low popularity)
 # need to adjust according to the observed ERGM network
-prior.mean <- c(-3, 0, 0, 1, 0, 2, -2, 0) # positive prior number for edge means high density
-prior.sigma <- diag(c(3, 5, 5, 5, 3, 2, 3, 1), 8, 8) # covariance matrix structure, uncertainty
+pre_prior_mean <- c(-3, 0, 0, 1, 0, 2, -2, 0) # positive prior number for edge means high density
+pre_prior_sigma <- diag(c(3, 5, 5, 5, 3, 2, 3, 1), 8, 8) # covariance matrix structure, uncertainty
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) a common prior model
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix
 # output includes estimated posterior means, medians and 95% credible intervals
 
 pre_bergm <- bergm(model_pre_3, # using the approximate exchange algorithm
-                  prior.mean  = prior.mean,
-                  prior.sigma = prior.sigma,
+                  prior.mean  = pre_prior_mean,
+                  prior.sigma = pre_prior_sigma,
                   burn.in     = 100, # drop first 100 for every chain of the population
                   main.iters  = 1000, # iterations for every chain of the population
                   aux.iters   = 4000, # MCMC steps used for network simulation
@@ -181,7 +181,6 @@ pre_bergm <- bergm(model_pre_3, # using the approximate exchange algorithm
                   gamma       = 0) # scalar; parallel adaptive direction sampling move factor, acceptance rate, 0.2
 
 summary(pre_bergm)
-
 plot(pre_bergm)
 
 # Bayesian Model assessment

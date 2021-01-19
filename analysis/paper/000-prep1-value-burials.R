@@ -1,3 +1,4 @@
+# preparation code that creates burial value as a new variable
 library(readxl)
 library(tidyverse)
 library(here)

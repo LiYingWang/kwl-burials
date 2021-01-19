@@ -1,4 +1,4 @@
-# run 000-prep1 and 000-prep2 first before the code below
+# run 000-prep1 first before running this code
 # burial data with combined age and three phases
 burial_three_period_age_tidy <-
   burial %>%

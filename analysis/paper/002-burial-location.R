@@ -1,3 +1,4 @@
+# create location map and a new variable of geographic distance
 library(sf)
 library(ggsn)
 # read in the spatial data

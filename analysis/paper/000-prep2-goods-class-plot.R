@@ -1,5 +1,5 @@
-# the purpose of this file is to explore data and can be ran individually and separately
-# it explores distribution of beads to guide the assignment of groups for making ties in 001 file
+# this file explores burial data that can be ran individually and separately
+# examines distribution of beads to guide group assignment for making ties in 001 file
 
 # tidy up
 burial_three_period_tidy_explore <-
@@ -104,7 +104,7 @@ library(cowplot)
 plot_grid(ridge_1, ridge_2, ridge_3, ridge_4,
           ncol = 2)
 
-# combine ridge plots 1 & 4
+# combine ridge plots 1 & 4 for supplementary materials
 ridge_1_and_4 <-
   burial_beads %>%
   ggplot(aes(x = value,
