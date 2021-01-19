@@ -140,17 +140,24 @@ knitr::kable(ergm_terms,
              caption = "Network variables used for model specifications with assocaited interpeation for burial relations.")
 ```
 
-```{r bergm-iteration}
-burn_in <- 100
-main_iter <- 1000
-aux_iter <- 4000
+```{r bergm-prior-and-iteration}
+prior_mean <- as_tibble(cbind(pre_prior_mean, 
+                              post_prior_mean)) %>% 
+  mutate(mean_same = ifelse(pre_prior_mean == post_prior_mean, pre_prior_mean, NA))
+
+prior_sigma <- as_tibble(cbind(diag(pre_prior_sigma), 
+                               diag(post_prior_sigma))) %>% 
+  rename(pre_prior_sigma = V1, post_prior_sigma = V2) %>% 
+  mutate(sigma_same = ifelse(pre_prior_sigma == post_prior_sigma, pre_prior_sigma, NA))
+
+priors <- cbind(prior_mean, prior_sigma)
 bgof_si <-10000
 ```
 
 <!--Model fitting: move to SI --> 
 
 <!-- add text about prior setting and anthropological assumptions of our prior values --> 
-Normal distributions for the priors are typical in network analysis studies that assume networks to have low density and high transitivity, as are commonly found in the real world [@Caimo2017]. Thus, we specified the prior of the edge density parameter to low for both network models. For covariates based on burial attributes, such as age, sex, and our wealth index, we specified a vague prior that follows a normal distribution with mean at 0 and standard deviation at 5 (i.e. N(0, 5)) for both models. For physical distance between burials, we also set a vague prior effect (N(0, 1)) to explore whether there is kinship-based proximity, e.g. stronger correlations for shorter distances. To evaluate our anthropological assumption about increased social inequality over time, we incorporated different prior information for the network variables that are meaningful for social inequality, especially for transitivity (gwesp) and popularity (gwedegree). We set the priors to higher transitivity (N(2, 2)), lower popularity (N(-2, 3)), and higher covariate effect based on ritual activity (N(1, 5)) for network before European contact to indicate less social inequality and stress ritual element shared in corporate groups. On the contrary, we set the priors for the network after the European arrival to lower transitivity (N(1, 3)), higher popularity (N(2, 3)), and higher covariate effect of burial values (N(2, 3)) to model an increased social inequality. This prior information derives from theory about horizontal hierarchies, which can be viewed as a spectrum that illustrates an increasing social inequality from a corporate mode at one end toward a network mode at the other end [@Drennan2010; @Feinman2000]. The priors for density were also set the same with N(-3, 3) for both pre- and post-European networks based on a common observation of network density. 
+Normal distributions for the priors are typical in network analysis studies that assume networks to have low density and high transitivity, as are commonly found in the real world [@Caimo2017]. Thus, we specified the prior of the edge density parameter to low for both network models. For covariates about biological features, such as age, sex, we specified a vague prior that follows a normal distribution with mean at `r priors$mean_same[2]` and standard deviations at `r priors$sigma_same[2]`for both models to explore their effects. For physical distance between burials, we also set a vague prior effect (N(`r priors$mean_same[8]`, `r priors$sigma_same[8]`)) to explore whether there is kinship-based proximity, e.g. stronger correlations for shorter distances. To evaluate our anthropological assumption about increased social inequality over time, we incorporated different prior information for the network variables that are meaningful for social inequality, especially for transitivity (gwesp) and popularity (gwedegree). We set the priors to higher transitivity (N(`r priors$pre_prior_mean[6]`, `r priors$pre_prior_sigma[6]`)), lower popularity (N(`r priors$pre_prior_mean[7]`, `r priors$pre_prior_sigma[7]`)), and higher covariate effect based on ritual activity (N(`r priors$pre_prior_mean[4]`, `r priors$pre_prior_sigma[4]`)) for network before European contact to indicate less social inequality and stress ritual element shared in corporate groups. On the contrary, we set the priors for the network after the European arrival to lower transitivity (N(`r priors$post_prior_mean[6]`, `r priors$post_prior_sigma[6]`)), higher popularity (N(`r priors$post_prior_mean[7]`, `r priors$post_prior_sigma[7]`)), and higher covariate effect of burial values (N(`r priors$post_prior_mean[5]`, `r priors$post_prior_sigma[5]`)) to model an increased social inequality. This prior information derives from theory about horizontal hierarchies, which can be viewed as a spectrum that illustrates an increasing social inequality from a corporate mode at one end toward a network mode at the other end [@Drennan2010; @Feinman2000]. The priors for density were also set the same with N(`r priors$mean_same[1]`, `r priors$sigma_same[1]`) for both pre- and post-European networks based on a common observation of network density. 
 
 <!-- assessment of MCMC and Goodness-of-fit in Bayesian: move to SI -->
 
