@@ -12,3 +12,24 @@ forcats
 here
 sf
 ggsn
+<<<<<<< HEAD
+=======
+gtools
+network
+ergm
+networkDynamic
+tergm
+ergm.count
+statnet.common
+sna
+tsna
+statnet
+Bergm
+psych
+tidygraph
+ggraph
+cowplot
+flextable
+snowboot
+igraph
+>>>>>>> b38d1ac724ff78b6a4d72b56f11f281268f7fc57
