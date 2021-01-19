@@ -1,0 +1,12 @@
+---
+title: "Supplementary material- A Bayesian approach to burial networks to infer social changes in northeastern Taiwan during the European colonization period"
+author:
+  - Li-Ying Wang
+  - Ben Marwick
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+    bookdown::word_document2:
+      fig_caption: yes
+      reference_docx: "../templates/template.docx" # Insert path for the DOCX file
+---
+
