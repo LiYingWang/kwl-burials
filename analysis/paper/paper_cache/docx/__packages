@@ -27,5 +27,6 @@ psych
 tidygraph
 ggraph
 cowplot
+flextable
 snowboot
 igraph
