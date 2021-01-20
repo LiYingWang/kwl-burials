@@ -104,32 +104,6 @@ library(cowplot)
 plot_grid(ridge_1, ridge_2, ridge_3, ridge_4,
           ncol = 2)
 
-# combine ridge plots 1 & 4 for supplementary materials
-ridge_1_and_4 <-
-  burial_beads %>%
-  ggplot(aes(x = value,
-             y = type,
-             fill = factor(stat(quantile)))) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE,
-    quantiles = 4,
-    quantile_lines = TRUE,
-    jittered_points = TRUE,
-    alpha = 0.7,
-    vline_size = 0.5,
-    vline_color = "grey10",
-    point_size = 2.5,
-    point_alpha = 0.4,
-    position = position_raincloud(adjust_vlines = TRUE),
-    rel_min_height = 0.01,
-    scale = 0.5, # so the filled regions don't overlap on the points
-    size = 0.2) +
-  scale_x_continuous(limits = c(1, 15),
-                     expand = c(0.1, 0)) +
-  scale_fill_viridis_d(name = "Quartiles") +
-  theme_minimal()
-
 # orientation
 burial %>%
   mutate(Phase = ifelse(Phase == 'euro', 'post', Phase)) %>%
