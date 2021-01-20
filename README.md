@@ -3,7 +3,8 @@
 
 # kwlburials
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/LiYingWang/kwlburials/master?urlpath=rstudio)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/LiYingWang/kwl-burials/master?urlpath=rstudio) [![run-docker.yml](https://github.com/LiYingWang/kwl-burials/workflows/.github/workflows/run-docker.yml/badge.svg)](https://github.com/LiYingWang/kwl-burials/actions)
+
 
 This repository contains the data and code for our paper:
 
