@@ -9,3 +9,4 @@
 ^CONTRIBUTING\.md$
 analysis
 ^Dockerfile$
+^\.github$

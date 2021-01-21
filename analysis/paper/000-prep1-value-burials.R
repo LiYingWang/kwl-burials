@@ -106,3 +106,4 @@ burial_with_type_value_class <-
     burial_value >= mean_burial_value & burial_value < high_burial_value ~ "above-average",
     burial_value >= high_burial_value ~ "high",
     TRUE ~ ""))
+

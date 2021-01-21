@@ -141,12 +141,12 @@ summary(model_post_3)
 
 # Specify a prior distribution
 # normal distribution (low density, low transitivity, high popularity)
-prior.mean <- c(-3, 0, 0, 0, 2, 1, 2, 0) # prior mean corresponds to mean for each parameter
-prior.sigma <- diag(c(3, 5, 5, 5, 3, 3, 3, 1), 8, 8) # covariance matrix structure
+post_prior_mean <- c(-3, 0, 0, 0, 2, 1, 2, 0) # prior mean corresponds to mean for each parameter
+post_prior_sigma <- diag(c(3, 5, 5, 5, 3, 3, 3, 1), 8, 8) # covariance matrix structure
 
 post_bergm <- bergm(model_post_3,
-                 prior.mean  = prior.mean,
-                 prior.sigma = prior.sigma,
+                 prior.mean  = post_prior_mean ,
+                 prior.sigma = post_prior_sigma,
                  burn.in     = 100, # burn-in iterations for every chain of the population, drops the first 200
                  main.iters  = 1000, # iterations for every chain of the population
                  aux.iters   = 4000, # MCMC steps used for network simulation

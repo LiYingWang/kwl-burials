@@ -72,6 +72,7 @@ library(network)
 
 # create network object
 attr(edges_for_network_pre, "n") = 29
+
 burial_network_pre <-
   network(edges_for_network_pre, # the network object
           vertex.attr = nodes_pre, # node list
@@ -81,8 +82,6 @@ burial_network_pre <-
           matrix.type = "edgelist") # input type
 
 network.density(burial_network_pre)
-network.dyadcount(burial_network_pre, na.omit = TRUE)
-
 #-----------------------attach attributes and make graphs------------------------------
 library(statnet)
 library(Bergm)
@@ -109,7 +108,6 @@ ID <- get.vertex.attribute(burial_network_pre, "burial_label")
 plot(burial_network_pre,
      displaylabels = TRUE,
      vertex.col = "quantity",
-     vertex.cex = 2,
      #vertex.cex = degree(burial_network_pre, cmode = 'indegree') / 5, #size nodes to their in-degree
      #vertex.sides = ifelse(burial_network_pre %v% "", 4, 50),
      pad = 1) # protects the labels from getting clipped

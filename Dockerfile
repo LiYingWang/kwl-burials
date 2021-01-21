@@ -1,21 +1,20 @@
 # get the base image, the rocker/verse has R, RStudio and pandoc
-FROM rocker/geospatial:3.6.0
+FROM rocker/geospatial:4.0.0
 
 # required
-MAINTAINER Liying Wang <jaybin502@gmail.com>
+MAINTAINER Li-Ying Wang <jaybin502@gmail.com>
 
-COPY . /kwlburials
+COPY . /kwl-burials
 
 # go into the repo directory
 RUN . /etc/environment \
-  # Install linux depedendencies here
-  # e.g. need this for ggforce::geom_sina
-  && sudo apt-get update \
-  && sudo apt-get install libudunits2-dev -y \
   # build this compendium package
-  && R -e "devtools::install('/kwlburials', dep=TRUE)" \
+  && R -e "remotes::install_github('r-lib/remotes')" \
+  && R -e "devtools::install('/kwl-burials', dep=TRUE)" \
   && R -e "remotes::install_github('benmarwick/wordcountaddin', type = 'source', dependencies=TRUE)" \
   && R -e "remotes::install_github('benmarwick/rrtools', type = 'source', dependencies=TRUE)" \
+  && R -e "remotes::install_github('3wen/legendMap', type = 'source', dependencies=TRUE)" \
+  && R -e "remotes::install_github('nevrome/ggpointgrid', type = 'source', dependencies=TRUE)" \
   # render the manuscript into a docx, you'll need to edit this if you've
   # customised the location and name of your main Rmd file
-  && R -e "rmarkdown::render('/kwlburials/analysis/paper/paper.Rmd')"
+  && R -e "rmarkdown::render('/kwl-burials/analysis/paper/paper.Rmd')"
