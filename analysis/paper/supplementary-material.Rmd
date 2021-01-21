@@ -118,10 +118,6 @@ After we set our model parameters, we simulated networks in a Bayesian framework
 
 <!-- assessment of MCMC and Goodness-of-fit in Bayesian: move to SI -->
 
-```{r tidy-data, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/001-data-tidy.R"))}
-suppressWarnings(source(here::here("analysis", "paper", "001-data-tidy.R")))
-```
-
 ```{r bergm-pre, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/003-burials-pre-network-modelling.R"))}
 suppressWarnings(source(here::here("analysis", "paper", "003-burials-pre-network-modelling.R")))
 ```
