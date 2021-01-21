@@ -48,8 +48,16 @@ The involvement in long-distance exchange is often associated with changes in po
 suppressWarnings(source(here::here("analysis", "paper", "000-prep1-value-burials.R")))
 ```
 
-```{r explore-data, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/000-prep1-value-burials.R"))}
+```{r explore-data, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/000-prep2-goods-class-plot.R"))}
 suppressWarnings(source(here::here("analysis", "paper", "000-prep2-goods-class-plot.R")))
+```
+
+```{r tidy-data, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/001-data-tidy.R"))}
+suppressWarnings(source(here::here("analysis", "paper", "001-data-tidy.R")))
+```
+
+```{r burial-location, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/002-burial-location.R"))}
+suppressWarnings(source(here::here("analysis", "paper", "002-burial-location.R")))
 ```
 
 <!-- burial data and the definition of tie formation: partially move to SI  --> 
@@ -109,6 +117,22 @@ bgof_si <-10000
 After we set our model parameters, we simulated networks in a Bayesian framework using a Markov chain Monte Carlo (MCMC) algorithm. MCMC algorithms allow estimation of posterior distributions through direct random sampling the posterior without assuming the prior comes from any specific distribution [@Hamra2013]. We can obtain a posterior distribution by constructing a Markov chain that describes a sequence of moves from current state to the next state following probabilistic rules based on an algorithm. This enables a random or stochastic simulation in a long run where each move does not depend on the previous move. More chains ensures a more desirable posterior distribution that is close to the target distribution under study, or convergence. In Bayesian ERGMs, MCMC first selects a set of edges (or a set of empty pair of actors) with equal probability, and then switches to a pair of actors at random within the chosen set [@Caimo2011]. In our case, we set the number of chains to six. For each chain, the number of burn-in iterations was `r burn_in` and the number of iterations after the burn-in was `r main_iter`. We set the number of iterations used to simulate a network y' at each iteration to `r aux_iter`.
 
 <!-- assessment of MCMC and Goodness-of-fit in Bayesian: move to SI -->
+
+```{r bergm-pre, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/003-burials-pre-network-modelling.R"))}
+suppressWarnings(source(here::here("analysis", "paper", "003-burials-pre-network-modelling.R")))
+```
+
+```{r bergm-post, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/004-burials-post-network-modelling.R"))}
+suppressWarnings(source(here::here("analysis", "paper", "004-burials-post-network-modelling.R")))
+```
+
+```{r diag-plots}
+png(filename = here::here("analysis", "figures", "008-pre-diag.png"),
+    width = 10, height = 8, units = "in", res = 360)
+plot(pre_bergm)
+dev.off()
+```
+
 As an informal way to diagnose model convergence, we first evaluated three diagnostic visual summaries of our MCMC output, including density plots, trace plots, and autocorrelation plots [@Hamra2013], which we include in our Supplementary Online Materials. In general, we can see the informative prior contributed to a better convergence of the MCMC according to the diagnostic plots showing more stationary distributions and decreased autocorrelation. Then we summarize output from our two models by goodness-of-fit (GOF) diagnostics in the Bayesian framework, where the observed network is compared with the set of networks simulated from the estimated posterior distributions of the parameters of each model [@Caimo2011; @Caimo2017]. We set $`r bgof_si`$ network graphs simulated from the estimated posterior distribution in ERGMs. Our Bayesian GOF diagnostics summarized three distributions, including degree, minimum geodesic distance, and edgewise shared partner distributions. This provides a statistical approach to check how well the estimated posterior parameter distribution, based on our hypotheses, can reproduce networks with similar general structural features of the observed networks. We then compared the distribution of our observed networks, the networks before and after the arrival of Europeans, with the distribution of our hypothesized models. We expect to see the models fit with our hypotheses, indicative of a increased social inequality after the foreign contact. In addition, the covariates can give some more clues for the underlying mechanisms for the formations of each network, such as the relative importance of age and sex. 
 
 # References
