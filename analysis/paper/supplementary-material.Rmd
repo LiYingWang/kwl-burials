@@ -9,6 +9,7 @@ output:
       fig_caption: yes
       reference_docx: "../templates/template.docx" # Insert path for the DOCX file
 bibliography: references.bib
+csl: "../templates/journal-of-archaeological-science.csl" # Insert path for the bib-style
 ---
 
 ```{r setup, echo = FALSE}
@@ -126,22 +127,79 @@ suppressWarnings(source(here::here("analysis", "paper", "003-burials-pre-network
 suppressWarnings(source(here::here("analysis", "paper", "004-burials-post-network-modelling.R")))
 ```
 
-```{r diag-plots}
+```{r pre-diag-plots, include= FALSE}
+# get the first set of diagnostic plots
+x <- pre_bergm
+
 png(filename = here::here("analysis", "figures", "008-pre-diag.png"),
-    width = 10, height = 8, units = "in", res = 360)
-plot(pre_bergm)
+    width = 10, height = 12, units = "in", res = 360)
+
+seqq <- 4
+par(mfrow = c(x$dim, 3), 
+    oma   = c(0, 0, 3, 0), 
+    mar   = c(4, 3, 1.5, 1))
+
+for (i in 1:x$dim) {
+
+  plot(density(x$Theta[, i]), 
+       main = "", 
+       axes = FALSE, 
+       xlab = bquote(paste(theta[.(i)], " (", .(x$specs[i]), ")")),
+       ylab = "", lwd = 2)
+  axis(1)
+  axis(2)
+  coda::traceplot(x$Theta[, i], type = "l", xlab = "Iterations", ylab = "")
+  coda::autocorr.plot(x$Theta[, i], auto.layout = FALSE)
+  if (x$dim > 4) seqq <- seq(4, x$dim, 4)
+  if (i %in% union(x$dim, seqq)) {
+    title(paste("MCMC output for Model: y ~", x$formula[3]), outer = TRUE)
+  }
+}
+
 dev.off()
 ```
 
-```{r , include = FALSE}
-library(cowplot)
-p1 <- ~{plot(pre_bergm)}
-plot_grid(p1)
-ggsave(here::here("analysis", "figures", "009-pre-diag.png"),
-    width = 10, height = 8, units = "in")
+```{r post-diag-plots, include= FALSE}
+# get the first set of diagnostic plots
+y <- post_bergm
+
+png(filename = here::here("analysis", "figures", "009-post-diag.png"),
+    width = 10, height = 12, units = "in", res = 360)
+
+seqq <- 4
+par(mfrow = c(y$dim, 3), 
+    oma   = c(0, 0, 3, 0), 
+    mar   = c(4, 3, 1.5, 1))
+
+for (i in 1:y$dim) {
+
+  plot(density(y$Theta[, i]), 
+       main = "", 
+       axes = FALSE, 
+       xlab = bquote(paste(theta[.(i)], " (", .(y$specs[i]), ")")),
+       ylab = "", lwd = 2)
+  axis(1)
+  axis(2)
+  coda::traceplot(y$Theta[, i], type = "l", xlab = "Iterations", ylab = "")
+  coda::autocorr.plot(y$Theta[, i], auto.layout = FALSE)
+  if (y$dim > 4) seqq <- seq(4, y$dim, 4)
+  if (i %in% union(y$dim, seqq)) {
+    title(paste("MCMC output for Model: y ~", y$formula[3]), outer = TRUE)
+  }
+}
+
+dev.off()
 ```
 
-As an informal way to diagnose model convergence, we first evaluated three diagnostic visual summaries of our MCMC output, including density plots, trace plots, and autocorrelation plots [@Hamra2013], which we include in our Supplementary Online Materials. In general, we can see the informative prior contributed to a better convergence of the MCMC according to the diagnostic plots showing more stationary distributions and decreased autocorrelation. Then we summarize output from our two models by goodness-of-fit (GOF) diagnostics in the Bayesian framework, where the observed network is compared with the set of networks simulated from the estimated posterior distributions of the parameters of each model [@Caimo2011; @Caimo2017]. We set $`r bgof_si`$ network graphs simulated from the estimated posterior distribution in ERGMs. Our Bayesian GOF diagnostics summarized three distributions, including degree, minimum geodesic distance, and edgewise shared partner distributions. This provides a statistical approach to check how well the estimated posterior parameter distribution, based on our hypotheses, can reproduce networks with similar general structural features of the observed networks. We then compared the distribution of our observed networks, the networks before and after the arrival of Europeans, with the distribution of our hypothesized models. We expect to see the models fit with our hypotheses, indicative of a increased social inequality after the foreign contact. In addition, the covariates can give some more clues for the underlying mechanisms for the formations of each network, such as the relative importance of age and sex. 
+As an informal way to diagnose model convergence, we first evaluated three diagnostic visual summaries of our MCMC output, including density plots, trace plots, and autocorrelation plots for both models (Figure \@ref(fig:figure-pre-diag) and Figure \@ref(fig:figure-post-diag)) [@Hamra2013]. In general, models with informative priors have a better convergence of the MCMC. We can see that the diagnostic plots show stationary distributions and a trend of decreased autocorrelation. Then we summarize output from our two models by goodness-of-fit (GOF) diagnostics in the Bayesian framework, where the observed network is compared with the set of networks simulated from the estimated posterior distributions of the parameters of each model [@Caimo2011; @Caimo2017]. We set $`r bgof_si`$ network graphs simulated from the estimated posterior distribution in ERGMs. Our Bayesian GOF diagnostics summarized three distributions, including degree, minimum geodesic distance, and edgewise shared partner distributions. This provides a statistical approach to check how well the estimated posterior parameter distribution, based on our hypotheses, can reproduce networks with similar general structural features of the observed networks. We then compared the distribution of our observed networks, the networks before and after the arrival of Europeans, with the distribution of our hypothesized models. We expect to see the models fit with our hypotheses, indicative of a increased social inequality after the foreign contact. In addition, the covariates can give some more clues for the underlying mechanisms for the formations of each network, such as the relative importance of age and sex. 
+
+```{r figure-pre-diag, fig.cap = "MCMC output of the pre-European model. In the order of edges, nodematch-age, nodematch-sex, nodematch-ritual, nodematch-value, gwesp, gwdeg, and dyadcov.distance."}
+knitr::include_graphics(here::here("analysis", "figures", "008-pre-diag.png"))
+```
+
+```{r figure-post-diag, fig.cap = "MCMC output of the post-European model. In the order of edges, nodematch-age, nodematch-sex, nodematch-ritual, nodematch-value, gwesp, gwdeg, and dyadcov.distance."}
+knitr::include_graphics(here::here("analysis", "figures", "009-post-diag.png"))
+```
 
 # References
 
