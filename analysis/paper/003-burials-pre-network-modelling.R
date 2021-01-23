@@ -89,7 +89,7 @@ library(Bergm)
 # add attributes to the network object burial_network_pre
 set.vertex.attribute(burial_network_pre, "quantity", burial_pre$quantity)
 set.vertex.attribute(burial_network_pre, "age", burial_pre$Age_scale)
-set.vertex.attribute(burial_network_pre, "gender", burial_pre$gender)
+set.vertex.attribute(burial_network_pre, "sex", burial_pre$gender)
 set.vertex.attribute(burial_network_pre, "ritual_pottery", burial_pre$ritual_pottery)
 set.vertex.attribute(burial_network_pre, "value_class", burial_pre$value_class) # categorical
 set.vertex.attribute(burial_network_pre, "burial_value", burial_pre$burial_value) # numeric
@@ -148,7 +148,7 @@ summary(burial_network_pre ~ gwdegree(0:10))
 model_pre_3 <- burial_network_pre ~ edges +  # the overall density of the network
   #nodematch('quantity') + # quantity-based homophily, the similarity of connected nodes
   nodematch('age') +
-  nodematch('gender') +
+  nodematch('sex') +
   nodematch('ritual_pottery') +
   nodematch('value_class') +
   #nodematch('orientation') +
