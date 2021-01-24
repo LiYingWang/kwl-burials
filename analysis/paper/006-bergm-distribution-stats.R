@@ -20,7 +20,6 @@ bergm_two_phases <-
   rbind(pre_bergm_stats, post_bergm_stats) %>%
   rename(gwdeg = gwdeg.fixed.0.5,
          `dyadcov.distance` = dyadcov.dist,
-         nodematch.sex = nodematch.gender,
          nodematch.ritual = nodematch.ritual_pottery,
          nodematch.value = nodematch.value_class)
 
