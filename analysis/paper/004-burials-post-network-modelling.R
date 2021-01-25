@@ -43,7 +43,7 @@ common_counts_lst_post <-
          rowwise() %>%
          mutate(common_counts = sum(count...3, count...6)))
 
-# count of ornament types in common between each pair of burials
+  # count of ornament types in common between each pair of burials
 common_counts_vct_post <- map_int(common_counts_lst_post, ~sum(!is.na(.x$common_counts)))
 
 burial_comb_with_common_counts_post <-

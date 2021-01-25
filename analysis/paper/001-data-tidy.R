@@ -1,8 +1,7 @@
-# run 000-prep1 first before running this code
+# run 000-prep-data before running this code
 # burial data with combined age and three phases
 burial_three_period_age_tidy <-
   burial %>%
-  rename(burial_label = ID) %>%
   mutate(Phase = ifelse(Phase == 'euro', 'post', Phase)) %>%
   filter(!is.na(Phase)) %>%
   mutate(Gold_leaf = ifelse(Gold_leaf == "shatter", "1", Gold_leaf),
@@ -55,6 +54,7 @@ burial_three_period_age_tidy <-
          all_glass_bead_med_3 = ifelse(all_glass_bead > 2 & all_glass_bead <= 6, 1, NA),
          all_glass_bead_high = ifelse(all_glass_bead > 6, 1, NA)) %>% #based on the result of histogram
   left_join(burial_with_type_value_class) %>% #000-prep1
+  rename(burial_label = ID) %>%
   select(burial_label,
          Phase,
          Age_scale,
@@ -89,3 +89,4 @@ burial_three_period_age_tidy <-
 burial_three_period_age_number <-
   burial_three_period_age_tidy %>%
   count(Phase)
+

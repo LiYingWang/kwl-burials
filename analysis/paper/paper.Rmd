@@ -72,8 +72,8 @@ Bayesian approaches to ERGMs are efficient computational tools for social networ
 
 # Materials  {-}
 
-```{r import-and-inspect-data, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/000-prep1-value-burials.R"))}
-suppressWarnings(source(here::here("analysis", "paper", "000-prep1-value-burials.R")))
+```{r import-and-inspect-data, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/000-prep-data.R"))}
+suppressWarnings(source(here::here("analysis", "paper", "000-prep-data.R")))
 ```
 
 ```{r tidy-data, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/001-data-tidy.R"))}
