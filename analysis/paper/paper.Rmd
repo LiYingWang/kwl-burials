@@ -15,17 +15,10 @@ abstract: |
 keywords: |
   Bayesian modeling; network analysis; Monte-carlo simulation; Burials; European colonialism; social differentiation; Taiwan
 highlights: |
-<<<<<<< HEAD
   1. We present Bayesian inference on exponential random graph models (ERGMs) to model archaeological networks.
-  2. We test social processes by simulating two sets of burial data from different time periods.
+  2. We explore social processes and network structures in archaeological data from from two time periods.
   3. Differences in network statistics imply change over time in social structures influenced by foreign presence. 
   4. Bayesian ERGMs are efficient and useful for evaluating and interpreting networks. 
-=======
-  1. We present Bayesian inference on Exponential random graph models (ERGMs) to model archaeological networks.
-  2. We explore social processes and network structures in archaeological data from from two time periods.
-  3. Differences in network statistics implies changes in social structures influenced by foreign presence. 
-  4. Bayesian ERGMs is efficient and useful for evaluating and interpreting networks. 
->>>>>>> 3a787ecbc94312c156101e08d51556b665e80b15
 ---
 
 <!-- This is the format for text comments that will be ignored during renderings. Do not put R code in these comments because it will not be ignored. -->
