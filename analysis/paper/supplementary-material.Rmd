@@ -35,7 +35,7 @@ This supplementary document contains:
 -  further details on methods of modeling fitting, and
 -  assessment of MCMC output and Goodness-of-fit diagnostics for our models
 
-## Kiwulan in the 17th century northeastern Taiwan {.unnumbered}
+# Kiwulan in the 17th northstern Taiwan in a pericolonial context {-}
 
 <!--fit in a bigger historical picture in a periclonial context: move to SI -->
 The involvement in long-distance exchange is often associated with changes in political-economic strategies to a network mode, where ambitious individuals are able to build their local power base and personal influence through the distribution of high-value goods [@Blanton1996; @Feinman2000; @Klehm2017]. Northeastern Taiwan was involved in a regional exchange in East Asia since the 14th century and long-distance trade during the European presence in the 17th century [@Chen2005; @Wang2007]. In 1626, the Spanish built their forts in Heping dao and Tamsui, northern Taiwan, and later were defeated and taken over by the Dutch in 1642 [@Andrade2007]. Indigenous people in northeastern Taiwan first encountered colonial power in 1632 when they were attacked by the Spanish and later in 1647 by the Dutch, who also asked them to pay annual tributes in a flexible way [@Borao2009; @Kang2016]. The Dutch would give local Indigenous leaders symbolic items or trade goods to assert their political authority and consolidate their relationship with Indigenous societies.
