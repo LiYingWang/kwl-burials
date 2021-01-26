@@ -29,16 +29,17 @@ image_width_2_col_inch = 190/25.4 # image Double column w = 190 mm
 
 This supplementary document contains:
 
-- further historical background of northeastern Taiwan in a pericolonial context
-- further definition of our approach to tie formation with the beads from Kiwulan burials
-- further review of network analysis in archaeology
-- further details on methods of modeling fitting, and
-- assessment of MCMC output and Goodness-of-fit diagnostics for our models
+-   further historical background of northeastern Taiwan in a pericolonial context
+-   further definition of our approach to tie formation with the beads from Kiwulan burials
+-   further review of network analysis in archaeology
+-   further details on methods of modeling fitting, and
+-   assessment of MCMC output and Goodness-of-fit diagnostics for our models
 
-## Kiwulan in the 17th century northern Taiwan {-}
+## Kiwulan in the 17th century northern Taiwan {.unnumbered}
 
 <!--fit in a bigger historical picture in a periclonial context: move to SI -->
-The involvement in long-distance exchange is often associated with changes in political-economic strategies to a network mode, where ambitious individuals are able to build their local power base and personal influence through the distribution of high-value goods [@Blanton1996; @Feinman2000; @Klehm2017]. Northeastern Taiwan was involved in a regional exchange in East Asia since the 14th century and long-distance trade during the European presence in the 17th century [@Chen2005; @Wang2007]. In 1626, the Spanish built their forts in Heping dao and Tamsui, northern Taiwan, and later were defeated and taken over by the Dutch in 1642 [@Andrade2007]. Indigenous people in northeastern Taiwan first encountered colonial power in 1632 when they were attacked by the Spanish and later in 1647 by the Dutch, who also asked them to pay annual tributes in a flexible way [@Borao2009; @Kang2016]. The Dutch would give local Indigenous leaders symbolic items or trade goods to assert their political authority and consolidate their relationship with Indigenous societies. 
+
+The involvement in long-distance exchange is often associated with changes in political-economic strategies to a network mode, where ambitious individuals are able to build their local power base and personal influence through the distribution of high-value goods [@Blanton1996; @Feinman2000; @Klehm2017]. Northeastern Taiwan was involved in a regional exchange in East Asia since the 14th century and long-distance trade during the European presence in the 17th century [@Chen2005; @Wang2007]. In 1626, the Spanish built their forts in Heping dao and Tamsui, northern Taiwan, and later were defeated and taken over by the Dutch in 1642 [@Andrade2007]. Indigenous people in northeastern Taiwan first encountered colonial power in 1632 when they were attacked by the Spanish and later in 1647 by the Dutch, who also asked them to pay annual tributes in a flexible way [@Borao2009; @Kang2016]. The Dutch would give local Indigenous leaders symbolic items or trade goods to assert their political authority and consolidate their relationship with Indigenous societies.
 
 ```{r import-and-inspect-data, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/000-prep-data.R"))}
 suppressWarnings(source(here::here("analysis", "paper", "000-prep-data.R")))
@@ -54,8 +55,9 @@ suppressWarnings(source(here::here("analysis", "paper", "002-burial-location.R")
 
 ## Tie formation using bead data from Kiwulan
 
-<!-- burial data and the definition of tie formation: partially move to SI  --> 
-For trade beads with substantial differences in quantities between burials, we described each burial as having one of four levels according to their distributions across all burials (Figure \@ref(fig:figure-raincloud-beads)). Gold-foil beads are in levels of high (>3), upper-middle (3), lower-middle (2), and low (1); carnelian beads are in levels of high (>6), upper-middle (4-6), lower-middle (3), and low (1-2); glass beads are in levels of high (>6), upper-middle (3-6), lower-middle (2), and low (1). If burial 1 and burial 2 both have high quantities of agate beads, then there will be a tie connecting them. 
+<!-- burial data and the definition of tie formation: partially move to SI  -->
+
+For trade beads with substantial differences in quantities between burials, we described each burial as having one of four levels according to their distributions across all burials (Figure \@ref(fig:figure-raincloud-beads)). Gold-foil beads are in levels of high (\>3), upper-middle (3), lower-middle (2), and low (1); carnelian beads are in levels of high (\>6), upper-middle (4-6), lower-middle (3), and low (1-2); glass beads are in levels of high (\>6), upper-middle (3-6), lower-middle (2), and low (1). If burial 1 and burial 2 both have high quantities of agate beads, then there will be a tie connecting them.
 
 ```{r raincloud-beads, fig.cap = "The distributions of different types of trade beads across all burials analyzed in this paper."}
 # combine ridge plots 1 & 4 in the 000-prep-data file
@@ -99,24 +101,27 @@ ridge_1_and_4 <-
 knitr::include_graphics(here::here("analysis", "figures", "000-raincloud-beads.png"))
 ```
 
-## Review of network analysis and archaeological applications {-}
+## Review of network analysis and archaeological applications {.unnumbered}
 
 <!-- intro to networks: move to SI -->
-A social network is generally visualized as a graph consisting of a set of socially-relevant nodes/actors, connected by edges/ties representing one or more relations, such as friendship, collaborations, information flow, trade ties, or any other forms of connection of interest [@Marin2011; @Wasserman1994]. The ties can be classified into four major types, including similarities, social relations, interactions, and flows [@Borgatti2009]. In archaeology, actors can be people, groups, objects, places, or events, with ties built on similarity, proximity, or co-presence of material culture to create patterns reflecting influence, geographical distance, or affiliations in social groups [@Mills2017; @Brughmans2018; @Peeples2019]. For example, past trade can be conceptualized as a network of individual entities connected by shared similarities, the flow of goods, to represent their interactions [@Collar2015, pp. 4]. Similar concepts can be applied to a wide range of archaeological data with relational assumptions, such as burial contexts. Burial goods, especially high value goods, can reflect social practices in broader cultural contexts to represent personal wealth or social status from which we can infer social differentiation or complexity [@Gamble2002; @Janes2013]. This enables the exploration of the structure of the past social organization through the identification of the relationships among burials. 
+
+A social network is generally visualized as a graph consisting of a set of socially-relevant nodes/actors, connected by edges/ties representing one or more relations, such as friendship, collaborations, information flow, trade ties, or any other forms of connection of interest [@Marin2011; @Wasserman1994]. The ties can be classified into four major types, including similarities, social relations, interactions, and flows [@Borgatti2009]. In archaeology, actors can be people, groups, objects, places, or events, with ties built on similarity, proximity, or co-presence of material culture to create patterns reflecting influence, geographical distance, or affiliations in social groups [@Mills2017; @Brughmans2018; @Peeples2019]. For example, past trade can be conceptualized as a network of individual entities connected by shared similarities, the flow of goods, to represent their interactions [@Collar2015, pp. 4]. Similar concepts can be applied to a wide range of archaeological data with relational assumptions, such as burial contexts. Burial goods, especially high value goods, can reflect social practices in broader cultural contexts to represent personal wealth or social status from which we can infer social differentiation or complexity [@Gamble2002; @Janes2013]. This enables the exploration of the structure of the past social organization through the identification of the relationships among burials.
 
 <!-- two types of network analysis: move to SI -->
-Network analysis has been increasingly applied by archaeologists in recent years to deal with past interactions and explore the underlying mechanisms. There are two common approaches to characterize network properties at two distinct scales: node/edge level and graph level [@Peeples2019]. Node level focuses on the role of node in a network, such as centrality, representing the individual influence or social prominence in a group, while graph level assesses the whole network attributes, such as density, clustering in a network, to generalize relationship patterns [@Mills2017; @Peeples2019]. By quantifying those network properties, archaeologists can answer a wide range of research questions. 
 
-Examples includes exploring the political centralization in the Kofun period in Japan through the hierarchical communication network constructed by prestige goods [@Mizoguchi2013], the investigation of long term inter-site relationships from the Epipalaeolithic to the early Neolithic in the Near East according to trade items [@Coward2013]. Regarding burials, @Sosna2013 examined spatial pattern of burials from the Early Bronze Age in Rebesovice with two hypothesized networks constructed according to cultural and chronological similarity between burials. Recently, complex network modeling evaluates networks at both node and graph level through simulations of particular processes and statistically testing the formation of network properties [@Brughmans2013; @Brughmans2018; @Freeman2004; @Salvini2010]. Such application includes simulations and testing food exchange modes for Ancestral Pueblos on the aggregation of households in the American Southwest simulation [@Crabtree2015], or exploring the diffusion of fired bricks across Hellenistic Europe by comparing similarity networks of sites with random networks. Other examples show the assessment of hunter-gatherer exchange networks structure across the Kuril Islands using bootstrap simulation based on ceramic composition [@Erik2015]. 
+Network analysis has been increasingly applied by archaeologists in recent years to deal with past interactions and explore the underlying mechanisms. There are two common approaches to characterize network properties at two distinct scales: node/edge level and graph level [@Peeples2019]. Node level focuses on the role of node in a network, such as centrality, representing the individual influence or social prominence in a group, while graph level assesses the whole network attributes, such as density, clustering in a network, to generalize relationship patterns [@Mills2017; @Peeples2019]. By quantifying those network properties, archaeologists can answer a wide range of research questions.
+
+Examples includes exploring the political centralization in the Kofun period in Japan through the hierarchical communication network constructed by prestige goods [@Mizoguchi2013], the investigation of long term inter-site relationships from the Epipalaeolithic to the early Neolithic in the Near East according to trade items [@Coward2013]. Regarding burials, @Sosna2013 examined spatial pattern of burials from the Early Bronze Age in Rebesovice with two hypothesized networks constructed according to cultural and chronological similarity between burials. Recently, complex network modeling evaluates networks at both node and graph level through simulations of particular processes and statistically testing the formation of network properties [@Brughmans2013; @Brughmans2018; @Freeman2004; @Salvini2010]. Such application includes simulations and testing food exchange modes for Ancestral Pueblos on the aggregation of households in the American Southwest simulation [@Crabtree2015], or exploring the diffusion of fired bricks across Hellenistic Europe by comparing similarity networks of sites with random networks. Other examples show the assessment of hunter-gatherer exchange networks structure across the Kuril Islands using bootstrap simulation based on ceramic composition [@Erik2015].
 
 <!-- current approaches to network analysis: move to SI -->
-Current approaches to network analysis used by archaeologists are mostly restricted to a single rational structure without consideration of interaction between network variables. Our use of Bayesian inference on ERGMs is the first application to archaeological data that can bring new insights to understand past social structures by characterizing network properties as a whole. ERGMs are an important family of statistical models for networks that allows direct modeling for the formation of edges, or ties, between nodes [@Robins2007]. 
 
-The assumption is that possible ties in a network are random variables and dependent on actor variables or the presence or absence of other ties [@Robins2007]. In other words, networks in ERGMs are viewed as dependent variables, where network dependencies and the attributes of nodes/edges can influence the formation of a tie [@Snijders2011]. For example, nodes with similar attributes are more likely to form a relationship, such as friendship between people with the same hobby. Ties form a small structure in a network called a graph configuration, that describes the form of dependence, such as reciprocity (relationship between two actors), transitivity or clustering (relationship between two actors through a shared third actor), homophily (relationship between actors with a similar attribute), and popularity (actors have many relationships with others) [@Robins2007; @Snijders2006; @Morris2008]. Those configurations represent the structure or the property of a network and can be expressed by network statistics. 
+Current approaches to network analysis used by archaeologists are mostly restricted to a single rational structure without consideration of interaction between network variables. Our use of Bayesian inference on ERGMs is the first application to archaeological data that can bring new insights to understand past social structures by characterizing network properties as a whole. ERGMs are an important family of statistical models for networks that allows direct modeling for the formation of edges, or ties, between nodes [@Robins2007].
 
-By modeling those network statistics as direct functions of ties by specifying the forms of configurations, we can generate a distribution of random networks that represent our hypothesis-based model [@Morris2008; @Robins2007]. Such a distribution consists of a large number of possible networks that enables statistical inference and comparison with an observed network [@Robins2007]. ERGMs helps us understand whether an observed network shows significantly more or less of a property of interest than the random networks generated from our model assumptions. 
+The assumption is that possible ties in a network are random variables and dependent on actor variables or the presence or absence of other ties [@Robins2007]. In other words, networks in ERGMs are viewed as dependent variables, where network dependencies and the attributes of nodes/edges can influence the formation of a tie [@Snijders2011]. For example, nodes with similar attributes are more likely to form a relationship, such as friendship between people with the same hobby. Ties form a small structure in a network called a graph configuration, that describes the form of dependence, such as reciprocity (relationship between two actors), transitivity or clustering (relationship between two actors through a shared third actor), homophily (relationship between actors with a similar attribute), and popularity (actors have many relationships with others) [@Robins2007; @Snijders2006; @Morris2008]. Those configurations represent the structure or the property of a network and can be expressed by network statistics.
 
-## Further details on methods of modeling fitting {-}
+By modeling those network statistics as direct functions of ties by specifying the forms of configurations, we can generate a distribution of random networks that represent our hypothesis-based model [@Morris2008; @Robins2007]. Such a distribution consists of a large number of possible networks that enables statistical inference and comparison with an observed network [@Robins2007]. ERGMs helps us understand whether an observed network shows significantly more or less of a property of interest than the random networks generated from our model assumptions.
+
+## Further details on methods of modeling fitting {.unnumbered}
 
 ```{r bergm-iteration}
 burn_in <- 100
@@ -125,8 +130,9 @@ aux_iter <- 4000
 bgof_si <-10000
 ```
 
-<!--Model fitting: move to SI --> 
-After we set our model parameters, we simulated networks in a Bayesian framework using a Markov chain Monte Carlo (MCMC) algorithm. MCMC algorithms allow estimation of posterior distributions through direct random sampling the posterior without assuming the prior comes from any specific distribution [@Hamra2013]. We can obtain a posterior distribution by constructing a Markov chain that describes a sequence of moves from current state to the next state following probabilistic rules based on an algorithm. This enables a random or stochastic simulation in a long run where each move does not depend on the previous move. More chains ensures a more desirable posterior distribution that is close to the target distribution under study, or convergence. 
+<!--Model fitting: move to SI -->
+
+After we set our model parameters, we simulated networks in a Bayesian framework using a Markov chain Monte Carlo (MCMC) algorithm. MCMC algorithms allow estimation of posterior distributions through direct random sampling the posterior without assuming the prior comes from any specific distribution [@Hamra2013]. We can obtain a posterior distribution by constructing a Markov chain that describes a sequence of moves from current state to the next state following probabilistic rules based on an algorithm. This enables a random or stochastic simulation in a long run where each move does not depend on the previous move. More chains ensures a more desirable posterior distribution that is close to the target distribution under study, or convergence.
 
 In Bayesian ERGMs, MCMC first selects a set of edges (or a set of empty pair of actors) with equal probability, and then switches to a pair of actors at random within the chosen set [@Caimo2011]. In our case, we set the number of chains to six. For each chain, the number of burn-in iterations was `r burn_in` and the number of iterations after the burn-in was `r main_iter`. We set the number of iterations used to simulate a network y' at each iteration to `r aux_iter`.
 
@@ -200,9 +206,9 @@ dev.off()
 
 ## Assessment of MCMC output and Goodness-of-fit diagnostics for our models
 
-As an informal way to diagnose model convergence, we first evaluated three diagnostic visual summaries of our MCMC output, including density plots, trace plots, and autocorrelation plots for both models (Figure \@ref(fig:figure-pre-diag) and Figure \@ref(fig:figure-post-diag)) [@Hamra2013]. In general, models with informative priors have a better convergence of the MCMC. We can see that the diagnostic plots show stationary distributions and a trend of decreased autocorrelation. Then we summarize output from our two models by goodness-of-fit (GOF) diagnostics in the Bayesian framework, where the observed network is compared with the set of networks simulated from the estimated posterior distributions of the parameters of each model [@Caimo2011; @Caimo2017]. We set $`r bgof_si`$ network graphs simulated from the estimated posterior distribution in ERGMs. 
+As an informal way to diagnose model convergence, we first evaluated three diagnostic visual summaries of our MCMC output, including density plots, trace plots, and autocorrelation plots for both models (Figure \@ref(fig:figure-pre-diag) and Figure \@ref(fig:figure-post-diag)) [@Hamra2013]. In general, models with informative priors have a better convergence of the MCMC. We can see that the diagnostic plots show stationary distributions and a trend of decreased autocorrelation. Then we summarize output from our two models by goodness-of-fit (GOF) diagnostics in the Bayesian framework, where the observed network is compared with the set of networks simulated from the estimated posterior distributions of the parameters of each model [@Caimo2011; @Caimo2017]. We set $`r bgof_si`$ network graphs simulated from the estimated posterior distribution in ERGMs.
 
-Our Bayesian GOF diagnostics, shown in the main text, summarized three distributions, including degree, minimum geodesic distance, and edgewise shared partner distributions. This provides a statistical approach to check how well the estimated posterior parameter distribution, based on our hypotheses, can reproduce networks with similar general structural features of the observed networks. We then compared the distribution of our observed networks, the networks before and after the arrival of Europeans, with the distribution of our hypothesized models. We expect to see the models fit with our hypotheses, indicative of a increased social inequality after the foreign contact. In addition, the covariates can give some more clues for the underlying mechanisms for the formations of each network, such as the relative importance of age and sex. 
+Our Bayesian GOF diagnostics, shown in the main text, summarized three distributions, including degree, minimum geodesic distance, and edgewise shared partner distributions. This provides a statistical approach to check how well the estimated posterior parameter distribution, based on our hypotheses, can reproduce networks with similar general structural features of the observed networks. We then compared the distribution of our observed networks, the networks before and after the arrival of Europeans, with the distribution of our hypothesized models. We expect to see the models fit with our hypotheses, indicative of a increased social inequality after the foreign contact. In addition, the covariates can give some more clues for the underlying mechanisms for the formations of each network, such as the relative importance of age and sex.
 
 ```{r figure-pre-diag, fig.cap = "MCMC output of the pre-European model. In the order of edges, nodematch-age, nodematch-sex, nodematch-ritual, nodematch-value, gwesp, gwdeg, and dyadcov.distance."}
 knitr::include_graphics(here::here("analysis", "figures", "008-pre-diag.png"))
@@ -212,16 +218,18 @@ knitr::include_graphics(here::here("analysis", "figures", "008-pre-diag.png"))
 knitr::include_graphics(here::here("analysis", "figures", "009-post-diag.png"))
 ```
 
-# References {-}
+# References {.unnumbered}
 
 <!-- The following line ensures the references appear here for the MS Word or HTML output files, rather than right at the end of the document (this will not work for PDF files):  -->
-<div id="refs"></div>
+
+::: {#refs}
+:::
 
 ##### pagebreak
 
 ### Colophon
 
-This report was generated on `r Sys.time()` using the following computational environment and dependencies: 
+This report was generated on `r Sys.time()` using the following computational environment and dependencies:
 
 ```{r colophon, cache = FALSE}
 # which R packages and versions?
