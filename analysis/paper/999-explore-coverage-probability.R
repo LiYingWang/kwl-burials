@@ -112,3 +112,8 @@ post_CIpatchwork <- lsmi_cv(post_E_igraph_to_network,
 
 # calculate 95% bootstrap confidence intervals for the density
 post_CIpatchwork$bci/(post_E_igraph_to_network$n - 1)
+
+# calculate odds ratios for estimates of posterior for both models
+expit = function(x) 1/(1+exp(-x))
+pre_odd <- expit(posterior_esti_two_phases$mean_pre)
+post_odd <- expit(posterior_esti_two_phases$mean_post)
