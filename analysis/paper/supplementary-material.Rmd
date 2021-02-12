@@ -31,7 +31,7 @@ This supplementary document contains:
 
 -  further historical background of 17th century northeastern Taiwan in a pericolonial context
 -  further review of network analysis and archaeological applications
--  further definition of our approach to tie formation with the beads from Kiwulan burials
+-  further definition of our approach to tie formation and node attributes from Kiwulan burials
 -  further details on methods of modeling fitting, and
 -  assessment of MCMC output and Goodness-of-fit diagnostics for our models
 
@@ -67,10 +67,10 @@ Current approaches to network analysis used by archaeologists are mostly restric
 
 By modeling those network statistics as direct functions of ties by specifying the forms of configurations, we can generate a distribution of random networks that represent our hypothesis-based model [@Morris2008; @Robins2007]. Such a distribution consists of a large number of possible networks that enables statistical inference and comparison with an observed network [@Robins2007]. ERGMs helps us understand whether an observed network shows significantly more or less of a property of interest than the random networks generated from our model assumptions.
 
-## Tie formation with the beads from Kiwulan burials {.unnumbered}
+## Tie formation and node attributes from Kiwulan burials {.unnumbered}
 
 <!-- burial data and the definition of tie formation: partially move to SI  -->
-For trade beads with substantial differences in quantities between burials, we described each burial as having one of four levels according to their distributions across all burials (Figure \@ref(fig:figure-raincloud-beads)). Gold-foil beads are in levels of high (\>3), upper-middle (3), lower-middle (2), and low (1); carnelian beads are in levels of high (\>6), upper-middle (4-6), lower-middle (3), and low (1-2); glass beads are in levels of high (\>6), upper-middle (3-6), lower-middle (2), and low (1). If burial 1 and burial 2 both have high quantities of agate beads, then there will be a tie connecting them.
+For trade beads with substantial differences in quantities between burials, we described each burial as having one of four levels according to their distributions across all burials (Figure \@ref(fig:figure-raincloud-beads)). Gold-foil beads are in levels of high (\>3), upper-middle (3), lower-middle (2), and low (1); carnelian beads are in levels of high (\>6), upper-middle (4-6), lower-middle (3), and low (1-2); glass beads are in levels of high (\>6), upper-middle (3-6), lower-middle (2), and low (1). If burial 1 and burial 2 both have high quantities of agate beads, then there will be a tie connecting them. For burial attributes, we assigned burials to different groups according to their age, sex, burial value and the presence/absence of ritual pottery. We have three groups for the age attribute, 0-12, 12-20, and above 20; two groups for the sex attribute, male and female, and four groups for the burial value that are specified in the main paper document.
 
 ```{r raincloud-beads, fig.cap = "The distributions of different types of trade beads across all burials analyzed in this paper."}
 # combine ridge plots 1 & 4 in the 000-prep-data file
