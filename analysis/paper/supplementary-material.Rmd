@@ -72,6 +72,9 @@ By modeling those network statistics as direct functions of ties by specifying t
 <!-- burial data and the definition of tie formation: partially move to SI  -->
 For trade beads with substantial differences in quantities between burials, we described each burial as having one of four levels according to their distributions across all burials (Figure \@ref(fig:figure-raincloud-beads)). Gold-foil beads are in levels of high (\>3), upper-middle (3), lower-middle (2), and low (1); carnelian beads are in levels of high (\>6), upper-middle (4-6), lower-middle (3), and low (1-2); glass beads are in levels of high (\>6), upper-middle (3-6), lower-middle (2), and low (1). If burial 1 and burial 2 both have high quantities of agate beads, then there will be a tie connecting them. For burial attributes, we assigned burials to different groups according to their age, sex, burial value and the presence/absence of ritual pottery. We have three groups for the age attribute, 0-12, 12-20, and above 20; two groups for the sex attribute, male and female, and four groups for the burial value that are specified in the main paper document.
 
+(TODO: table in SI with age and sex by phase)
+
+
 ```{r raincloud-beads, fig.cap = "The distributions of different types of trade beads across all burials analyzed in this paper."}
 # combine ridge plots 1 & 4 in the 000-prep-data file
 library(tidyverse)

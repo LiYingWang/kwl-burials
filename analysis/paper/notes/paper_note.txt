@@ -7,3 +7,13 @@
 4. gwdegree (geometrically weighted degree distribution): a parametric form that represents the frequency distribution for nodal degree, each node counts only once. The local configuration is degrees and stars that are equivalent representations for the distribution of node-based edge counts. A measure of the tendency of the number of edges into a node. This statistic captures the tendency towards centralisation in the degree distribution of the network.
 
 5. nodematch: uniform homophily between nodes that refers to the similarity of connected nodes. A statistics that counts the number of edges between nodes sharing the same covariate value or characteristics. We use wealth index and age as covariants that reflects the similarity between nodes. Here we consider age, gender, and index of wealth as node attributes covariants.
+
+6. T test on the difference of network populations (removed from main text, the original scrip file is 008)
+
+```{r bootstrap-t-test, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/008-bootstrap-t-test.R"))}
+suppressWarnings(source(here::here("analysis", "paper", "008-bootstrap-t-test.R")))
+pval_den <- signif(density_b_test$p.value, 4)
+pval_trans <- signif(trans_b_test$p.value, 4)
+pval_star <- signif(star_b_test$p.value, 4)
+```
+The vertex bootstrap procedure with a t-test on the difference of network populations also shows that there are significant differences in network density(p = $`r pval_den`$), transitivity (p = $`r pval_trans`$), and centralization (p = $`r pval_star`$). Moreover, we explored the sample size effect by removing nodes at certain percent (5-40%) for both networks and compared their confidence intervals.
