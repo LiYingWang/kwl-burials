@@ -221,24 +221,24 @@ sim_esp_pre <-
 
 # make dataframes for distribution stats
 posterior_distribution_pre <-
-  data.frame("moments" = c("Mean", "Variance", "Skewness"),
-             "Observed.degree" = round(c(obs_degree_pre$mean,
+  data.frame("moments" = c("mean", "variance", "skewness"),
+             "observed.degree" = round(c(obs_degree_pre$mean,
                                   obs_degree_pre$sd,
                                   obs_degree_pre$skew), 2),
-             "Modelled.degree" = round(c(mean(sim_degree_pre$mean),
+             "modelled.degree" = round(c(mean(sim_degree_pre$mean),
                                mean(sim_degree_pre$sd),
                                mean(sim_degree_pre$skew)),2),
-             "Observed.distance" = round(c(obs_dist_pre$mean,
+             "observed.distance" = round(c(obs_dist_pre$mean,
                                            obs_dist_pre$sd,
                                            obs_dist_pre$skew), 2),
-             "Modelled.distance" = round(c(mean(sim_dist_pre$mean),
+             "modelled.distance" = round(c(mean(sim_dist_pre$mean),
                                         mean(sim_dist_pre$sd),
                                         mean(sim_dist_pre$skew)),2),
-             "Observed.esp" = round(c(obs_esp_pre$mean,
+             "observed.esp" = round(c(obs_esp_pre$mean,
                                       obs_esp_pre$sd,
                                       obs_esp_pre$skew), 2),
-             "Modelled.esp" = round(c(mean(sim_esp_pre$mean),
+             "modelled.esp" = round(c(mean(sim_esp_pre$mean),
                                    mean(sim_esp_pre$sd),
                                    mean(sim_esp_pre$skew)),2),
-             "Phase" = "pre-European")
+             "phase" = "pre-European")
 

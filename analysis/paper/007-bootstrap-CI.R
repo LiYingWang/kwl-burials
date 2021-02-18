@@ -252,7 +252,15 @@ CIs_two_nets_tidy <-
   mutate(variable = case_when(
     variable == "1" ~ "density",
     variable == "2" ~ "transitivity",
-    variable == "3" ~ "popularity",
+    variable == "3" ~ "centralization",
+    TRUE ~ "")) %>%
+  mutate(variable = factor(variable,
+                            levels=c("density",
+                                     "transitivity",
+                                     "centralization"))) %>%
+  mutate(phase = case_when(
+    phase == "pre" ~ "pre-European",
+    phase == "post" ~ "post-European",
     TRUE ~ "")) %>%
   mutate(removal = as.factor(removal))
 
@@ -277,5 +285,6 @@ CIs_two_nets_tidy %>%
   facet_wrap(~variable,
              scales = "free_x")
 
+# Figure 5
 ggsave(here::here("analysis", "figures", "007-bootstrap-CI.png"),
        w = 8, h = 5)

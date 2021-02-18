@@ -63,9 +63,19 @@ histogram <-
 bergm_two_phases_longer <-
   bergm_two_phases %>%
   select(edges, gwesp, gwdeg, dyadcov.distance, phase) %>%
+  mutate(phase = case_when(
+    phase == "pre" ~ "pre-European",
+    phase == "post" ~ "post-European",
+    TRUE ~ "")) %>%
+  rename(transitivity = gwesp,
+         centralization = gwdeg,
+         "physical distance" = dyadcov.distance) %>%
   pivot_longer(!phase, names_to = "parameter", values_to = "posterior") %>%
   mutate(parameter = factor(parameter,
-                            levels=c("edges","gwesp","gwdeg","dyadcov.distance")))
+                            levels=c("edges",
+                                     "transitivity",
+                                     "centralization",
+                                     "physical distance")))
 
 density_posterior_facet <-
   ggplot(bergm_two_phases_longer,
@@ -74,6 +84,7 @@ density_posterior_facet <-
   facet_wrap(~parameter, scales = "free") +
   theme_minimal()
 
+# Figure 4
 ggsave(here::here("analysis", "figures", "006-posterior-distribution.png"),
        w = 8, h = 5)
 
@@ -84,16 +95,16 @@ distribution_two_phases <-
 
 distribution_two_phases_longer <-
   distribution_two_phases %>%
-  pivot_longer(cols = starts_with(c("Observed", "Modelled")),
+  pivot_longer(cols = starts_with(c("observed", "modelled")),
                names_to = "parameter",
                values_to = "value") %>%
   separate(parameter, c("data", "parameter"))
 
 distribution_two_phases_diff <-
   distribution_two_phases %>%
-  mutate(degree = abs(Observed.degree-Modelled.degree),
-         distance = abs(Observed.distance-Modelled.distance),
-         esp = abs(Observed.esp-Modelled.esp)) %>%
+  mutate(degree = abs(observed.degree-modelled.degree),
+         distance = abs(observed.distance-modelled.distance),
+         esp = abs(observed.esp-modelled.esp)) %>%
   pivot_longer(cols = c("degree", "distance", "esp"),
                names_to = "parameter",
                values_to = "difference")
@@ -101,11 +112,12 @@ distribution_two_phases_diff <-
 # https://github.com/nevrome/ggpointgrid
 ggplot(distribution_two_phases_longer,
        aes(parameter, value)) +
-  ggpointgrid::geom_pointgrid(aes(color = Phase,
+  ggpointgrid::geom_pointgrid(aes(color = phase,
                                   shape = data),
                               size = 3) +
   facet_wrap(~moments, scales = "free") +
   theme_minimal()
 
+# Figure 7
 ggsave(here::here("analysis", "figures", "006-distribution-moments.png"),
        w = 8, h = 5)
