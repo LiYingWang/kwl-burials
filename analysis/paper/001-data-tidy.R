@@ -90,3 +90,15 @@ burial_three_period_age_number <-
   burial_three_period_age_tidy %>%
   count(Phase)
 
+# missing values
+NAs_age <-
+  burial_three_period_age_tidy%>%
+  filter(Age_scale == "NA") %>%
+  filter(Phase != "disturbed") %>%
+  count(Phase)
+
+NAs_sex <-
+  burial_three_period_age_tidy%>%
+  filter(gender == "NA") %>%
+  filter(Phase != "chi") %>%
+  count(Phase)

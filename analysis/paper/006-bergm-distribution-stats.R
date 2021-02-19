@@ -115,6 +115,9 @@ ggplot(distribution_two_phases_longer,
   ggpointgrid::geom_pointgrid(aes(color = phase,
                                   shape = data),
                               size = 3) +
+  scale_x_discrete(labels=c("degree",
+                            "minimum\ngeodetic\ndistance",
+                            "edge-wise\nshared\npartners")) +
   facet_wrap(~moments, scales = "free") +
   theme_minimal()
 

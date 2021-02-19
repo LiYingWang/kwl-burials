@@ -110,6 +110,10 @@ post_E <- burial_three_period_age_number %>% filter(Phase == "post") %>% pull()
 chi <- burial_three_period_age_number %>% filter(Phase == "chi") %>% pull()
 disturb <- burial_three_period_age_number %>% filter(Phase == "disturbed") %>% pull()
 diff_pre_post <- post_E - pre_E
+
+# missing values
+age_miss <- sum(NAs_age$n)
+sex_miss <- sum(NAs_sex$n)
 ```
 
 <!-- Our chronology and principles of network building -->
@@ -229,6 +233,7 @@ posterior_esti_two_phases<-
 library(flextable)
 # add column labels
 ft <- flextable(posterior_esti_two_phases) %>% 
+  colformat_double(digits = 2) %>% 
   set_header_labels(mean_pre = "pre-European", median_pre = "pre-European", 
                     `2.5%_pre` = "pre-European", `97.5%_pre` = "pre-European",
                     mean_post = "post-European", median_post = "post-European", 
@@ -239,7 +244,7 @@ ft <- flextable(posterior_esti_two_phases) %>%
                             "mean", "median", "2.5%", "97.5%"), top = FALSE ) %>% 
   align(j = 2:9, align = "right", part = "header") %>% 
   align(i = 1, align = "center", part = "header") %>% 
-  width(j = ~ parameter, width = 1.3) %>% 
+  width(j = ~ parameter, width = 1.35) %>% 
   width(j = 2:9, width = 0.65) %>% 
   set_caption("Estimated posterior means, medians, and 95% confidence intervals for each network parameter of two models. Confidence intervals that do not include zero indicate significant effects of parameters (Caimo, 2017). Posterior means are generally close to posterior medians.")
 ft
@@ -283,7 +288,7 @@ knitr::include_graphics(here::here("analysis", "figures", "006-distribution-mome
 A striking finding in our results is the change in network properties of Kiwulan burials from a more cohesive network with multiple subgroups toward a more centralized network with concentration of connections among fewer burials after the European arrival in the 17th century. This supports our pericolonial impact model that Kiwulan changed from a more corporate-based to a more networked-based society, as indicated in the grave goods and burial attributes. A corporate-based society, as we interpret the pre-European situation at Kiwulan, stresses shared power between individuals, communal rituals, and social inequality, if any, would be associated with groups [@Drennan2010; @Feinman2000; @Feinman2000political]. In contrast, a network-based society, as we interpret the post-European data from Kiwulan, presents wealth accumulation through individual networks, prestige goods manipulation, and trade monopolization [@Blanton1996]. It should be noted that the corporate-network continuum represents a dynamic process with different degrees of hierarchical complexity instead of static ideal-type stages [@Feinman2000].
 
 <!--archaeological implication based on the results-->
-Network covariates give insights into the socio-cultural factors that were associated with the acquisition and distribution of foreign prestige goods. Our results indicate that the major factor contributing to burial networks is ritual for the pre-European network, and wealth for the post-European network. We interpret these results as illustrating different social and economic mechanisms influencing relations between burials for the two periods. Before European arrival, ritual behaviors were important factors that structured the interconnections of prestige goods in the burial contexts. This might imply that ritual could be a status indicator at the time before foreign goods were first introduced to Indigenous societies. After the European presence was established, status indicators shifted from ritual to wealth differences. Moreover, geographical proximity, implying some kinship association, has not effect on sharing similar prestige items between burials for both phases. This may suggest that the use of prestige items is more individual-oriented instead of kinship-based. Demographic information, such as age and sex, do not have any effects on network formation for both networks. But we also note that no effects could be due to the unavailability of age and sex values for many burials in our sample.
+Network covariates give insights into the socio-cultural factors that were associated with the acquisition and distribution of foreign prestige goods. Our results indicate that the major factor contributing to burial networks is ritual for the pre-European network, and wealth for the post-European network. We interpret these results as illustrating different social and economic mechanisms influencing relations between burials for the two periods. Before European arrival, ritual behaviors were important factors that structured the interconnections of prestige goods in the burial contexts. This might imply that ritual could be a status indicator at the time before foreign goods were first introduced to Indigenous societies. After the European presence was established, status indicators shifted from ritual to wealth differences. Moreover, geographical proximity, implying some kinship association, has not effect on sharing similar prestige items between burials for both phases. This may suggest that the use of prestige items is more individual-oriented instead of kinship-based. Demographic information, such as age and sex, do not have any effects on network formation for both networks. But we also note that no effects could be due to the unavailability of age and sex values for many burials (missing age = `r age_miss` and missing sex = `r sex_miss`) in our sample.
 
 <!-- other evidence -->
 We used burial data as a proxy to explore social relations reflected by interconnections of prestige goods based on assumptions that burials can represent social structures [@Binford1971; @Saxe1970], and individuals with similar prestige goods reflect similar access to trade, exchange, and gifting networks [eg. @Coward2013, pp. 252]. We argue that the social relations at Kiwulan changed because of contact with European colonial powers and associated foreign trade. This argument is supported by changes in burial network structures through time. It should be noted that manipulation of burial rituals by the living can cause a disconnect between a person’s status in life and their status represented by burial contexts [@Hodder1980; @Pearson1982]. However, this issue can be reduced by comparing the results with evidence from other archaeological contexts, such as residential areas [@Chapman2003]. Previous studies of trade ornaments from the residential area of Kiwulan suggests an uneven spatial distribution when the Europeans were active in northern Taiwan that hints at an increased social differentiation [@LWandBM2020ornament]. This is consistent with the result of a more centralized burial network after the presence of Europeans, that supports a connection between a burial and the social role of the living person. Also, ethnographic records support our interpretation of burial goods as prestige goods or status items in the local Indigenous culture [@Borao2009; @LiandWu2006], so the interrelations represented by the flow of these goods observed in the burial data likely reflect social contexts of the living people at Kiwulan.
