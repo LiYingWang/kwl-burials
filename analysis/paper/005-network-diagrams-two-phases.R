@@ -134,5 +134,6 @@ diagrams_two_phases <-
             labels = c('A', 'B'),
             label_size = 12)
 
+# Figure 3
 ggsave(here::here("analysis", "figures", "005-network-diagrams.png"),
        w = 10, h = 4)

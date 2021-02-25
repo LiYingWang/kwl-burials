@@ -113,6 +113,7 @@ ggplot() +
                     ymax = 1) +
   theme_void()
 
+# Figure 1
 ggsave(here("analysis", "figures", "000-KWL-map.png"),
        width = 135,
        height = 60,

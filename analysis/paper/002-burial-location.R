@@ -72,5 +72,6 @@ KWL_burial_map <-
   blank() +
   north(AD_data, scale = 0.2, symbol = 3)
 
+# Figure 2
 ggsave(here::here("analysis", "figures", "002-burial-map.png"),
        w = 8, h = 4)

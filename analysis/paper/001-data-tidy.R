@@ -24,7 +24,7 @@ burial_three_period_age_tidy <-
     TRUE ~ "")) %>% # the classification is based on the result of histogram
   mutate(Age_scale = case_when(
     `Age` %in% c("1","2") ~ "0-12",
-    `Age` == "3" ~ "12~20",
+    `Age` == "3" ~ "12-20",
     `Age` %in% c("4","5","6","7","8") ~ "+20",
     TRUE ~ "NA")) %>%
   mutate(gender = case_when(
@@ -90,3 +90,15 @@ burial_three_period_age_number <-
   burial_three_period_age_tidy %>%
   count(Phase)
 
+# missing values
+NAs_age <-
+  burial_three_period_age_tidy%>%
+  filter(Age_scale == "NA") %>%
+  filter(Phase != "disturbed") %>%
+  count(Phase)
+
+NAs_sex <-
+  burial_three_period_age_tidy%>%
+  filter(gender == "NA") %>%
+  filter(Phase != "chi") %>%
+  count(Phase)
