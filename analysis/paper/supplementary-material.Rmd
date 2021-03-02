@@ -138,7 +138,9 @@ ft_age_sex <- flextable(age_sex_by_phase) %>%
                             "male", "female", "unknown"), top = FALSE) %>% 
   align(j = 2:7, align = "right", part = "header") %>% 
   align(i = 1, align = "center", part = "header") %>% 
-  set_caption("The number of burials with identification of age and sex at Kiwulan. The NA means no sufficient skeletal remains for determination of age or sex")
+  width(j = ~ age, width = 1) %>% 
+  width(j = 2:7, width = 0.8) %>% 
+  set_caption("The number of burials with identification of age and sex at Kiwulan. The unknown means no sufficient skeletal remains for determination of age or sex")
 ft_age_sex
 ```
 
