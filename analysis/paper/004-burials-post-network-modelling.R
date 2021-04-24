@@ -141,6 +141,7 @@ summary(model_post_3)
 
 # Specify a prior distribution
 # normal distribution (low density, low transitivity, high popularity)
+# priors below follow the order of variables (without#) specified in model 3 (lines 126-138)
 post_prior_mean <- c(-3, 0, 0, 0, 2, 1, 2, 0) # prior mean corresponds to mean for each parameter
 post_prior_sigma <- diag(c(3, 5, 5, 5, 3, 3, 3, 1), 8, 8) # covariance matrix structure
 
