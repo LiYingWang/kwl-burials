@@ -280,7 +280,7 @@ CIs_two_nets_tidy %>%
                   position = position_dodge(0.3)) +
   #scale_color_viridis(discrete= T) +
   theme_minimal() +
-  labs(x = "confidence intervals (95%)",
+  labs(x = "parameter value with confidence intervals (95%)",
        y = "node removal (%)") +
   facet_wrap(~variable,
              scales = "free_x")

@@ -48,19 +48,21 @@ relation_tidy_pre %>%
 
 pre_diagram <-
   ggraph(relation_tidy_pre, layout = "stress") + #graphopt
-  geom_edge_link(aes(width = as.factor(common_counts)),
-                 alpha = 0.4) +
+  geom_edge_link(aes(width = as.factor(common_counts),
+                     color = as.factor(common_counts)),
+                 alpha = 0.6) +
   geom_node_point(aes(filter = !is.na(connections),
                       size = connections,
                       color = connections)) + #alpha = connection
-  scale_edge_width_manual(values = c(0.2, 0.5, 1)) +
+  scale_edge_width_manual(values = c(0.15, 0.8, 1.2)) +
+  scale_edge_color_manual(values = c("black", "black", "red"))+
   scale_size_continuous(breaks = c(2, 5, 8, 11, 13)) +
   scale_color_viridis(direction = -1, breaks = c(2, 5, 8, 11, 13)) +
-  guides(size = guide_legend(order = 1), color=guide_legend(order = 1)) +
+  guides(size = guide_legend(order = 1), color = guide_legend(order = 1)) +
   #geom_node_text(aes(filter= !is.na(connections) & connections > 11,
                      #label = burial_label_rm),
                  #repel = TRUE) + # no.21, 48, 85
-  labs(edge_width = "common items") +
+  labs(edge_width = "common items", edge_color = "common items") +
   theme_graph() +
   theme(plot.margin = unit(rep(0.8, 4), "cm")) #legend.position="none"
 
@@ -109,22 +111,28 @@ relation_tidy_post %>%
   activate(edges) %>%
   arrange(desc(common_counts))
 
+got_palette <- c("#1A5878", "#C44237", "#AD8941", "#E99093", "#50594B")
+
 post_diagram <-
   ggraph(relation_tidy_post, layout = "stress") + #graphopt
-  geom_edge_link(aes(width = as.factor(common_counts)),
-                 alpha = 0.4) +
+  geom_edge_link(aes(width = as.factor(common_counts),
+                     color = as.factor(common_counts)),
+                 alpha = 0.6) +
   geom_node_point(aes(filter= !is.na(connections),
                       size = connections,
                       color = connections)) +
-  scale_edge_width_manual(values=c(0.2, 0.5, 1)) +
+  scale_edge_width_manual(values=c(0.15, 0.8, 1.2)) +
+  scale_edge_colour_manual(values = c("black", "black", "red")) +
   scale_color_viridis_c(direction = -1) +
-  guides(size = guide_legend(), color=guide_legend()) +
   #geom_node_text(aes(filter= !is.na(connections) & connections > 22,
                      #label = burial_label_rm),
                 # repel = TRUE) + # no.20, 42, 74
-  labs(edge_width = "common item") +
+  labs(edge_width = "common items", edge_color = "common items") +
+  guides(size = guide_legend(order =1), color = guide_legend(order =1),
+         edge_width = guide_legend(order = 2), edge_color = guide_legend(order = 2)) +
   theme_graph() +
   theme(plot.margin = unit(rep(0.8, 4), "cm"))
+
 
 # plot together
 library(cowplot)

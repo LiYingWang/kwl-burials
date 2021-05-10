@@ -1,5 +1,5 @@
 ---
-title: "Supplementary Materials- A Bayesian approach to burial networks to infer social changes in northeastern Taiwan during the European colonization period"
+title: "Supplementary Materials- A Bayesian networks approach to infer social changes in burials in northeastern Taiwan during the European colonization period"
 author:
   - Li-Ying Wang
   - Ben Marwick
@@ -30,15 +30,15 @@ image_width_2_col_inch = 190/25.4 # image Double column w = 190 mm
 This supplementary document contains:
 
 -  further historical background of 17th century northeastern Taiwan in a pericolonial context
--  further review of network analysis and archaeological applications
--  further definition of our approach to tie formation and node attributes from Kiwulan burials
--  further details on methods of modeling fitting, and
--  assessment of MCMC output and Goodness-of-fit diagnostics for our models
+-  further review of network analysis and archaeological applications relevant to this study
+-  further definitions of our approach to tie formation and node attributes from Kiwulan burials
+-  further details on our methods of modeling fitting, and
+-  assessment of our MCMC output and Goodness-of-fit diagnostics for our models
 
 # Kiwulan in the 17th northeastern Taiwan in a pericolonial context {-}
 
 <!--fit in a bigger historical picture in a pericolonial context: move to SI -->
-The involvement in long-distance exchange is often associated with changes in political-economic strategies from a corporate mode to a network mode, where ambitious individuals are able to build their local power base and personal influence through the acquisition and distribution of foreign prestige goods [@Blanton1996; @Feinman2000; @Klehm2017]. Northeastern Taiwan became more involved in regional exchange with East Asia since the 14th century and long-distance trade with Southeast Asia brought by Europeans in the 17th century [@Chen2005; @Wang2007]. In 1626, the Spanish built their forts in Heping dao and Tamsui, northern Taiwan, and later were defeated and taken over by the Dutch in 1642 [@Andrade2007]. Indigenous people in northeastern Taiwan first encountered colonial power in 1632 when they were attacked by the Spanish and later in 1647 by the Dutch. The Dutch asked local settlements to pay deer hides or rice as annual tributes but negotiating a delayed payment is allowed if it is needed [@Borao2009; @Kang2016]. In the annual event held by the Dutch with participants of local Indigenous representatives [@Andrade1997], the Dutch would give those representatives symbolic items such as rattan sticks or foreign goods to assert their political authority and consolidate their relationship with Indigenous settlements. The introduction of foreign prestige goods to local Indigenous communities might have occurred before European presence became established, but was maintained and amplified after European arrival due to local competition for power [@Borao2009; @LiandWu2006; @LWandBM2020ornament; @Ueda2016].
+The involvement in long-distance exchange is often associated with changes in political-economic strategies from a corporate mode to a network mode, where ambitious individuals are able to build their local power base and personal influence through the acquisition and distribution of foreign prestige goods [@Blanton1996; @Feinman2000; @Klehm2017]. Increased social inequality associated with the use of exotic trade goods is recognized as a ‘network’ strategy for gaining power [@Blanton1996; @Feinman2000]. Northeastern Taiwan became more involved in regional exchange with East Asia since the 14th century and long-distance trade with Southeast Asia brought by Europeans in the 17th century [@Chen2005; @Wang2007]. In 1626, the Spanish built their forts in Heping dao and Tamsui, northern Taiwan, and later were defeated and taken over by the Dutch in 1642 [@Andrade2007]. Indigenous people in northeastern Taiwan first encountered colonial power in 1632 when they were attacked by the Spanish and later in 1647 by the Dutch. The Dutch asked local settlements to pay deer hides or rice as annual tributes but negotiating a delayed payment is allowed if it is needed [@Borao2009; @Kang2016]. In the annual event held by the Dutch with participants of local Indigenous representatives [@Andrade1997], the Dutch would give those representatives symbolic items such as rattan sticks or foreign goods to assert their political authority and consolidate their relationship with Indigenous settlements. The introduction of foreign prestige goods to local Indigenous communities might have occurred before European presence became established, but was maintained and amplified after European arrival due to local competition for power [@Borao2009; @LiandWu2006; @LWandBM2020ornament; @Ueda2016]. 
 
 ```{r import-and-inspect-data, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/000-prep-data.R"))}
 suppressWarnings(source(here::here("analysis", "paper", "000-prep-data.R")))
@@ -70,7 +70,9 @@ By modeling those network statistics as direct functions of ties by specifying t
 ## Tie formation and node attributes from Kiwulan burials {.unnumbered}
 
 <!-- burial data and the definition of tie formation: partially move to SI  -->
-For trade beads with substantial differences in quantities between burials, we described each burial as having one of four levels according to their distributions across all burials (Figure \@ref(fig:figure-raincloud-beads)). Gold-foil beads are in levels of high (\>3), upper-middle (3), lower-middle (2), and low (1); carnelian beads are in levels of high (\>6), upper-middle (4-6), lower-middle (3), and low (1-2); glass beads are in levels of high (\>6), upper-middle (3-6), lower-middle (2), and low (1). If burial 1 and burial 2 both have high quantities of agate beads, then there will be a tie connecting them. For burial attributes, we assigned burials to different groups according to their age, sex, burial value and the presence/absence of ritual pottery. We have three groups for the age attribute, 0-12, 12-20, and above 20; two groups for the sex attribute, male and female; and four groups for the burial value that are specified in the main paper document. Table \@ref(tab:age-sex-table) shows the number of burials, of which sex and age can be determined. 
+For trade beads with substantial differences in quantities between burials, we described each burial as having one of four levels according to their distributions across all burials (Figure \@ref(fig:figure-raincloud-beads)). Gold-foil beads are in levels of high (\>3), upper-middle (3), lower-middle (2), and low (1); carnelian beads are in levels of high (\>6), upper-middle (4-6), lower-middle (3), and low (1-2); glass beads are in levels of high (\>6), upper-middle (3-6), lower-middle (2), and low (1). If burial 1 and burial 2 both have high quantities of agate beads, then there will be a tie connecting them. The trade goods we used to define network ties are relatively durable materials, such as glass, stone, and metal, that are less affected by taphonomic factors in buried environments. Despite the exclusion of eight burials lacking clear archaeological contexts, the burials analyzed in this study consisting of 90% Kiwulan burials can robustly represent network structure. Also, each burial has a clear boundary as our analytical unit that reduces sampling errors.
+
+For burial attributes, we assigned burials to different groups according to their age, sex, burial value and the presence/absence of ritual pottery. We have three groups for the age attribute, 0-12, 12-20, and above 20; two groups for the sex attribute, male and female; and four groups for the burial value that are specified in the main paper document. Table \@ref(tab:age-sex-table) shows the number of burials, of which sex and age can be determined. 
 
 ```{r raincloud-beads, fig.cap = "The distributions of different types of trade beads across all burials analyzed in this paper."}
 # combine ridge plots 1 & 4 in the 000-prep-data file
@@ -119,23 +121,28 @@ age_sex_by_phase <-
   count() %>% 
   pivot_wider(names_from = c(Phase, gender), 
               values_from = n) %>% 
-  mutate(Age_scale = factor(Age_scale,
-                            levels = c("0-12", "12-20", "+20", "NA"))) %>% 
-  arrange(Age_scale) %>% 
   rename(age = Age_scale) %>% 
-  select(age, pre_male, pre_female, pre_NA, post_male, post_female, post_NA)
+  mutate(age = ifelse(age == "NA", "unknown", age)) %>% 
+  mutate(age = factor(age,
+                      levels = c("0-12", "12-20", "+20", "unknown"))) %>% 
+  arrange(age) %>% 
+  select(age, pre_male, pre_female, pre_NA, post_male, post_female, post_NA) %>% 
+  mutate_all(., funs(replace_na(., 0))) 
 
 ft_age_sex <- flextable(age_sex_by_phase) %>% 
+  colformat_double(digits = 0) %>%
   set_header_labels(pre_male = "pre-European", pre_female = "pre-European",
                     pre_NA = "pre-European", post_male = "post-European", 
                     post_female ="post-European", post_NA = "post-European") %>%
   merge_at(i = 1, j = 2:4, part = "header") %>% 
   merge_at(i = 1, j = 5:7, part = "header") %>% 
-  add_header_row(values = c("","male", "female", "NA", 
-                            "male", "female", "NA"), top = FALSE) %>% 
+  add_header_row(values = c("","male", "female", "unknown", 
+                            "male", "female", "unknown"), top = FALSE) %>% 
   align(j = 2:7, align = "right", part = "header") %>% 
   align(i = 1, align = "center", part = "header") %>% 
-  set_caption("The number of burials with identification of age and sex at Kiwulan. The NA means no sufficient skeletal remains for determination of age or sex")
+  width(j = ~ age, width = 1) %>% 
+  width(j = 2:7, width = 0.8) %>% 
+  set_caption("The number of burials with identification of age and sex at Kiwulan. The unknown means no sufficient skeletal remains for determination of age or sex")
 ft_age_sex
 ```
 
