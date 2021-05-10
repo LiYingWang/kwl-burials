@@ -187,7 +187,7 @@ png(filename = here::here("analysis", "figures", "003-pre-bgof.png"),
     width = 5, height = 4, units = "in", res = 360)
 
 bgof_pre <-
-  bgof(pre_bergm,
+  bgof2(pre_bergm,
        sample.size = 100,
        aux.iters = 10000,
        n.deg     = 15,
