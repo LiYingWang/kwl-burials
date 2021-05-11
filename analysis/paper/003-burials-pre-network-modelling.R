@@ -184,14 +184,12 @@ pre_bergm <- bergm(model_pre_3, # using the approximate exchange algorithm
 summary(pre_bergm)
 plot(pre_bergm)
 
-saveRDS(pre_bergm, here("analysis", "data", "derived_data", "pre_bergm.rds"))
-
 # Bayesian Model assessment
 png(filename = here::here("analysis", "figures", "003-pre-bgof.png"),
     width = 5, height = 4, units = "in", res = 360)
 
 bgof_pre <-
-  bgof2(pre_bergm,
+  bgof(pre_bergm,
        sample.size = 100,
        aux.iters = 10000,
        n.deg     = 15,

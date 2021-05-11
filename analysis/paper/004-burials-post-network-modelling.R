@@ -43,7 +43,7 @@ common_counts_lst_post <-
          rowwise() %>%
          mutate(common_counts = sum(count...3, count...6)))
 
-  # count of ornament types in common between each pair of burials
+# count of ornament types in common between each pair of burials
 common_counts_vct_post <- map_int(common_counts_lst_post, ~sum(!is.na(.x$common_counts)))
 
 burial_comb_with_common_counts_post <-
@@ -156,7 +156,7 @@ post_bergm <- bergm(model_post_3,
 
 summary(post_bergm)
 plot(post_bergm)
-saveRDS(post_bergm, here("analysis", "data", "derived_data", "post_bergm.rds"))
+save.image(here("analysis", "data", "derived_data", "burial_bergm_model.RData"))
 
 # Model assessment, Bayesian goodness of fit diagnostics
 png(filename = here::here("analysis", "figures", "004-post-bgof.png"),
