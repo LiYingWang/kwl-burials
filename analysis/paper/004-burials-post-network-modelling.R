@@ -155,8 +155,8 @@ post_bergm <- bergm(model_post_3,
                  gamma       = 0) # scalar; parallel adaptive direction sampling move factor, acceptance rate
 
 summary(post_bergm)
-
 plot(post_bergm)
+saveRDS(post_bergm, here("analysis", "data", "derived_data", "post_bergm.rds"))
 
 # Model assessment, Bayesian goodness of fit diagnostics
 png(filename = here::here("analysis", "figures", "004-post-bgof.png"),

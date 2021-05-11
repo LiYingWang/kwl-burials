@@ -81,6 +81,8 @@ burial_network_pre <-
           loops = FALSE, # allow self ties or not
           matrix.type = "edgelist") # input type
 
+saveRDS(burial_network_pre, here("analysis", "data", "derived_data", "burial_network_pre.rds"))
+
 network.density(burial_network_pre)
 #-----------------------attach attributes and make graphs------------------------------
 library(statnet)
@@ -181,6 +183,8 @@ pre_bergm <- bergm(model_pre_3, # using the approximate exchange algorithm
 
 summary(pre_bergm)
 plot(pre_bergm)
+
+saveRDS(pre_bergm, here("analysis", "data", "derived_data", "pre_bergm.rds"))
 
 # Bayesian Model assessment
 png(filename = here::here("analysis", "figures", "003-pre-bgof.png"),
