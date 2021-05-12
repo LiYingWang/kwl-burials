@@ -274,15 +274,8 @@ One key difference between the pre-European and post-European networks is their 
 knitr::include_graphics(here::here("analysis", "figures", "007-bootstrap-CI.png"))
 ```
 
-```{r figure-bgof-two-phases, fig.cap = "Goodness-of-fit diagnostics for the pre-European model (top) and the post-European model (below). Boxplots represent distributions calculated on 100 network graphs simulated from the estimated posterior distribution. Red lines represent distributions of observed networks, and gray lines show the 95% intervals."}
-library(magick)
-pre_bgof_img <- image_read(here::here("analysis/figures/003-pre-bgof.png"))
-post_bgof_img <- image_read(here::here("analysis/figures/004-post-bgof.png"))
-image_append(c(pre_bgof_img, post_bgof_img), stack = T)
-```
-
 <!--assessment of MCMC analysis and BGOF--> 
-Our computational models reproduce networks that resemble the structural features of our observed networks. Bayesian goodness of fit diagnostics plots (Figure \@ref(fig:figure-bgof-two-phases); details in Supplementary Online Materials) demonstrate that both models fit the observed networks very well for the minimum geodesic distance distribution (i.e. the number of edges between node pairs in a shortest path, @Hunter2008) and the degree distribution. For edgewise shared partner distribution, despite some observations falling outside the 95% interval, the fit is generally good with most observations within it. We also compared the first three distribution moments of each observed distribution and their corresponding simulated distributions, represented by means. Figure \@ref(fig:figure-distribution-moments) shows that modeled values from the pre-European network are slightly closer to the observed values for the mean and the variance of distributions, compared to the values from the post-European network. In general, this demonstrates a slightly better fit between model and data for the pre-European network. 
+Our computational models reproduce networks that resemble the structural features of our observed networks according to Bayesian goodness of fit diagnostics (details in Supplementary Online Materials), showing both models fit the observed networks very well. We also compared the first three distribution moments of each observed distribution and their corresponding simulated distributions, represented by means. Figure \@ref(fig:figure-distribution-moments) shows that modeled values from the pre-European network are slightly closer to the observed values for the mean and the variance of distributions, compared to the values from the post-European network. In general, this demonstrates a slightly better fit between model and data for the pre-European network. 
 
 ```{r figure-distribution-moments, fig.cap = "Distribution moments (mean, skewness, and variance) calculated on the observed data and simulated distributions for the pre- and post-European models."}
 knitr::include_graphics(here::here("analysis", "figures", "006-distribution-moments.png"))
