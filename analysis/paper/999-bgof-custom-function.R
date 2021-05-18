@@ -181,7 +181,7 @@ bgof2 <- function(x,
     b95 <- apply(B[-(n.dist:(dim(B)[1] - 1)), -1], 1, quantile, probs = 0.95)
     c95 <- apply(C[1:n.esp, -1], 1, quantile, probs = 0.95)
 
-    par(mfrow = c(4, 1), oma = c(0, 0, 3, 0), mar = c(4, 3, 1.5, 1))
+    par(mfrow = c(4, 1), oma = c(0, 0, 3, 0), mar = c(4, 3, 1.5, 1)) # explore the number
 
     boxplot(as.data.frame(t(A[1:n.ideg,-1])),
             xaxt = "n",
