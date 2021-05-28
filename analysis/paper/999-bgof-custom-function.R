@@ -113,7 +113,7 @@ bgof2 <- function(x,
                  1, quantile, probs = 0.95)
     c95 <- apply(C[1:n.esp, -1],
                  1, quantile, probs = 0.95)
-    par(mfrow = c(1, 3), oma = c(0, 0, 3, 0), mar = c(4, 3, 1.5, 1))
+    par(mfrow = c(3, 1), oma = c(0, 0, 3, 0), mar = c(4.5, 4.5, 1.5, 1)) # explore the number
 
     boxplot(as.data.frame(t(A[1:n.deg, -1])),
             xaxt = "n",
@@ -121,8 +121,8 @@ bgof2 <- function(x,
             ylab = "proportion of nodes")
     axis(1, seq(1, n.deg), seq(0, n.deg - 1))
     lines(A[1:n.deg, 1], lwd = 2, col = 2)
-    lines(a5, col = "darkgray")
-    lines(a95, col = "darkgray")
+    lines(a5, col = "black")
+    lines(a95, col = "black")
 
     title("Bayesian goodness-of-fit diagnostics", outer = TRUE)
     boxplot(as.data.frame(t(B[-(n.dist:(dim(B)[1] - 1)), -1])),
@@ -131,8 +131,8 @@ bgof2 <- function(x,
             ylab = "proportion of dyads")
     axis(1, seq(1, n.dist), labels = c(seq(1, (n.dist - 1)), "NR"))
     lines(B[-(n.dist:(dim(B)[1] - 1)), 1],lwd = 2, col = 2)
-    lines(b5, col = "darkgray")
-    lines(b95, col = "darkgray")
+    lines(b5, col = "black")
+    lines(b95, col = "black")
 
     boxplot(as.data.frame(t(C[1:n.esp,-1])),
             xaxt = "n",
@@ -140,8 +140,8 @@ bgof2 <- function(x,
             ylab = "proportion of edges")
     axis(1,seq(1, n.esp),seq(0, n.esp - 1))
     lines(C[1:n.esp, 1],lwd = 2,col = 2)
-    lines(c5,col = "darkgray")
-    lines(c95,col = "darkgray")
+    lines(c5,col = "black")
+    lines(c95,col = "black")
 
     out = list(sim.degree = A[,-1],
                sim.dist = B[,-1],
@@ -181,7 +181,7 @@ bgof2 <- function(x,
     b95 <- apply(B[-(n.dist:(dim(B)[1] - 1)), -1], 1, quantile, probs = 0.95)
     c95 <- apply(C[1:n.esp, -1], 1, quantile, probs = 0.95)
 
-    par(mfrow = c(4, 1), oma = c(0, 0, 3, 0), mar = c(4, 3, 1.5, 1)) # explore the number
+    par(mfrow = c(1, 3), oma = c(0, 0, 3, 0), mar = c(4, 3, 1.5, 1))
 
     boxplot(as.data.frame(t(A[1:n.ideg,-1])),
             xaxt = "n",
