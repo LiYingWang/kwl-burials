@@ -14,6 +14,7 @@ burial_three_period_age_tidy <-
   mutate(Porcelain = ifelse(Porcelain == 0, NA, Porcelain)) %>%
   mutate(Stonewares = rowSums(.[c(50, 55)], na.rm = TRUE)) %>% #stoneware, Anping jars
   mutate(Stonewares = ifelse(Stonewares == 0, NA, Stonewares)) %>%
+  mutate(Coin = ifelse(Coin > 1, 1, NA)) %>%
   rowwise() %>%
   mutate(all_glass_bead = sum(Glass_bead, `Indo-Pacific_bead`, na.rm = TRUE)) %>%
   mutate(quantity = case_when(
@@ -79,6 +80,7 @@ burial_three_period_age_tidy <-
          Gold_leaf, #prestige good
          fish_shape_knit, #prestige good
          #Bell, #children burials
+         Coin,
          quantity,
          total,
          burial_value,
@@ -102,3 +104,4 @@ NAs_sex <-
   filter(gender == "NA") %>%
   filter(Phase != "chi") %>%
   count(Phase)
+
