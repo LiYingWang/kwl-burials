@@ -167,8 +167,8 @@ summary(model_pre_3)
 # prior uses normal distribution (low density, high transitivity, low popularity)
 # need to adjust according to the observed ERGM network
 # priors below follow the order of variables (without#) specified in model 3 (lines 148-159)
-pre_prior_mean <- c(-3, 0, 0, 1, 0, 2, -2, 0) # positive prior number for edge means high density
-pre_prior_sigma <- diag(c(3, 5, 5, 5, 3, 2, 3, 1), 8, 8) # covariance matrix structure, uncertainty
+pre_prior_mean <- c(-5, 0, 0, 3, 0, 3, -3, 0) # positive prior number for edge means high density
+pre_prior_sigma <- diag(c(1, 5, 5, 1, 5, 1, 1, 5), 8, 8) # covariance matrix structure, uncertainty
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) a common prior model
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix
 # output includes estimated posterior means, medians and 95% credible intervals
@@ -176,10 +176,10 @@ pre_prior_sigma <- diag(c(3, 5, 5, 5, 3, 2, 3, 1), 8, 8) # covariance matrix str
 pre_bergm <- bergm(model_pre_3, # using the approximate exchange algorithm
                   prior.mean  = pre_prior_mean,
                   prior.sigma = pre_prior_sigma,
-                  burn.in     = 100, # drop first 100 for every chain of the population
-                  main.iters  = 1000, # iterations for every chain of the population
-                  aux.iters   = 4000, # MCMC steps used for network simulation
-                  nchains     = 16, # number of chains of the population MCMC
+                  burn.in     = 1000, # drop first 100 for every chain of the population
+                  main.iters  = 30000, # iterations for every chain of the population
+                  aux.iters   = 5000, # MCMC steps used for network simulation
+                  nchains     = 24, # number of chains of the population MCMC
                   gamma       = 0) # scalar; parallel adaptive direction sampling move factor, acceptance rate, 0.2
 
 summary(pre_bergm)
@@ -187,15 +187,15 @@ plot(pre_bergm)
 
 # Bayesian Model assessment
 png(filename = here::here("analysis", "figures", "003-pre-bgof.png"),
-    width = 5, height = 4, units = "in", res = 360)
+    width = 5, height = 8, units = "in", res = 360)
 
 bgof_pre <-
-  bgof(pre_bergm,
-       sample.size = 100,
-       aux.iters = 10000,
-       n.deg     = 15,
-       n.dist    = 15,
-       n.esp     = 10)
+  bgof2(pre_bergm,
+        sample.size = 100,
+        aux.iters = 10000,
+        n.deg     = 15,
+        n.dist    = 15,
+        n.esp     = 10)
 
 dev.off()
 

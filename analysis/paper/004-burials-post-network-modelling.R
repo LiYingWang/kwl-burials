@@ -24,7 +24,7 @@ burial_comb_post = as_tibble(burial_comb_post)
 # create list for each burial that contains the burial good types and their counts
 edge_list_post <-
   burial_three_period_age_tidy %>%
-  select(burial_label, 6:21) %>% # need to change for each exploration
+  select(burial_label, 6:22) %>% # need to change for each exploration
   pivot_longer(-burial_label, names_to = "goods", values_to = "count") %>%
   group_by(burial_label) %>%
   nest()
@@ -160,15 +160,15 @@ save.image(here("analysis", "data", "derived_data", "burial_bergm_model.RData"))
 
 # Model assessment, Bayesian goodness of fit diagnostics
 png(filename = here::here("analysis", "figures", "004-post-bgof.png"),
-    width = 5, height = 4, units = "in", res = 360)
+    width = 5, height = 8, units = "in", res = 360)
 
 bgof_post <-
-  bgof(post_bergm,
-       sample.size = 100,
-       aux.iters = 10000,
-       n.deg     = 30,
-       n.dist    = 15,
-       n.esp     = 30)
+  bgof2(post_bergm,
+        sample.size = 100,
+        aux.iters = 10000,
+        n.deg     = 30,
+        n.dist    = 15,
+        n.esp     = 30)
 
 dev.off()
 

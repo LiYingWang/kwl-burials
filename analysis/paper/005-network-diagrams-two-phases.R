@@ -54,8 +54,8 @@ pre_diagram <-
   geom_node_point(aes(filter = !is.na(connections),
                       size = connections,
                       color = connections)) + #alpha = connection
-  scale_edge_width_manual(values = c(0.15, 0.8, 1.2)) +
-  scale_edge_color_manual(values = c("black", "black", "red"))+
+  scale_edge_width_manual(values = c(0.15, 1, 2.5)) +
+  scale_edge_color_manual(values = c("black", "black", "black"))+
   scale_size_continuous(breaks = c(2, 5, 8, 11, 13)) +
   scale_color_viridis(direction = -1, breaks = c(2, 5, 8, 11, 13)) +
   guides(size = guide_legend(order = 1), color = guide_legend(order = 1)) +
@@ -111,8 +111,6 @@ relation_tidy_post %>%
   activate(edges) %>%
   arrange(desc(common_counts))
 
-got_palette <- c("#1A5878", "#C44237", "#AD8941", "#E99093", "#50594B")
-
 post_diagram <-
   ggraph(relation_tidy_post, layout = "stress") + #graphopt
   geom_edge_link(aes(width = as.factor(common_counts),
@@ -121,8 +119,8 @@ post_diagram <-
   geom_node_point(aes(filter= !is.na(connections),
                       size = connections,
                       color = connections)) +
-  scale_edge_width_manual(values=c(0.15, 0.8, 1.2)) +
-  scale_edge_colour_manual(values = c("black", "black", "red")) +
+  scale_edge_width_manual(values=c(0.15, 1, 2.5)) +
+  scale_edge_colour_manual(values = c("black", "black", "black")) +
   scale_color_viridis_c(direction = -1) +
   #geom_node_text(aes(filter= !is.na(connections) & connections > 22,
                      #label = burial_label_rm),
