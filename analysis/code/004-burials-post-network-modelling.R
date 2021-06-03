@@ -92,25 +92,6 @@ set.vertex.attribute(burial_network_post, "orientation", burial_post$orientation
 post_distance_n <- network(post_distance, matrix.type = "adjacency", directed = F)
 set.edge.attribute(post_distance_n, "dist", post_distance_n)
 
-# plot
-set.seed(30)
-quantity <- get.vertex.attribute(burial_network_post, "quantity")
-age <- get.vertex.attribute(burial_network_post, "age")
-ID <- get.vertex.attribute(burial_network_post, "burial_label")
-
-plot(burial_network_post,
-     displaylabels = TRUE,
-     vertex.col = "quantity",
-     #vertex.cex = degree(burial_network_post, cmode = 'indegree') / 12, #size nodes to their in-degree
-     #vertex.sides = ifelse(burial_network_pre %v% "", 4, 50),
-     pad = 1)
-
-legend("topleft",
-       col = c(3, 2, 1, 4), # adjust each time
-       pch    = 20,
-       legend = unique(quantity),
-       title  = 'Burial goods quantity')
-
 #------------------creating ERGM model-------------------------------------
 # every term in an ERGM must have an associated algorithm for computing its value for network
 model_post_1 <- burial_network_post ~
@@ -142,21 +123,23 @@ summary(model_post_3)
 # Specify a prior distribution
 # normal distribution (low density, low transitivity, high popularity)
 # priors below follow the order of variables (without#) specified in model 3 (lines 126-138)
-post_prior_mean <- c(-3, 0, 0, 0, 2, 1, 2, 0) # prior mean corresponds to mean for each parameter
-post_prior_sigma <- diag(c(3, 5, 5, 5, 3, 3, 3, 1), 8, 8) # covariance matrix structure
+post_prior_mean <- c(-3, 0, 0, 0, 3, 1, 3, 0) # prior mean corresponds to mean for each parameter
+post_prior_sigma <- diag(c(1, 5, 5, 5, 1, 1, 1, 5), 8, 8) # covariance matrix structure
 
 post_bergm <- bergm(model_post_3,
                  prior.mean  = post_prior_mean ,
                  prior.sigma = post_prior_sigma,
-                 burn.in     = 100, # burn-in iterations for every chain of the population, drops the first 200
-                 main.iters  = 1000, # iterations for every chain of the population
-                 aux.iters   = 4000, # MCMC steps used for network simulation
-                 nchains     = 16, # number of chains of the population MCMC
+                 burn.in     = 1000, # drops the first 1000
+                 main.iters  = 40000, # iterations for every chain of the population
+                 aux.iters   = 5000, # MCMC steps used for network simulation
+                 nchains     = 32, # number of chains of the population MCMC
                  gamma       = 0) # scalar; parallel adaptive direction sampling move factor, acceptance rate
+
+saveRDS(post_bergm, here::here("analysis", "data", "derived_data", "post_bergm.rds"))
+save.image(here::here("analysis", "data", "derived_data", "burial_bergm_model.RData"))
 
 summary(post_bergm)
 plot(post_bergm)
-save.image(here("analysis", "data", "derived_data", "burial_bergm_model.RData"))
 
 # Model assessment, Bayesian goodness of fit diagnostics
 png(filename = here::here("analysis", "figures", "004-post-bgof.png"),

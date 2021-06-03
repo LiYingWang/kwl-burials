@@ -77,6 +77,7 @@ bergm_two_phases_longer <-
                                      "centralization",
                                      "physical distance")))
 
+# Figure 5
 density_posterior_facet <-
   ggplot(bergm_two_phases_longer,
          aes(x = posterior, fill = phase))+
@@ -84,9 +85,7 @@ density_posterior_facet <-
   facet_wrap(~parameter, scales = "free") +
   theme_minimal()
 
-# Figure 4
-ggsave(here::here("analysis", "figures", "006-posterior-distribution.png"),
-       w = 8, h = 5)
+ggsave(here::here("analysis", "figures", "006-posterior-distribution.png"), w = 8, h = 5)
 
 # distribution stats for both phases
 distribution_two_phases <-
@@ -109,10 +108,10 @@ distribution_two_phases_diff <-
                names_to = "parameter",
                values_to = "difference")
 
-# https://github.com/nevrome/ggpointgrid
+# Figure 7
 ggplot(distribution_two_phases_longer,
        aes(parameter, value)) +
-  ggpointgrid::geom_pointgrid(aes(color = phase,
+  ggpointgrid::geom_pointgrid(aes(color = phase, # https://github.com/nevrome/ggpointgrid
                                   shape = data),
                               size = 3) +
   scale_x_discrete(labels=c("degree",
@@ -121,6 +120,4 @@ ggplot(distribution_two_phases_longer,
   facet_wrap(~moments, scales = "free") +
   theme_minimal()
 
-# Figure 7
-ggsave(here::here("analysis", "figures", "006-distribution-moments.png"),
-       w = 8, h = 5)
+ggsave(here::here("analysis", "figures", "006-distribution-moments.png"), w = 8, h = 5)

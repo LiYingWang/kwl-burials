@@ -119,5 +119,3 @@ ggsave(here("analysis", "figures", "000-KWL-map.png"),
        height = 60,
        dpi = 300,
        units = "mm")
-
-# add the location of Keelung, Tamsui, and Heping dau

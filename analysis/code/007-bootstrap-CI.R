@@ -268,6 +268,7 @@ CIs_two_nets_tidy$removal <-
   factor(CIs_two_nets_tidy$removal,
          levels = c("40", "35", "30", "25", "20", "15", "10", "5", "0"))
 
+# Figure 6
 CIs_two_nets_tidy %>%
   ggplot(aes(obs,
              removal,
@@ -285,6 +286,4 @@ CIs_two_nets_tidy %>%
   facet_wrap(~variable,
              scales = "free_x")
 
-# Figure 5
-ggsave(here::here("analysis", "figures", "007-bootstrap-CI.png"),
-       w = 8, h = 5)
+ggsave(here::here("analysis", "figures", "007-bootstrap-CI.png"), w = 8, h = 5)

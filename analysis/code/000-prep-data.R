@@ -40,11 +40,10 @@ burial_goods_selected <-
          Small_Metal_ring,
          Metal_pendant,
          Coin,
-         Porcelain, #prestige good
-         Stonewares, #prestige good
-         Gold_leaf, #prestige good
+         Porcelain,
+         Stonewares,
+         Gold_leaf,
          fish_shape_knit,
-         #Bone_plate,
          Bell) # select all trade item
 
 # Step 1: create a new varialbe- burial value
@@ -157,14 +156,35 @@ ridge_4 <-
     position = position_raincloud(adjust_vlines = TRUE)) +
   scale_x_continuous(limits = c(1, 15), expand = c(0.1, 0))
 
-# plot them together for comparison
-library(cowplot)
-plot_grid(ridge_1, ridge_2, ridge_3, ridge_4,
-          ncol = 2)
+# Figure 3
+ridge_1_and_4 <-
+  burial_beads %>%
+  mutate(type = case_when(
+    type == "Golden_bead" ~"gold-foil bead",
+    type == "all_glass_bead" ~"glass bead",
+    type == "Agate_bead" ~"carnelian bead")) %>%
+  ggplot(aes(x = value,
+             y = type,
+             fill = factor(stat(quantile)))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE,
+    quantiles = 4,
+    quantile_lines = TRUE,
+    jittered_points = TRUE,
+    alpha = 0.7,
+    vline_size = 0.5,
+    vline_color = "grey10",
+    point_size = 2.5,
+    point_alpha = 0.4,
+    position = position_raincloud(adjust_vlines = TRUE),
+    rel_min_height = 0.01,
+    scale = 0.5, # so the filled regions don't overlap on the points
+    size = 0.2) +
+  scale_x_continuous(limits = c(1, 15),
+                     expand = c(0.1, 0)) +
+  scale_fill_viridis_d(name = "Quartiles") +
+  theme_minimal()
 
-# orientation plot
-burial_goods_selected %>%
-  ggplot(aes(x = Degree_axis, fill = Phase)) +
-  geom_histogram()+
-  coord_polar() +
-  scale_x_continuous(limits = c(0,360))
+#ggsave(here::here("analysis", "figures", "000-raincloud-beads.png"), w = 6, h = 4)
+

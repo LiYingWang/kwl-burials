@@ -81,8 +81,6 @@ burial_network_pre <-
           loops = FALSE, # allow self ties or not
           matrix.type = "edgelist") # input type
 
-saveRDS(burial_network_pre, here("analysis", "data", "derived_data", "burial_network_pre.rds"))
-
 network.density(burial_network_pre)
 #-----------------------attach attributes and make graphs------------------------------
 library(statnet)
@@ -100,25 +98,6 @@ set.vertex.attribute(burial_network_pre, "orientation", burial_pre$orientation)
 # get distance matrix, need to run 002 code first
 pre_distance_n <- network(pre_distance, matrix.type = "adjacency", directed = F)
 set.edge.attribute(pre_distance_n, "dist", pre_distance_n)
-
-# plot
-set.seed(30)
-quantity <- get.vertex.attribute(burial_network_pre, "quantity")
-age <- get.vertex.attribute(burial_network_pre, "age")
-ID <- get.vertex.attribute(burial_network_pre, "burial_label")
-
-plot(burial_network_pre,
-     displaylabels = TRUE,
-     vertex.col = "quantity",
-     #vertex.cex = degree(burial_network_pre, cmode = 'indegree') / 5, #size nodes to their in-degree
-     #vertex.sides = ifelse(burial_network_pre %v% "", 4, 50),
-     pad = 1) # protects the labels from getting clipped
-
-legend("topleft",
-       col = c(2, 3, 1, 4), # adjust manually each time
-       pch    = 20,
-       legend = unique(quantity), # quantity
-       title  = 'Burial good counts')
 
 #---------------------------create ERGMs-------------------------------------
 # model 1, checking triad relations (for clusters) to decide gwesp, Morris et al. (2008)
@@ -166,7 +145,7 @@ summary(model_pre_3)
 # prior uses normal distribution (low density, high transitivity, low popularity)
 # need to adjust according to the observed ERGM network
 # priors below follow the order of variables (without#) specified in model 3 (lines 148-159)
-pre_prior_mean <- c(-5, 0, 0, 3, 0, 3, -3, 0) # positive prior number for edge means high density
+pre_prior_mean <- c(-3, 0, 0, 3, 0, 3, -3, 0) # positive prior number for edge means high density
 pre_prior_sigma <- diag(c(1, 5, 5, 1, 5, 1, 1, 5), 8, 8) # covariance matrix structure, uncertainty
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) a common prior model
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix
@@ -175,12 +154,13 @@ pre_prior_sigma <- diag(c(1, 5, 5, 1, 5, 1, 1, 5), 8, 8) # covariance matrix str
 pre_bergm <- bergm(model_pre_3, # using the approximate exchange algorithm
                   prior.mean  = pre_prior_mean,
                   prior.sigma = pre_prior_sigma,
-                  burn.in     = 1000, # drop first 100 for every chain of the population
-                  main.iters  = 30000, # iterations for every chain of the population
+                  burn.in     = 1000, # drop first 1000 for every chain of the population
+                  main.iters  = 40000, # iterations for every chain of the population
                   aux.iters   = 5000, # MCMC steps used for network simulation
-                  nchains     = 24, # number of chains of the population MCMC
+                  nchains     = 32, # number of chains of the population MCMC
                   gamma       = 0) # scalar; parallel adaptive direction sampling move factor, acceptance rate, 0.2
 
+saveRDS(pre_bergm, here::here("analysis", "data", "derived_data", "pre_bergm.rds"))
 summary(pre_bergm)
 plot(pre_bergm)
 

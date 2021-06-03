@@ -131,8 +131,7 @@ post_diagram <-
   theme_graph() +
   theme(plot.margin = unit(rep(0.8, 4), "cm"))
 
-
-# plot together
+# Figure 4: plot together
 library(cowplot)
 diagrams_two_phases <-
   plot_grid(pre_diagram,
@@ -140,6 +139,4 @@ diagrams_two_phases <-
             labels = c('A', 'B'),
             label_size = 12)
 
-# Figure 3
-ggsave(here::here("analysis", "figures", "005-network-diagrams.png"),
-       w = 10, h = 4)
+ggsave(here::here("analysis", "figures", "005-network-diagrams.png"), w = 10, h = 4)
