@@ -1,3 +1,4 @@
+
 # get data from pre-European model
 pre_bergm_stats <- as.data.frame(pre_bergm$Theta)
 colnames(pre_bergm_stats) <- pre_bergm$specs
@@ -86,38 +87,3 @@ density_posterior_facet <-
   theme_minimal()
 
 ggsave(here::here("analysis", "figures", "006-posterior-distribution.png"), w = 8, h = 5)
-
-# distribution stats for both phases
-distribution_two_phases <-
-  rbind(posterior_distribution_pre,
-        posterior_distribution_post)
-
-distribution_two_phases_longer <-
-  distribution_two_phases %>%
-  pivot_longer(cols = starts_with(c("observed", "modelled")),
-               names_to = "parameter",
-               values_to = "value") %>%
-  separate(parameter, c("data", "parameter"))
-
-distribution_two_phases_diff <-
-  distribution_two_phases %>%
-  mutate(degree = abs(observed.degree-modelled.degree),
-         distance = abs(observed.distance-modelled.distance),
-         esp = abs(observed.esp-modelled.esp)) %>%
-  pivot_longer(cols = c("degree", "distance", "esp"),
-               names_to = "parameter",
-               values_to = "difference")
-
-# Figure 7
-ggplot(distribution_two_phases_longer,
-       aes(parameter, value)) +
-  ggpointgrid::geom_pointgrid(aes(color = phase, # https://github.com/nevrome/ggpointgrid
-                                  shape = data),
-                              size = 3) +
-  scale_x_discrete(labels=c("degree",
-                            "minimum\ngeodetic\ndistance",
-                            "edge-wise\nshared\npartners")) +
-  facet_wrap(~moments, scales = "free") +
-  theme_minimal()
-
-ggsave(here::here("analysis", "figures", "006-distribution-moments.png"), w = 8, h = 5)

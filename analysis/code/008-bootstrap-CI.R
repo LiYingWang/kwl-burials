@@ -286,4 +286,4 @@ CIs_two_nets_tidy %>%
   facet_wrap(~variable,
              scales = "free_x")
 
-ggsave(here::here("analysis", "figures", "007-bootstrap-CI.png"), w = 8, h = 5)
+ggsave(here::here("analysis", "figures", "008-bootstrap-CI.png"), w = 8, h = 5)
