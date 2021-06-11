@@ -192,11 +192,11 @@ knitr::include_graphics(here::here("analysis", "figures", "009-post-diag.png"))
 
 Our Bayesian GOF diagnostics summarized three distributions, including degree, minimum geodesic distance, and edgewise shared partner distributions. The diagnostics plots (Figure \@ref(fig:figure-bgof-pre-E) and Figure \@ref(fig:figure-bgof-post-E)) demonstrate that both models fit the observed networks very well for the minimum geodesic distance distribution (i.e. the number of edges between node pairs in a shortest path, @Hunter2008). The pre-European model has a better fit for the degree distribution and edgewise shared partner distribution, compared to the post-European model. Despite some observations falling outside the 95% interval for the post-European model, the fit is generally good with most observations within it. This provides a statistical approach to check how well the estimated posterior parameter distribution, based on our hypotheses, can reproduce networks with similar general structural features of the observed networks. We then compared the distribution of our observed networks, the networks before and after the arrival of Europeans, with the distribution of our hypothesized models to test an increased social inequality after the foreign contact. 
 
-```{r figure-bgof-pre-E, fig.cap = "Goodness-of-fit diagnostics for the pre-European model (top) and the post-European model (below). Boxplots represent distributions calculated on 100 network graphs simulated from the estimated posterior distribution. Red lines represent distributions of observed networks, and black lines show the 95% intervals."}
+```{r figure-bgof-pre-E, fig.cap = "Goodness-of-fit diagnostics for the pre-European model and the post-European model (below). Boxplots represent distributions calculated on 100 network graphs simulated from the estimated posterior distribution. Red lines represent distributions of observed networks, and black lines show the 95% intervals."}
 knitr::include_graphics(here::here("analysis/figures/003-pre-bgof.png"))
 ```
 
-```{r figure-bgof-post-E, fig.cap = "Goodness-of-fit diagnostics for the post-European model (below). Boxplots represent distributions calculated on 100 network graphs simulated from the estimated posterior distribution. Red lines represent distributions of observed networks, and black lines show the 95% intervals."}
+```{r figure-bgof-post-E, fig.cap = "Goodness-of-fit diagnostics for the post-European model. Boxplots represent distributions calculated on 100 network graphs simulated from the estimated posterior distribution. Red lines represent distributions of observed networks, and black lines show the 95% intervals."}
 knitr::include_graphics(here::here("analysis/figures/004-post-bgof.png"))
 ```
 
