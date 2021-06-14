@@ -1,6 +1,4 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # kwlburials
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/LiYingWang/kwl-burials/master?urlpath=rstudio) [![run-docker.yaml](https://github.com/LiYingWang/kwl-burials/workflows/.github/workflows/run-docker.yaml/badge.svg)](https://github.com/LiYingWang/kwl-burials/actions)
@@ -27,10 +25,10 @@ Please cite this compendium as:
 
 This repository contains:
 
-  - [:file\_folder: code](analysis/code): R script files that include code to analyses data and reproduce the results and figures in this paper 
-  - [:file\_folder: paper](analysis/paper): R Markdown files for generating the paper and supplementary materials
-  - [:file\_folder: data](analysis/data): Data used in the analysis, including raw data and derived data
-  - [:file\_folder: figures](analysis/figures): Figures that were created by R script files and included in the paper 
+  - [:file\_folder: analysis/code)](analysis/code): R script files that include code to analyses data and reproduce the results and figures in this paper 
+  - [:file\_folder: analysis/paper](analysis/paper): R Markdown files for generating the paper and supplementary materials
+  - [:file\_folder: analysis/data](analysis/data): Data used in the analysis, including raw data and derived data
+  - [:file\_folder: analysis/figures](analysis/figures): Figures that were created by R script files and included in the paper 
 
 ### How to download or install
 
