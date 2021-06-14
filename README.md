@@ -25,7 +25,7 @@ Please cite this compendium as:
 
 This repository contains:
 
-  - [:file\_folder: analysis/code)](analysis/code): R script files that include code to analyses data and reproduce the results and figures in this paper 
+  - [:file\_folder: analysis/code](analysis/code): R script files that include code to analyses data and reproduce the results and figures in this paper 
   - [:file\_folder: analysis/paper](analysis/paper): R Markdown files for generating the paper and supplementary materials
   - [:file\_folder: analysis/data](analysis/data): Data used in the analysis, including raw data and derived data
   - [:file\_folder: analysis/figures](analysis/figures): Figures that were created by R script files and included in the paper 
