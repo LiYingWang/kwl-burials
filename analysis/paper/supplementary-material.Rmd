@@ -23,8 +23,6 @@ knitr::opts_chunk$set(
   fig.path = "../figures/"
 )
 
-image_width_1_col_inch = 90/25.4 # image Single column	w = 90 mm 
-image_width_2_col_inch = 190/25.4 # image Double column w = 190 mm 
 ```
 
 This supplementary document contains:
@@ -33,86 +31,44 @@ This supplementary document contains:
 -  further review of network analysis and archaeological applications relevant to this study
 -  further definitions of our approach to tie formation and node attributes from Kiwulan burials
 -  further details on our methods of modeling fitting, and
--  assessment of our MCMC output and Goodness-of-fit diagnostics for our models
+-  assessment of priors, MCMC outputs and Goodness-of-fit diagnostics for our models
 
 # Kiwulan in the 17th northeastern Taiwan in a pericolonial context {-}
 
-<!--fit in a bigger historical picture in a pericolonial context: move to SI -->
-The involvement in long-distance exchange is often associated with changes in political-economic strategies from a corporate mode to a network mode, where ambitious individuals are able to build their local power base and personal influence through the acquisition and distribution of foreign prestige goods [@Blanton1996; @Feinman2000; @Klehm2017]. Increased social inequality associated with the use of exotic trade goods is recognized as a ‘network’ strategy for gaining power [@Blanton1996; @Feinman2000]. Northeastern Taiwan became more involved in regional exchange with East Asia since the 14th century and long-distance trade with Southeast Asia brought by Europeans in the 17th century [@Chen2005; @Wang2007]. In 1626, the Spanish built their forts in Heping dao and Tamsui, northern Taiwan, and later were defeated and taken over by the Dutch in 1642 [@Andrade2007]. Indigenous people in northeastern Taiwan first encountered colonial power in 1632 when they were attacked by the Spanish and later in 1647 by the Dutch. The Dutch asked local settlements to pay deer hides or rice as annual tributes but negotiating a delayed payment is allowed if it is needed [@Borao2009; @Kang2016]. In the annual event held by the Dutch with participants of local Indigenous representatives [@Andrade1997], the Dutch would give those representatives symbolic items such as rattan sticks or foreign goods to assert their political authority and consolidate their relationship with Indigenous settlements. The introduction of foreign prestige goods to local Indigenous communities might have occurred before European presence became established, but was maintained and amplified after European arrival due to local competition for power [@Borao2009; @LiandWu2006; @LWandBM2020ornament; @Ueda2016]. 
+<!--fit in a bigger historical picture in a pericolonial context: move to SI-->
+The involvement in long-distance exchange is often associated with changes in political-economic strategies from a corporate mode to a network mode, where ambitious individuals are able to build their local power base and personal influence through the acquisition and distribution of foreign prestige goods [@Blanton1996; @Feinman2000; @Klehm2017]. Increased social inequality associated with the use of exotic trade goods is recognized as a "network" strategy for gaining power [@Feinman2000]. Northeastern Taiwan became more involved in regional exchange with East Asia since the 14th century and long-distance trade with Southeast Asia brought by Europeans in the 17th century [@Chen2005; @Wang2007]. In 1626, the Spanish built their forts in Heping dao and Tamsui, northern Taiwan, and later were defeated and taken over by the Dutch in 1642 [@Andrade2007]. Indigenous people in northeastern Taiwan first encountered colonial power in 1632 when they were attacked by the Spanish and later in 1647 by the Dutch. The Dutch asked local settlements to pay deer hides or rice as annual tributes but negotiating a delayed payment is allowed if it is needed [@Borao2009; @Kang2016]. In the annual event held by the Dutch with participants of local Indigenous representatives [@Andrade1997], the Dutch would give those representatives symbolic items such as rattan sticks or foreign goods to assert their political authority and consolidate their relationship with Indigenous settlements. The introduction of foreign prestige goods to local Indigenous communities might have occurred before European presence became established, but was maintained and amplified after European arrival due to local competition for prestige accumulation [@Borao2009; @LiandWu2006; @LWandBM2020ornament; @Ueda2016]. 
 
-```{r import-and-inspect-data, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/000-prep-data.R"))}
-suppressWarnings(source(here::here("analysis", "paper", "000-prep-data.R")))
-```
-
-```{r tidy-data, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/001-data-tidy.R"))}
-suppressWarnings(source(here::here("analysis", "paper", "001-data-tidy.R")))
-```
-
-```{r burial-location, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/002-burial-location.R"))}
-suppressWarnings(source(here::here("analysis", "paper", "002-burial-location.R")))
+```{r read-models-data, include=FALSE}
+load(here::here("analysis", "data", "derived_data", "burial_bergm_model.RData"))
+readRDS(here::here("analysis", "data", "derived_data", "pre_bergm.rds"))
+readRDS(here::here("analysis", "data", "derived_data", "post_bergm.rds"))
 ```
 
 ## Review of network analysis and archaeological applications {.unnumbered}
 
-<!-- intro to networks: move to SI -->
+<!--intro to networks: moved from the main text-->
 Drawing largely on network science and graph theory, a key assumption in the construction of archaeological networks is that a phenomenon can be conceptualized as a network through abstraction and representation [@Brandes2013; @Collar2015; @Mills2017; @Peeples2019]. A social network is generally visualized as a graph consisting of a set of socially-relevant nodes/actors, connected by edges/ties representing one or more relations, such as friendship, collaborations, information flow, trade ties, or any other forms of connection of interest [@Marin2011; @Wasserman1994]. The ties can be classified into four major types, including similarities, social relations, interactions, and flows [@Borgatti2009]. In archaeology, actors can be people, groups, objects, places, or events, with ties built on similarity, proximity, or co-presence of material culture to create patterns reflecting influence, geographical distance, or affiliations in social groups [@Mills2017; @Brughmans2018; @Peeples2019]. For example, past trade can be conceptualized as a network of individual entities connected by shared similar objects or elements, such as the flow of goods, to represent their interactions [@Collar2015, pp. 4]. This concept can be applied to burial contexts where each burial is an actor linked by similar elements, such as burial goods. Burial goods, especially high value goods, can reflect social practices in broader cultural contexts to represent personal wealth or social status from which we can infer social differentiation or complexity [@Gamble2002; @Janes2013]. This enables the exploration of the structure of the past social organization through the identification of the relationships among burials.
 
-<!-- two types of network analysis: move to SI -->
+<!--two types of network analysis: moved from the main text-->
 Network analysis has been increasingly applied by archaeologists in recent years to deal with past interactions and explore the underlying mechanisms. There are two common approaches to characterize network properties at two distinct scales: node/edge level and graph level [@Peeples2019]. Node level focuses on node properties in a network, such as centrality, representing the individual influence or social prominence in a group, while graph level assesses the whole network attributes, such as density, clustering in a network, to generalize relationship patterns [@Mills2017; @Peeples2019]. By quantifying those network properties, archaeologists can answer a wide range of research questions.
 
 Examples include exploring the political centralization in the Kofun period in Japan through the hierarchical communication network constructed by prestige goods [@Mizoguchi2013], and the investigation of long term inter-site relationships from the Epipalaeolithic to the early Neolithic in the Near East according to trade items [@Coward2013]. Regarding burials, @Sosna2013 examined spatial patterns of burials from the Early Bronze Age in Rebesovice with two hypothesized networks constructed according to cultural and chronological similarity between burials. Recently, complex network modeling has been used to evaluate networks at both node and graph level through simulations of particular processes and statistically tests of the formation of network properties [@Brughmans2013; @Brughmans2018; @Freeman2004; @Salvini2010]. Such applications include simulations and testing of food exchange modes for Ancestral Pueblos on the aggregation of households in the American Southwest [@Crabtree2015], and exploring the diffusion of fired bricks across Hellenistic Europe by comparing similarity networks of sites with random networks [@Ostborn2015]. Another example is the assessment of hunter-gatherer exchange networks structure across the Kuril Islands using bootstrap simulation based on ceramic composition [@Gjesfjeld2015].
 
-<!-- current approaches to network analysis: move to SI -->
+<!--current approaches to network analysis: move from the main text-->
 Current approaches to network analysis used by archaeologists are mostly restricted to a single rational structure without consideration of interaction between network variables. Our use of Bayesian inference on ERGMs is the first application to archaeological data that can bring new insights to understand past social structures by characterizing network properties as a whole. ERGMs are an important family of statistical models for networks that allows direct modeling for the formation of edges, or ties, between nodes [@Robins2007]. The assumption is that possible ties in a network are random variables and dependent on actor variables or the presence or absence of other ties [@Robins2007]. In other words, networks in ERGMs are viewed as dependent variables, where network dependencies and the attributes of nodes/edges can influence the formation of a tie [@Snijders2011]. For example, nodes with similar attributes are more likely to have a relationship, such as friendship between people with the same hobby. Ties form a small structure in a network called a graph configuration, that describes the form of dependence, such as reciprocity (relationship between two actors), transitivity or clustering (relationship between two actors through a shared third actor), homophily (relationship between actors with a similar attribute), and popularity (actors have many relationships with others) [@Robins2007; @Snijders2006; @Morris2008]. Those configurations represent the structure or the property of a network and can be expressed by network statistics.
 
-By modeling those network statistics as direct functions of ties by specifying the forms of configurations, we can generate a distribution of random networks that represent our hypothesis-based model [@Morris2008; @Robins2007]. Such a distribution consists of a large number of possible networks that enables statistical inference and comparison with an observed network [@Robins2007]. ERGMs helps us understand whether an observed network shows significantly more or less of a property of interest than the random networks generated from our model assumptions.
+By modeling those network statistics as direct functions of ties by specifying the forms of configurations, we can generate a distribution of random networks that represent our hypothesis-based model [@Morris2008; @Robins2007]. Such a distribution consists of a large number of possible networks that enables statistical inference and comparison with an observed network [@Robins2007]. ERGMs help us understand whether an observed network shows significantly more or less of a property of interest than the random networks generated from our model assumptions.
 
 ## Tie formation and node attributes from Kiwulan burials {.unnumbered}
 
 <!-- burial data and the definition of tie formation: partially move to SI  -->
-For trade beads with substantial differences in quantities between burials, we described each burial as having one of four levels according to their distributions across all burials (Figure \@ref(fig:figure-raincloud-beads), also in the main text). Gold-foil beads are in levels of high (\>3), upper-middle (3), lower-middle (2), and low (1); carnelian beads are in levels of high (\>6), upper-middle (4-6), lower-middle (3), and low (1-2); glass beads are in levels of high (\>6), upper-middle (3-6), lower-middle (2), and low (1). If burial 1 and burial 2 both have high quantities of carnelian beads, then there will be a tie connecting them. The trade goods we used to define network ties are relatively durable materials, such as glass, stone, and metal, that are less affected by taphonomic factors in buried environments. In addition, each burial has a clear boundary as our analytical unit that reduces sampling errors. Thus, we are confident that the quantities and distributions of beads in burial contexts can reflect the original differences between burials. 
+For trade beads with substantial differences in quantities between burials, we described each burial as having one of four levels according to their distributions across all burials (Figure is in the main text). Gold-foil beads are in levels of high (\>3), upper-middle (3), lower-middle (2), and low (1); carnelian beads are in levels of high (\>6), upper-middle (4-6), lower-middle (3), and low (1-2); glass beads are in levels of high (\>6), upper-middle (3-6), lower-middle (2), and low (1). If burial 1 and burial 2 both have high quantities of carnelian beads, then there will be a tie connecting them. The trade goods we used to define network ties are relatively durable materials, such as glass, stone, and metal, that are less affected by taphonomic factors in buried environments. In addition, each burial has a clear boundary as a single analytical unit that reduces sampling errors. Thus, we are confident that the quantities and distributions of beads in burial contexts can reflect the original differences between burials. 
 
 For burial attributes, we assigned burials to different groups according to their age, sex, burial value and the presence/absence of ritual pottery. We have three groups for the age attribute, 0-12, 12-20, and above 20; two groups for the sex attribute, male and female; and four groups for the burial value that are specified in the main paper document. Table \@ref(tab:age-sex-table) shows the number of burials, of which sex and age can be determined. Despite the exclusion of eight burials lacking clear archaeological contexts, the burials analyzed in this study consisting of 90% Kiwulan burials can effectively represent structures of burial networks. 
 
-```{r raincloud-beads, fig.cap = "The distributions of different types of trade beads across all burials analyzed in this paper."}
-# combine ridge plots 1 & 4 in the 000-prep-data file
-library(tidyverse)
-library(ggridges)
-ridge_1_and_4 <-
-  burial_beads %>%
-  mutate(type = case_when(
-    type == "Golden_bead" ~"gold-foil bead",
-    type == "all_glass_bead" ~"glass bead",
-    type == "Agate_bead" ~"carnelian bead")) %>% 
-  ggplot(aes(x = value,
-             y = type,
-             fill = factor(stat(quantile)))) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE,
-    quantiles = 4,
-    quantile_lines = TRUE,
-    jittered_points = TRUE,
-    alpha = 0.7,
-    vline_size = 0.5,
-    vline_color = "grey10",
-    point_size = 2.5,
-    point_alpha = 0.4,
-    position = position_raincloud(adjust_vlines = TRUE),
-    rel_min_height = 0.01,
-    scale = 0.5, # so the filled regions don't overlap on the points
-    size = 0.2) +
-  scale_x_continuous(limits = c(1, 15),
-                     expand = c(0.1, 0)) +
-  scale_fill_viridis_d(name = "Quartiles") +
-  theme_minimal()
-
-#ggsave(here::here("analysis", "figures", "000-raincloud-beads.png"),
-       #w = 6, h = 4)
-```
-
 ```{r age-sex-table}
 library(flextable)
+library(tidyverse)
 age_sex_by_phase <-
   burial_three_period_age_tidy %>% 
   select(Age_scale, gender, Phase) %>% 
@@ -146,32 +102,21 @@ ft_age_sex <- flextable(age_sex_by_phase) %>%
 ft_age_sex
 ```
 
-```{r figure-raincloud-beads, fig.cap = "The distributions of different types of trade beads across burials analyzed in this paper."}
-
-knitr::include_graphics(here::here("analysis", "figures", "000-raincloud-beads.png"))
-```
-
 ## Further details on methods of modeling fitting {.unnumbered}
 
 ```{r bergm-iteration}
-burn_in <- 100
-main_iter <- 1000
-aux_iter <- 4000
-bgof_si <-10000
+burn_in <- 1000
+main_iter <- 40000
+aux_iter <- 5000
+bgof_net <-100
+bgof_si <- 5000
+chains <- 32
 ```
 
 <!--Model fitting: move to SI -->
-After we set our model parameters, we simulated networks in a Bayesian framework using a Markov chain Monte Carlo (MCMC) algorithm. MCMC algorithms allow estimation of posterior distributions through direct random sampling the posterior without assuming the prior comes from any specific distribution [@Hamra2013]. We can obtain a posterior distribution by constructing a Markov chain that describes a sequence of moves from current state to the next state following probabilistic rules based on the approximate exchange algorithm [@Caimo2011]. This enables a random or stochastic simulation in a long run where each move does not depend on the previous move. More chains ensures a more desirable posterior distribution that is close to the target distribution under study, or convergence. In Bayesian ERGMs, MCMC first selects a set of edges (or a set of empty pairs of actors) with equal probability, and then switches to a pair of actors at random within the chosen set [@Caimo2011]. In our case, we set the number of chains to six. For each chain, the number of burn-in iterations was `r burn_in` and the number of iterations after the burn-in was `r main_iter`. We set the number of iterations used to simulate a network y' at each iteration to `r aux_iter`.
+After we set our model parameters, we simulated networks in a Bayesian framework using a Markov chain Monte Carlo (MCMC) algorithm. MCMC algorithms allow estimation of posterior distributions through direct random sampling the posterior without assuming the prior comes from any specific distribution [@Hamra2013]. We obtained a posterior distribution by constructing a Markov chain that describes a sequence of moves from current state to the next state following probabilistic rules based on the approximate exchange algorithm [@Caimo2011]. This enables a random or stochastic simulation in a long run where each move does not depend on the previous move. More chains can ensure a more desirable posterior distribution that is close to the target distribution under study, or convergence. In Bayesian ERGMs, MCMC first selects a set of edges (or a set of empty pairs of actors) with equal probability, and then switches to a pair of actors at random within the chosen set [@Caimo2011]. In our case, we set the number of chains to `r chains`. For each chain, the number of burn-in iterations was `r burn_in` and the number of iterations after the burn-in was $`r main_iter`$. We set the number of iterations used to simulate a network at each iteration to `r aux_iter`.
 
 <!-- assessment of MCMC and Goodness-of-fit in Bayesian: move to SI -->
-
-```{r bergm-pre, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/003-burials-pre-network-modelling.R"))}
-suppressWarnings(source(here::here("analysis", "paper", "003-burials-pre-network-modelling.R")))
-```
-
-```{r bergm-post, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/paper/004-burials-post-network-modelling.R"))}
-suppressWarnings(source(here::here("analysis", "paper", "004-burials-post-network-modelling.R")))
-```
 
 ```{r pre-diag-plots, include= FALSE}
 # get the first set of diagnostic plots
@@ -233,9 +178,9 @@ dev.off()
 
 ## Assessment of priors, MCMC outputs and Goodness-of-fit diagnostics for our models {.unnumbered}
 
-We conducted a sensitivity analysis to understand the effect of the prior specification on our two models. We set all the priors to be vague normal distribution (mean is 0 with standard deviation is 10) and a range of plausible priors (mean from 0 to 5 and standard deviation from 0 to 10). The comparison demonstrates that our results are robust to different priors that preserve the differences between our two models, especially for density, transitivity, and centralization. In general, models with informative priors have a better convergence of the MCMC presented by a trend of decreased autocorrelation for some of the parameters in both models. However, the posterior estimates in 95% confidence intervals could vary for some covariates with different priors.
+We conducted a sensitivity analysis to understand the effect of the prior specification on our two models. We set all the priors to be vague normal distribution (mean is 0 with standard deviation is 10) and a range of plausible priors (mean from 0 to 5 and standard deviation from 0 to 10). The comparison demonstrates that our results are robust to different priors that preserve the differences between our two models, especially for density, transitivity, and centralization. However, the posterior estimates in 95% confidence intervals could vary for some covariates with different priors. In general, models with our informative priors have a better convergence of the MCMC presented by the diagnostic plots.
 
-As an informal way to diagnose model convergence, we evaluated three diagnostic visual summaries of our MCMC output, including density plots, trace plots, and autocorrelation plots for both models (Figure \@ref(fig:figure-pre-diag) and Figure \@ref(fig:figure-post-diag)) [@Hamra2013]. We can see that the diagnostic plots show a trend of stationary distributions for most of the variables. However, the degree of autocorrelation is high at 40 lag for all variable but the dyadcov variable that indicates slow mixing and strong correlations between our samples [@Lynch2007; @Roy2020]. Then we summarize output from our two models by goodness-of-fit (GOF) diagnostics in the Bayesian framework, where the observed network is compared with the set of networks simulated from the estimated posterior distributions of the parameters of each model [@Caimo2011; @Caimo2017]. We set $`r bgof_si`$ network graphs simulated from the estimated posterior distribution in ERGMs.
+As an informal way to diagnose model convergence, we evaluated three diagnostic visual summaries of our MCMC output, including density plots, trace plots, and autocorrelation plots for both models (Figure \@ref(fig:figure-pre-diag) and Figure \@ref(fig:figure-post-diag)) [@Hamra2013]. We can see that the diagnostic plots show a trend of stationary distributions for most of the variables. However, the degree of autocorrelation is high at 40 lag for all variables but the dyadcov variable, which indicates slow mixing and strong correlations between our variables [@Lynch2007; @Roy2020]. Then we summarize output from our two models by goodness-of-fit (GOF) diagnostics in the Bayesian framework, where the observed network is compared with the set of networks simulated from the estimated posterior distributions of the parameters of each model [@Caimo2011; @Caimo2017]. We set `r bgof_net` network graphs simulated from the estimated posterior distribution in ERGMs, and `r aux_iter` iterations used for network simulation. 
 
 ```{r figure-pre-diag, fig.cap = "MCMC output of the pre-European model. In the order of edges, nodematch-age, nodematch-sex, nodematch-ritual, nodematch-value, gwesp, gwdeg, and dyadcov.distance."}
 knitr::include_graphics(here::here("analysis", "figures", "008-pre-diag.png"))
@@ -245,13 +190,14 @@ knitr::include_graphics(here::here("analysis", "figures", "008-pre-diag.png"))
 knitr::include_graphics(here::here("analysis", "figures", "009-post-diag.png"))
 ```
 
-Our Bayesian GOF diagnostics summarized three distributions, including degree, minimum geodesic distance, and edgewise shared partner distributions. The diagnostics plots (Figure \@ref(fig:figure-bgof-two-phases)) demonstrate that both models fit the observed networks very well for the minimum geodesic distance distribution (i.e. the number of edges between node pairs in a shortest path, @Hunter2008) and the degree distribution. For edgewise shared partner distribution, despite some observations falling outside the 95% interval, the fit is generally good with most observations within it. This provides a statistical approach to check how well the estimated posterior parameter distribution, based on our hypotheses, can reproduce networks with similar general structural features of the observed networks. We then compared the distribution of our observed networks, the networks before and after the arrival of Europeans, with the distribution of our hypothesized models. We expect to see the models fit with our hypotheses, indicative of an increased social inequality after the foreign contact. In addition, the covariates can give some more clues for the underlying mechanisms for the formations of each network, such as the relative importance of age and sex.
+Our Bayesian GOF diagnostics summarized three distributions, including degree, minimum geodesic distance, and edgewise shared partner distributions. The diagnostics plots (Figure \@ref(fig:figure-bgof-pre-E) and Figure \@ref(fig:figure-bgof-post-E)) demonstrate that both models fit the observed networks very well for the minimum geodesic distance distribution (i.e. the number of edges between node pairs in a shortest path, @Hunter2008). The pre-European model has a better fit for the degree distribution and edgewise shared partner distribution, compared to the post-European model. Despite some observations falling outside the 95% interval for the post-European model, the fit is generally good with most observations within it. This provides a statistical approach to check how well the estimated posterior parameter distribution, based on our hypotheses, can reproduce networks with similar general structural features of the observed networks. We then compared the distribution of our observed networks, the networks before and after the arrival of Europeans, with the distribution of our hypothesized models to test an increased social inequality after the foreign contact. 
 
-```{r figure-bgof-two-phases, fig.cap = "Goodness-of-fit diagnostics for the pre-European model (top) and the post-European model (below). Boxplots represent distributions calculated on 100 network graphs simulated from the estimated posterior distribution. Red lines represent distributions of observed networks, and gray lines show the 95% intervals."}
-library(magick)
-pre_bgof_img <- image_read(here::here("analysis/figures/003-pre-bgof.png"))
-post_bgof_img <- image_read(here::here("analysis/figures/004-post-bgof.png"))
-image_append(c(pre_bgof_img, post_bgof_img), stack = T)
+```{r figure-bgof-pre-E, fig.cap = "Goodness-of-fit diagnostics for the pre-European model and the post-European model (below). Boxplots represent distributions calculated on 100 network graphs simulated from the estimated posterior distribution. Red lines represent distributions of observed networks, and black lines show the 95% intervals."}
+knitr::include_graphics(here::here("analysis/figures/003-pre-bgof.png"))
+```
+
+```{r figure-bgof-post-E, fig.cap = "Goodness-of-fit diagnostics for the post-European model. Boxplots represent distributions calculated on 100 network graphs simulated from the estimated posterior distribution. Red lines represent distributions of observed networks, and black lines show the 95% intervals."}
+knitr::include_graphics(here::here("analysis/figures/004-post-bgof.png"))
 ```
 
 # References {.unnumbered}
