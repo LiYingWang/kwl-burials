@@ -29,6 +29,38 @@ This repository contains:
   - [:file\_folder: analysis/paper](analysis/paper): R Markdown files for generating the paper and supplementary materials
   - [:file\_folder: analysis/data](analysis/data): Data used in the analysis, including raw data and derived data
   - [:file\_folder: analysis/figures](analysis/figures): Figures that were created by R script files and included in the paper 
+  
+The key parts of the code in this project are listed below:
+
+
+```
+analysis
+   |-- code
+   |   |-- 000-Kiwulan-map.R
+   |   |   # makes the regional map
+   |   |-- 000-prep-data.R
+   |   |   # import data and ...
+   |   |-- 001-data-tidy.R
+   |   |   # import data and ...
+   |   |-- 002-burial-location.R
+   |   |   # makes Fig X: [caption snippet]
+   |   |-- 003-burials-pre-network-modelling.R
+   |   |   # makes Fig X: [caption snippet]
+   |   |-- 004-burials-post-network-modelling.R
+   |   |   # makes Fig X: [caption snippet]
+   |   |-- 005-network-diagrams-two-phases.R
+   |   |   # makes Fig X: [caption snippet]
+   |   |-- 006-bergm-distribution-stats.R
+   |   |   # makes Fig X: [caption snippet]
+   |   |-- 007-bgof-assessment-vis.R
+   |   |   # makes Fig X: [caption snippet]
+   |   |-- 008-bootstrap-CI.R
+   |   |   # makes Fig X: [caption snippet]
+   |   |-- 009-bootstrap-t-test.R
+   |   |   # makes Fig X: [caption snippet]
+   |   |-- 999-bgof-custom-function.R
+           # makes Fig X: [caption snippet]
+```
 
 ### How to download or install
 
