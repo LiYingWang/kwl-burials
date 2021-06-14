@@ -145,9 +145,27 @@ summary(model_pre_3)
 # follow Alberto Caimo et al. (2015) hospital example
 # prior uses normal distribution (low density, high transitivity, low popularity)
 # need to adjust according to the observed ERGM network
-# priors below follow the order of variables (without#) specified in model 3 (lines 148-159)
-pre_prior_mean <- c(-3, 0, 0, 3, 0, 3, -3, 0) # positive prior number for edge means high density
-pre_prior_sigma <- diag(c(1, 5, 5, 1, 5, 1, 1, 5), 8, 8) # covariance matrix structure, uncertainty
+# priors below follow the order of variables (without#) specified in model 3
+# positive prior number for edge means high density
+pre_prior_mean <- c(-3,   #  edges,
+                    0,    #  age
+                    0,    #  sex
+                    3,    #  ritual pottery
+                    0,    #  burial value class
+                    3,    #  gwesp or transitivity
+                    -3,   #  gwdegree or centralisation
+                    0     #  physical distance
+                    )
+
+pre_prior_sigma <- diag(c(1,   #   edges
+                          5,   #   age
+                          5,   #   sex
+                          1,   #   ritual pottery
+                          5,   #   burial value class
+                          1,   #   gwesp or transitivity
+                          1,   #   gwdegree or centralisation
+                          5),  #   physical distance
+                        8, 8) # covariance matrix structure, uncertainty
 # normal distribution 𝜃 ∼ Nd (𝜇prior , Σprior ) a common prior model
 # where the dimension d corresponds to the number of parameters, 𝜇 is mean vector and Σprior is a d × d covariance matrix
 # output includes estimated posterior means, medians and 95% credible intervals
