@@ -122,9 +122,23 @@ summary(model_post_3)
 
 # Specify a prior distribution
 # normal distribution (low density, low transitivity, high popularity)
-# priors below follow the order of variables (without#) specified in model 3 (lines 126-138)
-post_prior_mean <- c(-3, 0, 0, 0, 3, 1, 3, 0) # prior mean corresponds to mean for each parameter
-post_prior_sigma <- diag(c(1, 5, 5, 5, 1, 1, 1, 5), 8, 8) # covariance matrix structure
+post_prior_mean <- c(-3,  #  edges
+                      0,  #  age
+                      0,  #  sex
+                      0,  #  ritual pottery
+                      3,  #  burial value class
+                      1,  #  gwesp or transitivity
+                      3,  #  gwdegree or centralization
+                      0)  #  physical distance
+post_prior_sigma <- diag(c(1,  #  edges
+                           5,  #  age
+                           5,  #  sex
+                           5,  #  ritual pottery
+                           1,  #  burial value class
+                           1,  #  gwesp or transitivity
+                           1,  #  gwdegree or centralization
+                           5), #  physical distance
+                         8, 8) # covariance matrix structure
 
 post_bergm <- bergm(model_post_3,
                  prior.mean  = post_prior_mean ,
