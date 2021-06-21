@@ -37,29 +37,30 @@ The key parts of the code in this project are listed below:
 analysis
    |-- code
    |   |-- 000-Kiwulan-map.R
-   |   |   # makes the regional map
+   |   |   # makes Fig 1: the location of Kiwulan
    |   |-- 000-prep-data.R
-   |   |   # import data and ...
+   |   |   # imports and inspects data 
+   |   |   # makes Fig 3: the distribution of trade beads 
    |   |-- 001-data-tidy.R
-   |   |   # import data and ...
+   |   |   # tidies data for network construction 
    |   |-- 002-burial-location.R
-   |   |   # makes Fig X: [caption snippet]
+   |   |   # makes Fig 2: the location of burials by periods
    |   |-- 003-burials-pre-network-modelling.R
-   |   |   # makes Fig X: [caption snippet]
+   |   |   # build a Bayesian model for the pre-European network
    |   |-- 004-burials-post-network-modelling.R
-   |   |   # makes Fig X: [caption snippet]
+   |   |   # build a Bayesian model for the post-European network
    |   |-- 005-network-diagrams-two-phases.R
-   |   |   # makes Fig X: [caption snippet]
+   |   |   # makes Fig 4: burial network diagrams for both periods
    |   |-- 006-bergm-distribution-stats.R
-   |   |   # makes Fig X: [caption snippet]
+   |   |   # makes Fig 5: posterior density estimates for the ergm parameters 
    |   |-- 007-bgof-assessment-vis.R
-   |   |   # makes Fig X: [caption snippet]
+   |   |   # makes Fig 7: distribution moments for the observed and simulated distributions 
    |   |-- 008-bootstrap-CI.R
-   |   |   # makes Fig X: [caption snippet]
+   |   |   # makes Fig 6: results of the vertex bootstrap analysis
    |   |-- 009-bootstrap-t-test.R
-   |   |   # makes Fig X: [caption snippet]
+   |   |   # test for differences between network statistics
    |   |-- 999-bgof-custom-function.R
-           # makes Fig X: [caption snippet]
+           # customizes bgof function to adjust Fig 3 & 4 in the SI
 ```
 
 ### How to download or install
