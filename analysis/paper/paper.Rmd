@@ -133,12 +133,10 @@ We built networks where burials (nodes in the network) are linked when they have
 suppressWarnings(source(here::here("analysis", "code", "999-bgof-custom-function.R")))
 ```
 
-```{r bergm-pre, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/code/003-burials-post-network-modelling.R"))}
-suppressWarnings(source(here::here("analysis", "code", "003-burials-pre-network-modelling.R")))
-```
-
-```{r bergm-post, include=FALSE, cache=TRUE, cache.extra=tools::md5sum(here::here("analysis/code/004-burials-post-network-modelling.R"))}
-suppressWarnings(source(here::here("analysis", "code", "004-burials-post-network-modelling.R")))
+```{r read-models-data, include=FALSE}
+load(here::here("analysis", "data", "derived_data", "burial_bergm_model.RData"))
+readRDS(here::here("analysis", "data", "derived_data", "pre_bergm.rds"))
+readRDS(here::here("analysis", "data", "derived_data", "post_bergm.rds"))
 ```
 
 ## Hypothesis and prediction {-}
