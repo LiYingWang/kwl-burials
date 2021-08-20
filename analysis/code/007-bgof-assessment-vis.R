@@ -1,5 +1,9 @@
-# Bayesian Model assessment
+# read saved models
+load(here::here("analysis", "data", "derived_data", "burial_bergm_model.RData"))
+readRDS(here::here("analysis", "data", "derived_data", "pre_bergm.rds"))
+readRDS(here::here("analysis", "data", "derived_data", "post_bergm.rds"))
 
+# Bayesian Model assessment
 #------------- Pre-E network
 png(filename = here::here("analysis", "figures", "003-pre-bgof.png"),
     width = 5, height = 8, units = "in", res = 360)
