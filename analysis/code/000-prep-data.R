@@ -178,13 +178,18 @@ ridge_1_and_4 <-
     point_size = 2.5,
     point_alpha = 0.4,
     position = position_raincloud(adjust_vlines = TRUE),
-    rel_min_height = 0.01,
+    rel_min_height = 0.001,
     scale = 0.5, # so the filled regions don't overlap on the points
     size = 0.2) +
-  scale_x_continuous(limits = c(1, 15),
+  scale_x_continuous(limits = c(1, 20),
                      expand = c(0.1, 0)) +
-  scale_fill_viridis_d(name = "Quartiles") +
+  scale_fill_viridis_d(name = "quartiles") +
   theme_minimal()
 
-#ggsave(here::here("analysis", "figures", "000-raincloud-beads.png"), w = 6, h = 4)
+ggsave(here::here("analysis", "figures", "000-raincloud-beads.png"), w = 6, h = 4)
 
+# burials with 60 and more glass beads not on the plot
+glass_beads_high <-
+  burial_beads %>%
+  filter(type == "all_glass_bead") %>%
+  filter(value > 59)
