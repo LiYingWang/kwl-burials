@@ -79,7 +79,6 @@ The observed uneven distribution of burial goods at Kiwulan may be explained as 
 Using the theoretical framework of corporate-network strategies, we test a hypothesis of the shift in organizational modes in relation to increased social inequality, from a more corporate to a more network society, after the European presence that can be observed in the Kiwulan burial network [@Blanton1996; @Drennan2010; @Feinman2000]. We explore whether this change can be identified through the pattern of intercorrelations of foreign prestige goods among burials. We ask: (1) Does the burial network after European arrival present a more centralized structure with fewer subgroups compared to the burial network before European contact? and if so, (2) what are the major variables affecting or forming these two networks? Can we identify the shift in variables from ritual to wealth associated with two different strategies? By answering these questions, this case study helps to expand our understanding of European colonial effects on Indigenous groups in a pericolonial context.
 
 ```{r figure-KWL-map, fig.cap = "The location of Kiwulan and the European forts at Heping dao and Tamsui in northern Taiwan (modified from Wang and Marwick, 2020). Map data from naturalearthdata.com."}
-
 knitr::include_graphics(here::here("analysis", "figures", "000-KWL-map.png"))
 ```
 
@@ -128,10 +127,6 @@ To compare burial networks, we assigned burials to the pre-European period (n = 
 We built networks where burials (nodes in the network) are linked when they have the same trade goods in common. This is based on the assumptions that social status and associated relations can be represented by sharing similar goods and burials can reflect social structures [@Binford1971; @Saxe1970; cf. @Coward2013, pp. 252]. Thus, individuals with the same prestige goods reflect similar access to trade, exchange, and gifting networks, indicative of the similarity among Kiwulan residents and social inequality. The trade goods we identified include gold-foil beads, carnelian beads, glass beads, Chinese porcelains, stonewares, gold foils, fish-shaped ornaments, and imported coins, which were also items less affected by taphonomic processes because of their durable materials. Those goods are considered as prestige goods due to their rarity in burial contexts and descriptions in historical records [@Chen2007; @Cheng2008; @Hsieh2009; @Hsieh2012; @Wang2011]. European historical accounts mentioned that those items were treated as prestige goods in Indigenous culture [@Borao2009; @LiandWu2006]. For example, a Spanish priest described a Spanish soldier exchanging carnelian beads for natural resources with local Indigenous people, because of the beads’ high value in Indigenous culture [@LiandWu2006]. In addition, Spanish visitors observed that Indigenous people possessing more imported goods were recognized as having higher status in their community [@LiandWu2006]. 
 
 # Methods {-}
-
-```{r custom-function, include=FALSE}
-suppressWarnings(source(here::here("analysis", "code", "999-bgof-custom-function.R")))
-```
 
 ```{r read-models-data, include=FALSE}
 load(here::here("analysis", "data", "derived_data", "burial_bergm_model.RData"))
