@@ -1,7 +1,9 @@
 # read saved models
+
+library(igraph)
+library(Bergm)
+
 load(here::here("analysis", "data", "derived_data", "burial_bergm_model.RData"))
-readRDS(here::here("analysis", "data", "derived_data", "pre_bergm.rds"))
-readRDS(here::here("analysis", "data", "derived_data", "post_bergm.rds"))
 
 # Bayesian Model assessment
 #------------- Pre-E network
@@ -27,10 +29,10 @@ obs_dist_pre <- describe(bgof_pre$obs.dist * 1:length(bgof_pre$obs.dist))
 obs_esp_pre <- describe(bgof_pre$obs.esp * 0:(length(bgof_pre$obs.esp)-1))
 
 sim_degree_pre <-
-  describe(bgof_pre$sim.degree * rep(0:(length(bgof_pre$obs.degree)-1),
+  psych::describe(bgof_pre$sim.degree * rep(0:(length(bgof_pre$obs.degree)-1),
                                      times = length(bgof_pre$sim.degree)
                                      /length(bgof_pre$obs.degree))) %>%
-  filter(skew != "NaN")
+  dplyr::filter(skew != "NaN")
 
 sim_dist_pre <-
   describe(bgof_pre$sim.dist * rep(1:length(bgof_pre$obs.dist),
