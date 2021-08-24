@@ -55,6 +55,8 @@ analysis
    |   |   # makes Fig 5: posterior density estimates for the ergm parameters 
    |   |-- 007-bgof-assessment-vis.R
    |   |   # makes Fig 7: distribution moments for the observed and simulated distributions 
+   |   |   # makes Fig 3 in the SI: Goodness-of-fit diagnostics for the pre-European model
+   |   |   # makes Fig 4 in the SI: Goodness-of-fit diagnostics for the post-European model
    |   |-- 008-bootstrap-CI.R
    |   |   # makes Fig 6: results of the vertex bootstrap analysis
    |   |-- 009-bootstrap-t-test.R
