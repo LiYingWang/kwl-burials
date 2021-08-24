@@ -2,6 +2,7 @@
 load(here::here("analysis", "data", "derived_data", "burial_bergm_model.RData"))
 
 library(cowplot)
+library(Bergm)
 
 # get data from pre-European model
 pre_bergm_stats <- as.data.frame(pre_bergm$Theta)

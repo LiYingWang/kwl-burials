@@ -9,7 +9,6 @@ COPY . /kwl-burials
 # go into the repo directory
 RUN . /etc/environment \
   # build this compendium package
-  ## && R -e "remotes::install_github('r-lib/remotes')" \
   && R -e "devtools::install('/kwl-burials', dep=TRUE)" \
   && R -e "remotes::install_github('benmarwick/wordcountaddin', type = 'source', dependencies=TRUE)" \
   && R -e "remotes::install_github('benmarwick/rrtools', type = 'source', dependencies=TRUE)" \
