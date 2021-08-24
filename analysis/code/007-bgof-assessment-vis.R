@@ -1,9 +1,4 @@
 # read saved models
-
-library(igraph)
-library(Bergm)
-library(tidyverse)
-
 load(here::here("analysis", "data", "derived_data", "burial_bergm_model.RData"))
 suppressWarnings(source(here::here("analysis", "code", "999-bgof-custom-function.R")))
 
@@ -12,6 +7,7 @@ suppressWarnings(source(here::here("analysis", "code", "999-bgof-custom-function
 png(filename = here::here("analysis", "figures", "003-pre-bgof.png"),
     width = 5, height = 8, units = "in", res = 360)
 
+library(Bergm)
 bgof_pre <-
   bgof2(pre_bergm,
         sample.size = 100,
@@ -19,16 +15,15 @@ bgof_pre <-
         n.deg     = 15,
         n.dist    = 15,
         n.esp     = 10)
-
 dev.off()
 
 # load library for measuring moments of distribution
 library(psych)
 
 # calculate moments for observed and simulated GOF distribution for pre-E model
-obs_degree_pre <- describe(bgof_pre$obs.degree * 0:(length(bgof_pre$obs.degree)-1))
-obs_dist_pre <- describe(bgof_pre$obs.dist * 1:length(bgof_pre$obs.dist))
-obs_esp_pre <- describe(bgof_pre$obs.esp * 0:(length(bgof_pre$obs.esp)-1))
+obs_degree_pre <- psych::describe(bgof_pre$obs.degree * 0:(length(bgof_pre$obs.degree)-1))
+obs_dist_pre <- psych::describe(bgof_pre$obs.dist * 1:length(bgof_pre$obs.dist))
+obs_esp_pre <- psych::describe(bgof_pre$obs.esp * 0:(length(bgof_pre$obs.esp)-1))
 
 sim_degree_pre <-
   psych::describe(bgof_pre$sim.degree * rep(0:(length(bgof_pre$obs.degree)-1),
@@ -37,12 +32,12 @@ sim_degree_pre <-
   dplyr::filter(skew != "NaN")
 
 sim_dist_pre <-
-  describe(bgof_pre$sim.dist * rep(1:length(bgof_pre$obs.dist),
+  psych::describe(bgof_pre$sim.dist * rep(1:length(bgof_pre$obs.dist),
                                    times = length(bgof_pre$sim.dist)
                                    /length(bgof_pre$obs.dist)))
 
 sim_esp_pre <-
-  describe(bgof_pre$sim.esp * rep(0:(length(bgof_pre$obs.esp)-1),
+  psych::describe(bgof_pre$sim.esp * rep(0:(length(bgof_pre$obs.esp)-1),
                                   times = length(bgof_pre$sim.esp)
                                   /length(bgof_pre$obs.esp)))
   #filter(skew != "NaN" & skew != 0.00)
