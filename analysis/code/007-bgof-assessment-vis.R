@@ -2,6 +2,7 @@
 
 library(igraph)
 library(Bergm)
+library(tidyverse)
 
 load(here::here("analysis", "data", "derived_data", "burial_bergm_model.RData"))
 
@@ -135,10 +136,10 @@ distribution_two_phases <-
 
 distribution_two_phases_longer <-
   distribution_two_phases %>%
-  pivot_longer(cols = starts_with(c("observed", "modelled")),
+  tidyr::pivot_longer(cols = starts_with(c("observed", "modelled")),
                names_to = "parameter",
                values_to = "value") %>%
-  separate(parameter, c("data", "parameter"))
+  tidyr::separate(parameter, c("data", "parameter"))
 
 distribution_two_phases_diff <-
   distribution_two_phases %>%
