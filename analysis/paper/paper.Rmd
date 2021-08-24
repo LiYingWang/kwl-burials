@@ -135,8 +135,6 @@ suppressWarnings(source(here::here("analysis", "code", "999-bgof-custom-function
 
 ```{r read-models-data, include=FALSE}
 load(here::here("analysis", "data", "derived_data", "burial_bergm_model.RData"))
-readRDS(here::here("analysis", "data", "derived_data", "pre_bergm.rds"))
-readRDS(here::here("analysis", "data", "derived_data", "post_bergm.rds"))
 ```
 
 ## Hypothesis and prediction {-}

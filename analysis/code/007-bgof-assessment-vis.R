@@ -5,6 +5,7 @@ library(Bergm)
 library(tidyverse)
 
 load(here::here("analysis", "data", "derived_data", "burial_bergm_model.RData"))
+suppressWarnings(source(here::here("analysis", "code", "999-bgof-custom-function.R")))
 
 # Bayesian Model assessment
 #------------- Pre-E network

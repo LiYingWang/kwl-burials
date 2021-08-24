@@ -82,7 +82,7 @@ bgof2 <- function(x,
                  ...){
 
   FF <- as.matrix(x$Theta[sample(dim(x$Theta)[1], sample.size), ])
-  DN <- is.directed(ergm.getnetwork(x$formula))
+  DN <- network::is.directed(ergm::ergm.getnetwork(x$formula))
 
   if (DN == FALSE) { # undirected
     for (i in 1:sample.size) {
