@@ -1,7 +1,8 @@
 # read saved models
 load(here::here("analysis", "data", "derived_data", "burial_bergm_model.RData"))
-readRDS(here::here("analysis", "data", "derived_data", "pre_bergm.rds"))
-readRDS(here::here("analysis", "data", "derived_data", "post_bergm.rds"))
+
+library(cowplot)
+library(Bergm)
 
 # get data from pre-European model
 pre_bergm_stats <- as.data.frame(pre_bergm$Theta)

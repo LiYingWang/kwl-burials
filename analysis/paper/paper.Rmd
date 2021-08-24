@@ -130,8 +130,6 @@ We built networks where burials (nodes in the network) are linked when they have
 
 ```{r read-models-data, include=FALSE}
 load(here::here("analysis", "data", "derived_data", "burial_bergm_model.RData"))
-readRDS(here::here("analysis", "data", "derived_data", "pre_bergm.rds"))
-readRDS(here::here("analysis", "data", "derived_data", "post_bergm.rds"))
 ```
 
 ## Hypothesis and prediction {-}
