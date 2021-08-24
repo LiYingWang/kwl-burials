@@ -2,8 +2,10 @@
 load(here::here("analysis", "data", "derived_data", "burial_bergm_model.RData"))
 suppressWarnings(source(here::here("analysis", "code", "999-bgof-custom-function.R")))
 
-# Bayesian Model assessment
+# Assessment for the two Bayesian models
+
 #------------- Pre-E network
+# Figure 3 in the SI
 png(filename = here::here("analysis", "figures", "003-pre-bgof.png"),
     width = 5, height = 8, units = "in", res = 360)
 
@@ -69,6 +71,7 @@ posterior_distribution_pre <-
 summary(bgof_pre)
 
 #----------- Post-E network
+# Figure 4 in the SI
 png(filename = here::here("analysis", "figures", "004-post-bgof.png"),
     width = 5, height = 8, units = "in", res = 360)
 

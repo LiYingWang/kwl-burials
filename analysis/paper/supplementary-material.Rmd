@@ -119,6 +119,7 @@ After we set our model parameters, we simulated networks in a Bayesian framework
 <!-- assessment of MCMC and Goodness-of-fit in Bayesian: move to SI -->
 
 ```{r pre-diag-plots, include= FALSE}
+# Figure 1 in the SI
 # get the first set of diagnostic plots
 x <- pre_bergm
 
@@ -148,6 +149,7 @@ dev.off()
 ```
 
 ```{r post-diag-plots, include= FALSE}
+# Figure 2 in the SI
 # get the first set of diagnostic plots
 y <- post_bergm
 
@@ -183,10 +185,12 @@ We conducted a sensitivity analysis to understand the effect of the prior specif
 As an informal way to diagnose model convergence, we evaluated three diagnostic visual summaries of our MCMC output, including density plots, trace plots, and autocorrelation plots for both models (Figure \@ref(fig:figure-pre-diag) and Figure \@ref(fig:figure-post-diag)) [@Hamra2013]. We can see that the diagnostic plots show a trend of stationary distributions for most of the variables. However, the degree of autocorrelation is high at 40 lag for all variables but the dyadcov variable, which indicates slow mixing and strong correlations between our variables [@Lynch2007; @Roy2020]. Then we summarize output from our two models by goodness-of-fit (GOF) diagnostics in the Bayesian framework, where the observed network is compared with the set of networks simulated from the estimated posterior distributions of the parameters of each model [@Caimo2011; @Caimo2017]. We set `r bgof_net` network graphs simulated from the estimated posterior distribution in ERGMs, and `r aux_iter` iterations used for network simulation. 
 
 ```{r figure-pre-diag, fig.cap = "MCMC output of the pre-European model. In the order of edges, nodematch-age, nodematch-sex, nodematch-ritual, nodematch-value, gwesp, gwdeg, and dyadcov.distance."}
+# Figure 3 in the SI (code is in 007-bgof-assessment-vis.R)
 knitr::include_graphics(here::here("analysis", "figures", "008-pre-diag.png"))
 ```
 
 ```{r figure-post-diag, fig.cap = "MCMC output of the post-European model. In the order of edges, nodematch-age, nodematch-sex, nodematch-ritual, nodematch-value, gwesp, gwdeg, and dyadcov.distance."}
+# Figure 4 in the SI (code is in 007-bgof-assessment-vis.R)
 knitr::include_graphics(here::here("analysis", "figures", "009-post-diag.png"))
 ```
 
