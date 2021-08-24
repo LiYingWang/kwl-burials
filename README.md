@@ -6,24 +6,24 @@
 
 This repository contains the data and code for our paper:
 
-> Li-Ying Wang & Ben Marwick, (2021). A Bayesian networks approach to infer social changes in burials in northeastern Taiwan during the European colonization period. 
+> Li-Ying Wang & Ben Marwick, (2021). A Bayesian networks approach to infer social changes in burials in northeastern Taiwan during the European colonization period. *Journal of Archaeological Science 134*
+> <https://doi.org/10.1016/j.jas.2021.105471>
 
 Our pre-print is online here:
 
-> Li-Ying Wang & Ben Marwick, (2021). A Bayesian networks approach to infer social changes in burials in northeastern Taiwan during the European colonization period. 
-> Accessed 16 Mar 2021. Online at
+> Li-Ying Wang & Ben Marwick, (2021). A Bayesian networks approach to infer social changes in burials in northeastern Taiwan during the European colonization period. *Journal of Archaeological Science 134*
 > <https://osf.io/preprints/socarxiv/3vfea/>
 
 ### How to cite
 
 Please cite this compendium as:
 
-> Li-Ying Wang & Ben Marwick, (2021). Compendium of R code and data for "A Bayesian networks approach to infer social changes in burials in northeastern Taiwan during the European colonization period". Accessed 16 Mar 2021. Online at
+> Li-Ying Wang & Ben Marwick, (2021). Compendium of R code and data for "A Bayesian networks approach to infer social changes in burials in northeastern Taiwan during the European colonization period". Accessed 23 Aug 2021. Online at
 > <https://osf.io/xga6n/>
 
 ### Contents
 
-This repository contains:
+The most important parts of this compendium, for most users, are:
 
   - [:file\_folder: analysis/code](analysis/code): R script files that include code to analyses data and reproduce the results and figures in this paper 
   - [:file\_folder: analysis/paper](analysis/paper): R Markdown files for generating the paper and supplementary materials
@@ -63,18 +63,38 @@ analysis
            # customizes bgof function to adjust Fig 3 & 4 in the SI
 ```
 
-### How to download or install
+## How to run in your broswer or download and run locally
 
-You can download the compendium as a zip from from this URL:
-</archive/master.zip>
+This research compendium has been developed using the statistical
+programming language R. To work with the compendium, you will need
+installed on your computer the [R
+software](https://cloud.r-project.org/) itself and optionally [RStudio
+Desktop](https://rstudio.com/products/rstudio/download/).
 
-Or you can install this compendium as an R package, kwlburials, from
+The simplest way to explore the text, code and data is to click on
+[binder](https://mybinder.org/v2/gh/parkgayoung/racisminarchy/master?urlpath=rstudio)
+to open an instance of RStudio in your browser, which will have the
+compendium files ready to work with. Binder uses rocker-project.org
+Docker images to ensure a consistent and reproducible computational
+environment. These Docker images can also be used locally.
+
+You can install this compendium as an R package, kwlburials, from
 GitHub with:
 
 ``` r
 # install.packages("devtools")
 remotes::install_github("LiYingWang/kwlburials")
 ```
+
+Or You can download the compendium as a zip file from this URL:
+[master.zip](/archive/master.zip). After unzipping:  
+- open the `.Rproj` file in RStudio, this will open our project in
+RStudio on your computer  
+- run `renv::restore()` to ensure you have the packages this analysis
+depends on (also listed in the [DESCRIPTION](/DESCRIPTION) file).  
+- run the R code that produces the figures and numerical results presented
+in the paper, and generate our manuscript by rendering our R Markdown
+document into a Microsoft Word document.
 
 ### Licenses
 
