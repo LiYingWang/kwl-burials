@@ -6,19 +6,19 @@
 
 This repository contains the data and code for our paper:
 
-> Li-Ying Wang & Ben Marwick, (2021). A Bayesian networks approach to infer social changes in burials in northeastern Taiwan during the European colonization period. *Journal of Archaeological Science 134*
+> Li-Ying Wang & Ben Marwick, (2021). A Bayesian networks approach to infer social changes from burials in northeastern Taiwan during the European colonization period. *Journal of Archaeological Science 134*
 > <https://doi.org/10.1016/j.jas.2021.105471>
 
 Our pre-print is online here:
 
-> Li-Ying Wang & Ben Marwick, (2021). A Bayesian networks approach to infer social changes in burials in northeastern Taiwan during the European colonization period. *Journal of Archaeological Science 134*
+> Li-Ying Wang & Ben Marwick, (2021). A Bayesian networks approach to infer social changes from burials in northeastern Taiwan during the European colonization period. *Journal of Archaeological Science 134*
 > <https://osf.io/preprints/socarxiv/3vfea/>
 
 ### How to cite
 
 Please cite this compendium as:
 
-> Li-Ying Wang & Ben Marwick, (2021). Compendium of R code and data for "A Bayesian networks approach to infer social changes in burials in northeastern Taiwan during the European colonization period". Accessed 23 Aug 2021. Online at
+> Li-Ying Wang & Ben Marwick, (2021). Compendium of R code and data for "A Bayesian networks approach to infer social changes from burials in northeastern Taiwan during the European colonization period". Accessed 23 Aug 2021. Online at
 > <https://osf.io/xga6n/>
 
 ### Contents
@@ -87,7 +87,7 @@ remotes::install_github("LiYingWang/kwlburials")
 ```
 
 Or You can download the compendium as a zip file from this URL:
-[master.zip](/archive/master.zip). After unzipping:  
+[master.zip](https://github.com/LiYingWang/kwl-burials/archive/master.zip). After unzipping:  
 - open the `.Rproj` file in RStudio, this will open our project in
 RStudio on your computer  
 - run `renv::restore()` to ensure you have the packages this analysis
